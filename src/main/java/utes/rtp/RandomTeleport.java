@@ -74,11 +74,14 @@ public class RandomTeleport implements Listener {
 		player.sendMessage("等待随机传送中，3s内请不要移动！");
 		Location from = player.getLocation();
 		Location destination = getRandomDestination(from.clone());
+		if(destination==null){
+			player.sendMessage("找不到合适的随机传送点，请重试");
+			return;
+		}
 		new BukkitRunnable() {
 
 			@Override
 			public void run() {
-				cancel();
 				if ((!player.isOnline()) || player == null)
 					return;
 				if (player.getLocation().distance(from) >= 0.3 && (!player.hasPermission("utes.rtp.ignoremove"))) {
@@ -88,7 +91,6 @@ public class RandomTeleport implements Listener {
 				player.sendMessage("随机传送至x:§6" + destination.getBlockX() + "§r z:§6"
 						+ destination.getBlockZ());
 				player.teleport(destination);
-				player.getWorld().spawnParticle(Particle.PORTAL, player.getLocation().add(0, 1, 0), 5);
 				player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, 200, 0));
 				lastUseTimeStamp.remove(player.getUniqueId());
 				lastUseTimeStamp.put(player.getUniqueId(), System.currentTimeMillis());
@@ -99,22 +101,31 @@ public class RandomTeleport implements Listener {
 
 	private static Location getRandomDestination(Location loc) {
 		Location current = loc.clone();
+		int y=-1,counter=0;
 		do {
+			counter++;
+			if(counter==100){
+				break;
+			}
 			loc = current.clone();
 			loc.add(minX + Math.random() * (maxX - minX), 0, minZ + Math.random() * (maxZ - minZ));
-		} while (!goSafe(loc));
+		} while (y==-1);
+		if(y==-1){
+			return null;
+		}
+		loc.setY(y);
 		return loc;
 	}
 
-	private static boolean goSafe(Location loc) {
+	private static int isSafe(Location loc) {
 		for (int y = 128; y >= 32; y--) {
 			loc.setY(y);
 			Location upLoc = loc.clone().add(0, 1, 0);
 			Location downLoc = loc.clone().add(0, -1, 0);
 			if (loc.getBlock().getType() == Material.AIR && upLoc.getBlock().getType() == Material.AIR
-					&& downLoc.getBlock().getType() != Material.AIR && downLoc.getBlock().getType().isSolid())
-				return true;
+					&& downLoc.getBlock().getType() != Material.AIR && !downLoc.getBlock().getType().isSolid())
+				return y;
 		}
-		return false;
+		return -1;
 	}
 }

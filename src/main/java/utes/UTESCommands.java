@@ -39,7 +39,6 @@ public class UTESCommands implements CommandExecutor {
 		String command = label;
 		for (String arg : args)
 			command+=" " + arg;
-		System.out.println(command);
 		if (command.startsWith("utes rtp")) {
 			RandomTeleport.initRTP((Player) sender);
 		} else if (command.startsWith("utes xpfly")) {
@@ -51,7 +50,7 @@ public class UTESCommands implements CommandExecutor {
 				SuperJump.addEffect((Player) sender, Integer.valueOf(args[1]));
 		} else if (command.startsWith("utes scoreboard")) {
 			ScoreBoard.changeState((Player) sender);
-		}else if (command.startsWith("utes cardpoints")) {
+		} else if (command.startsWith("utes cardpoints")) {
 			switch (args[1]) {
 		 	case "give":
 				CardPointRewards.givePoints(sender, Bukkit.getPlayer(args[2]), Integer.parseInt(args[3]));

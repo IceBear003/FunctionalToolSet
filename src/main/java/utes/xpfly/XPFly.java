@@ -48,9 +48,9 @@ public class XPFly {
 					
 					if(player.hasPermission("utes.xpfly.slowexhaust")) {
 						if(counter%2==0)
-							player.setExp(player.getExp()-exhaustSpeed);
+							player.setExp(player.getTotalExperience()-exhaustSpeed);
 					} else
-						player.setExp(player.getExp()-exhaustSpeed);
+						player.setExp(player.getTotalExperience()-exhaustSpeed);
 					
 					if(player.isOnGround()&&player.isSneaking()) {
 						player.sendMessage("您已经落地，自动停止飞行");

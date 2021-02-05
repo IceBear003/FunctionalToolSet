@@ -80,11 +80,11 @@ public class ScoreBoard implements Listener{
 			return;
 		}
 		if (!disablers.contains(player.getUniqueId())) {
-			disablers.remove(player.getUniqueId());
+			disablers.add(player.getUniqueId());
 			player.setScoreboard(Bukkit.getServer().getScoreboardManager().getNewScoreboard());
 			player.sendMessage("计分板已经关闭");
 		} else {
-			disablers.add(player.getUniqueId());
+			disablers.remove(player.getUniqueId());
 			player.sendMessage("计分板已经开启");
 		}
 	}

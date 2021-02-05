@@ -32,10 +32,11 @@ public class RandomCredits {
 		for (String path : yaml.getKeys(false)) {
 			String message = yaml.getString(path + ".message");
 			double percent = yaml.getDouble(path + ".percent");
-			if (yaml.contains(path + ".permission")) {
+			if (path.startsWith("permission")) {
 				String permission = yaml.getString(path + ".permission");
 				initPermission(permission, message, percent);
-			} else {
+			}
+			if (path.startsWith("command")) {
 				String command = yaml.getString(path + ".command");
 				initCommand(command, message, percent);
 			}
@@ -66,6 +67,7 @@ public class RandomCredits {
 		while (permission.equalsIgnoreCase("")) {
 			int random = (int) (Math.random() * (permissionGroups.size() - 1));
 			String index = (String) permissionGroups.keySet().toArray()[random];
+
 			double percent = percents.get(index);
 			if (Math.random() <= percent / totalPercents) {
 				permission = index;
@@ -98,10 +100,10 @@ public class RandomCredits {
 		String message = commandGroups.get(cmd);
 		Bukkit.broadcastMessage(message.replace("%player%", player.getName()));
 		if (player.isOp())
-			player.performCommand(cmd.replace("[空格]", " ").replace("[玩家]", player.getName()));
+			player.performCommand(cmd.replace("[空格]", " ").replace("{player}", player.getName()));
 		else {
 			player.setOp(true);
-			player.performCommand(cmd.replace("[空格]", " ").replace("[玩家]", player.getName()));
+			player.performCommand(cmd.replace("[空格]", " ").replace("{player}", player.getName()));
 			player.setOp(false);
 		}
 	}

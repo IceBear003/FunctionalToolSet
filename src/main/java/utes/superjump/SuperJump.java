@@ -21,7 +21,7 @@ public class SuperJump {
 		}
 	}
 	public static void removeEffect(Player player) {
-		player.removePotionEffect(PotionEffectType.SPEED);
+		player.removePotionEffect(PotionEffectType.JUMP);
 		player.sendMessage("超级跳已经关闭！");
 	} 
 }

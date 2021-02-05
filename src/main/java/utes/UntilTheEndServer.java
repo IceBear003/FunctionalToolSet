@@ -7,6 +7,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 
+import utes.deathchest.DeathChest;
 import utes.information.NoLoginQuitMessage;
 import utes.information.TranslateMessage;
 import utes.lift.IronBlockLift;
@@ -45,11 +46,11 @@ public class UntilTheEndServer extends JavaPlugin {
 		System.out.println("[UntilTheEndServer] 正在启用铁块电梯功能中...");
 		new IronBlockLift();
 		
-		System.out.println("[UntilTheEndServer] 正在启用屏蔽进出信息功能中...");
-		new NoLoginQuitMessage();
-		
 		System.out.println("[UntilTheEndServer] 正在启用增加信息前缀功能中...");
 		new TranslateMessage();
+
+		System.out.println("[UntilTheEndServer] 正在启用屏蔽进出信息功能中...");
+		new NoLoginQuitMessage();
 		
 		System.out.println("[UntilTheEndServer] 正在启用统计在线时间功能中...");
 		new OnlineTimes();
@@ -60,6 +61,9 @@ public class UntilTheEndServer extends JavaPlugin {
 		
 		System.out.println("[UntilTheEndServer] 正在启用随机抽奖功能中...");
 		new RandomCredits();
+
+		System.out.println("[UntilTheEndServer] 正在启用死亡物品存储箱功能中...");
+		new DeathChest();
 		
 		} catch(Exception exception) {
 			System.out.println("[UntilTheEndServer] 哎呀这步好像出了些小问题呢！");

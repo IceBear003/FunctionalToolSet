@@ -1,0 +1,4 @@
+enable: true #是否启用死亡掉落物品生成箱子功能
+showMessage: true #箱子上面显示文字
+storeExp: true #箱子内是否保留死前经验（打开箱子获得）
+onlyOwnerCanOpen: false #是否只有死者才能查看自己的遗物

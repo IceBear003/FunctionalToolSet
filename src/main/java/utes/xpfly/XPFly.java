@@ -41,16 +41,24 @@ public class XPFly {
 				counter++;
 				for(UUID uuid:(ArrayList<UUID>)flyingPlayers.clone()) {
 					Player player=Bukkit.getPlayer(uuid);
-					if(player.getTotalExperience()<exhaustSpeed) {
+					if(player.getExp()<exhaustSpeed&&player.getLevel()==0) {
 						player.sendMessage("您没有足够的经验，自动停止飞行");
 						cancelFly(player);
 					}
-					
+
+					float currentExp = player.getExp();
+					float newExp = currentExp - exhaustSpeed;
+
+					if (newExp < 0.0f) {
+						player.setLevel(player.getLevel() - 1>=0?player.getLevel() - 1:0);
+						player.setExp(1.0f + newExp);
+					}
+
 					if(player.hasPermission("utes.xpfly.slowexhaust")) {
 						if(counter%2==0)
-							player.setExp(player.getTotalExperience()-exhaustSpeed);
+							player.setExp(newExp);
 					} else
-						player.setExp(player.getTotalExperience()-exhaustSpeed);
+						player.setExp(newExp);
 					
 					if(player.isOnGround()&&player.isSneaking()) {
 						player.sendMessage("您已经落地，自动停止飞行");

@@ -90,6 +90,17 @@ public class UTESCommands implements CommandExecutor {
 				RandomCredits.goRandomPermission(sender,Bukkit.getPlayer(args[1]));
 			else
 				RandomCredits.goRandomCommand(sender,Bukkit.getPlayer(args[1]));
+		} else if (command.startsWith("utes help")) {
+			sender.sendMessage("{ignore}§e-----------§6§lUntilTheEndServer插件指令简介§e-----------");
+			sender.sendMessage("{ignore}§a/utes rtp §e-随机传送");
+			sender.sendMessage("{ignore}§a/utes xpfly §e-开关经验飞行");
+			sender.sendMessage("{ignore}§a/utes superjump <等级/off> §e-开关超级跳");
+			sender.sendMessage("{ignore}§a/utes scoreboard §e-开关计分板");
+			sender.sendMessage("{ignore}§a/utes cardpoints <give/set/take/check> <玩家名> [数值] §e-操作玩家的积分点数");
+			sender.sendMessage("{ignore}§a/utes cardpoints get <礼包名字> <TRUE/FALSE> §e-用已经得到的积分领取礼包(TRUE和FALSE表示是否双倍领取)");
+			sender.sendMessage("{ignore}§a/utes particle <under/up/off> [粒子效果名称] §e-在头顶/脚下开启粒子效果，off代表关闭所有效果");
+			sender.sendMessage("{ignore}§a/utes randomcredits <玩家名> §e-随机奖励权限和指令");
+			sender.sendMessage("{ignore}§e----------------------------------------------------------");
 		}
 		return true;
 	}

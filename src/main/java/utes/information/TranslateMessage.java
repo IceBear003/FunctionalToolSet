@@ -52,9 +52,10 @@ public class TranslateMessage {
 
 							BaseComponent[] origin = ComponentSerializer.parse(json);
 							String message = TextComponent.toLegacyText(origin);
-							if (!message.contains(prefix)) {
+							if (!message.contains(prefix)&&!message.contains("{ignore}")) {
 								message = prefix + message;
 							}
+							message=message.replace("{ignore}","");
 
 							for (int index = 0; index < origins.size(); index++)
 								message = message.replace(origins.get(index), adapteds.get(index));

@@ -1,0 +1,10 @@
+name: UntilTheEndServer
+main: utes.UntilTheEndServer
+version: 1.0.0
+depend: 
+- PlaceholderAPI
+- ProtocolLib
+commands:
+  utes:
+    usage: /utes
+    description: /utes <rtp>

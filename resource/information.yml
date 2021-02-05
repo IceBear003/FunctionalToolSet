@@ -1,0 +1,9 @@
+enableJoinMessage: true #是否显示玩家进出信息
+enableAdaptMessage: true #是否启用以下的信息魔改功能
+origin: #原来的信息（与下面魔改后的信息一个一个对应）
+- "信息1"
+- "信息2"
+adapted: #魔改后的信息
+- "信息1new"
+- "信息2new"
+prefix: "§f§6[§c服务器信息§6]§f " #无论如何都会在任何信息前面加的信息

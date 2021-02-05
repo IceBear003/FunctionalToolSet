@@ -1,0 +1,11 @@
+enable: true #启用此插件的世界
+disableWorlds: #禁用的世界
+- world1
+maxRange: #最大范围（距离世界中心）
+  x: 50000
+  z: 50000
+minRange: #最小范围（距离世界中心）
+  x: 100
+  z: 100
+waitTime: 3 #传送滞后延迟秒数
+cooldown: 60 #冷却时间秒数

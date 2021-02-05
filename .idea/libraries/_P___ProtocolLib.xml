@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="[P][前置]ProtocolLib">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../服务器/新服务器/plugins/[P][前置]ProtocolLib.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

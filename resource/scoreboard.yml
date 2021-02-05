@@ -1,0 +1,12 @@
+enable: true #是否开启计分板功能
+title: "&8&l&k=====&e&l&n服务器名称&8&l&k=====" #标题
+lines: #内容（最多16行）
+- "&6&l名字§7» &a%name%"
+- "&6&l金币§7» &a%money%"
+- "&6&l点券§7» &a%points%"
+- "&6&l积分§7» &a%cardpoints%"
+- "&6&l今日§7» &a%dayOnlineTime%"
+- "&6&l累计§7» &a%totalOnlineTime%"
+- "  "
+- "&c&l输入/cd 打开快捷菜单"
+- "&6&l创造最温馨的生存家园！"

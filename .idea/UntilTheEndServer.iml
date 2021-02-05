@@ -2,8 +2,15 @@
 <module type="JAVA_MODULE" version="4">
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
-    <content url="file://$MODULE_DIR$" />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/resource" type="java-resource" />
+    </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="spigot-1.12.2-R0.1-SNAPSHOT-b1409" level="project" />
+    <orderEntry type="library" name="[P][前置]ProtocolLib" level="project" />
+    <orderEntry type="library" name="[P][占位符前置]PlaceholderAPI" level="project" />
+    <orderEntry type="library" name="[V][前置]Vault" level="project" />
   </component>
 </module>

@@ -1,0 +1,6 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="UntilTheEndServer:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/UntilTheEndServer_jar</output-path>
+    <root id="archive" name="UntilTheEndServer.jar" />
+  </artifact>
+</component>

@@ -7,6 +7,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 
+import utes.bancmd.CommandBanner;
+import utes.bugfix.BugFixer;
 import utes.deathchest.DeathChest;
 import utes.information.NoLoginQuitMessage;
 import utes.information.TranslateMessage;
@@ -17,6 +19,7 @@ import utes.particle.ParticleUnderFeet;
 import utes.randomcredit.RandomCredits;
 import utes.rtp.RandomTeleport;
 import utes.scoreboard.ScoreBoard;
+import utes.showoff.ShowOff;
 import utes.xpfly.XPFly;
 
 public class UntilTheEndServer extends JavaPlugin {
@@ -64,6 +67,15 @@ public class UntilTheEndServer extends JavaPlugin {
 
 		System.out.println("[UntilTheEndServer] 正在启用死亡物品存储箱功能中...");
 		new DeathChest();
+
+		System.out.println("[UntilTheEndServer] 正在启用世界禁用指令功能中...");
+		new CommandBanner();
+
+		System.out.println("[UntilTheEndServer] 正在启用修复bug功能中...");
+		new BugFixer();
+
+		System.out.println("[UntilTheEndServer] 正在启用炫耀物品功能中...");
+		new ShowOff();
 		
 		} catch(Exception exception) {
 			System.out.println("[UntilTheEndServer] 哎呀这步好像出了些小问题呢！");

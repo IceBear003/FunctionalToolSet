@@ -1,8 +1,5 @@
 package utes.particle;
 
-import java.util.HashMap;
-import java.util.UUID;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -12,8 +9,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import utes.UntilTheEndServer;
 
+import java.util.HashMap;
+import java.util.UUID;
+
 public class ParticleUnderFeet implements Listener {
-    private static HashMap<UUID, Effect> users = new HashMap<UUID, Effect>();
+    private static final HashMap<UUID, Effect> users = new HashMap<UUID, Effect>();
 
     public ParticleUnderFeet() {
         Bukkit.getPluginManager().registerEvents(this, UntilTheEndServer.getInstance());

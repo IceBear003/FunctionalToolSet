@@ -1,9 +1,7 @@
 package utes.bancmd;
 
-import net.minecraft.server.v1_12_R1.CommandBan;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
-import org.bukkit.command.Command;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -13,7 +11,6 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import utes.UntilTheEndServer;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -21,7 +18,7 @@ import java.util.List;
  * utes.cmdban.ignore
  */
 public class CommandBanner implements Listener {
-    private static HashMap<String, List<String>> worlds = new HashMap<String, List<String>>();
+    private static final HashMap<String, List<String>> worlds = new HashMap<String, List<String>>();
     private static YamlConfiguration yaml;
 
     public CommandBanner() {

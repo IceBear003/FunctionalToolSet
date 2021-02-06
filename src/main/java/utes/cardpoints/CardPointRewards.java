@@ -1,13 +1,5 @@
 package utes.cardpoints;
 
-import java.io.File;
-import java.io.IOException;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
-
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -18,6 +10,14 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import utes.UntilTheEndServer;
 
+import java.io.File;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
+
 //TODO 
 /*
  * utes.cardpoints.double
@@ -25,9 +25,9 @@ import utes.UntilTheEndServer;
 public class CardPointRewards implements Listener {
     private static YamlConfiguration yaml;
     public static HashMap<UUID, IPlayer> stats = new HashMap<UUID, IPlayer>();
-    private static HashMap<String, List<String>> rewards = new HashMap<String, List<String>>();
-    private static HashMap<String, Integer> needs = new HashMap<String, Integer>();
-    private static HashMap<String, Boolean> consumes = new HashMap<String, Boolean>();
+    private static final HashMap<String, List<String>> rewards = new HashMap<String, List<String>>();
+    private static final HashMap<String, Integer> needs = new HashMap<String, Integer>();
+    private static final HashMap<String, Boolean> consumes = new HashMap<String, Boolean>();
     private static int startDate;
     private static int period;
 
@@ -183,7 +183,7 @@ public class CardPointRewards implements Listener {
 
     public static class IPlayer {
         public int points;
-        private List<String> received;
+        private final List<String> received;
 
         public IPlayer(int points, List<String> received) {
             this.points = points;

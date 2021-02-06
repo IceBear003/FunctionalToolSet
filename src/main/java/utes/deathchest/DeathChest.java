@@ -45,10 +45,10 @@ public class DeathChest implements Listener {
         Bukkit.getPluginManager().registerEvents(this, UntilTheEndServer.getInstance());
     }
 
-    private static HashMap<Location, UUID> messageArmor = new HashMap<Location, UUID>();
-    private static HashMap<Location, UUID> owner = new HashMap<Location, UUID>();
-    private static HashMap<Location, Integer> storeLevel = new HashMap<Location, Integer>();
-    private static HashMap<Location, Float> storeExperience = new HashMap<Location, Float>();
+    private static final HashMap<Location, UUID> messageArmor = new HashMap<Location, UUID>();
+    private static final HashMap<Location, UUID> owner = new HashMap<Location, UUID>();
+    private static final HashMap<Location, Integer> storeLevel = new HashMap<Location, Integer>();
+    private static final HashMap<Location, Float> storeExperience = new HashMap<Location, Float>();
 
     @EventHandler
     public void onDeath(PlayerDeathEvent event) {

@@ -31,7 +31,7 @@ import java.util.UUID;
  * utes.showoff.ignorecd
  */
 public class ShowOff implements Listener {
-    private static HashMap<UUID, Long> lastShowOffStamp = new HashMap<UUID, Long>();
+    private static final HashMap<UUID, Long> lastShowOffStamp = new HashMap<UUID, Long>();
     private static YamlConfiguration yaml;
     private static int cooldown;
     private static String string;
@@ -66,9 +66,9 @@ public class ShowOff implements Listener {
                             BaseComponent[] origin = ComponentSerializer.parse(json);
                             String message = TextComponent.toLegacyText(origin);
 
-                            for(String str:owners.keySet()){
-                                if(message.contains(str)){
-                                    BaseComponent[] adapted=getBaseComponents(Bukkit.getPlayer(owners.get(str)),message);
+                            for (String str : owners.keySet()) {
+                                if (message.contains(str)) {
+                                    BaseComponent[] adapted = getBaseComponents(Bukkit.getPlayer(owners.get(str)), message);
                                     String newJson = ComponentSerializer.toString(adapted);
                                     warppedComponent.setJson(newJson);
                                     packet.getChatComponents().write(0, warppedComponent);
@@ -93,41 +93,43 @@ public class ShowOff implements Listener {
                 }
             }
             lastShowOffStamp.put(player.getUniqueId(), System.currentTimeMillis());
-            owners.put(message,player.getUniqueId());
+            owners.put(message, player.getUniqueId());
         }
     }
 
-    private static HashMap<String,UUID> owners=new HashMap<String,UUID>();
+    private static final HashMap<String, UUID> owners = new HashMap<String, UUID>();
 
-    private static BaseComponent[] getBaseComponents(Player player,String message){
+    private static BaseComponent[] getBaseComponents(Player player, String message) {
         String[] tmp = message.split(string);
-        HashMap<Integer,Integer> indexes = new HashMap<Integer,Integer>();
+        HashMap<Integer, Integer> indexes = new HashMap<Integer, Integer>();
         for (int i = 1; i < tmp.length; i++) {
             if (tmp[i].length() <= 0) continue;
             if (!(tmp[i].charAt(0) <= '9' && tmp[i].charAt(0) >= '1')) continue;
-            indexes.put(i,Integer.valueOf(tmp[i].charAt(0) - 49));
-            tmp[i]=tmp[i].substring(1);
+            indexes.put(i, Integer.valueOf(tmp[i].charAt(0) - 49));
+            tmp[i] = tmp[i].substring(1);
         }
 
         ArrayList<TextComponent> textes = new ArrayList<TextComponent>();
 
-        int cnt=1,tot=0;
+        int cnt = 1, tot = 0;
         String first = tmp[0];
         textes.add(new TextComponent(first));
         for (int i = 1; i < tmp.length; i++) {
-            if(indexes.containsKey(i)) {
+            if (indexes.containsKey(i)) {
                 ItemStack item = player.getInventory().getItem(indexes.get(i));
-                textes.add(itemToTextComponent(item)); cnt++;
+                textes.add(itemToTextComponent(item));
+                cnt++;
             }
-            textes.add(new TextComponent(tmp[i])); cnt++;
+            textes.add(new TextComponent(tmp[i]));
+            cnt++;
         }
-        String newMessage="";
+        String newMessage = "";
         TextComponent[] tmps = new TextComponent[cnt];
-        for(TextComponent text:textes){
-            tmps[tot++]=text;
+        for (TextComponent text : textes) {
+            tmps[tot++] = text;
 
         }
-        return (BaseComponent[]) tmps;
+        return tmps;
     }
 
     private static String getJsonMessage(ItemStack itemStack) {
@@ -137,13 +139,9 @@ public class ShowOff implements Listener {
         Method method1, method2;
         try {
             method1 = clazz1.getMethod("asNMSCopy",
-                    new Class[]{
-                            ItemStack.class
-                    });
+                    ItemStack.class);
             method2 = clazz2.getMethod("save",
-                    new Class[]{
-                            clazz3
-                    });
+                    clazz3);
         } catch (NoSuchMethodException e) {
             UntilTheEndServer.getInstance().getLogger().info("nms内部错误，请检查版本！");
             return null;
@@ -152,8 +150,8 @@ public class ShowOff implements Listener {
         Object result;
         try {
             result = method2.invoke(
-                    method1.invoke(null, new Object[]{itemStack}),
-                    new Object[]{clazz3.newInstance()});
+                    method1.invoke(null, itemStack),
+                    clazz3.newInstance());
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             UntilTheEndServer.getInstance().getLogger().info("nms内部错误，请检查版本！");
             return null;

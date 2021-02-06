@@ -1,10 +1,6 @@
 package utes.scoreboard;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
+import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -16,17 +12,20 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
-
-import me.clip.placeholderapi.PlaceholderAPI;
 import utes.UntilTheEndServer;
 import utes.onlinetimes.OnlineTimes;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 //TODO
 /*
  * utes.sb.toggle
  */
 public class ScoreBoard implements Listener {
-    private static ArrayList<UUID> disablers = new ArrayList<UUID>();
+    private static final ArrayList<UUID> disablers = new ArrayList<UUID>();
     private static String title;
     private static List<String> lines;
     private static YamlConfiguration yaml;

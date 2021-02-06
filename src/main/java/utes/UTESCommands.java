@@ -5,7 +5,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
 import utes.cardpoints.CardPointRewards;
 import utes.particle.ParticleOverHead;
 import utes.particle.ParticleUnderFeet;
@@ -65,7 +64,7 @@ public class UTESCommands implements CommandExecutor {
                     CardPointRewards.checkPoints(sender, Bukkit.getPlayer(args[2]));
                     break;
                 case "get":
-                    CardPointRewards.getReward((Player) sender, args[2], (args[3].equalsIgnoreCase("TRUE") ? true : false));
+                    CardPointRewards.getReward((Player) sender, args[2], (args[3].equalsIgnoreCase("TRUE")));
                     break;
                 default:
                     return false;

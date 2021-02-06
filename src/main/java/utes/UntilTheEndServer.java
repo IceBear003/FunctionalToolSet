@@ -1,15 +1,14 @@
 package utes;
 
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
-
-import utes.action.ActionCommand;
+import utes.actioncmd.ActionCommand;
 import utes.bancmd.CommandBanner;
 import utes.bugfix.BugFixer;
+import utes.customexp.CustomExpMechenism;
 import utes.deathchest.DeathChest;
 import utes.information.NoLoginQuitMessage;
 import utes.information.TranslateMessage;
@@ -81,6 +80,9 @@ public class UntilTheEndServer extends JavaPlugin {
 
             System.out.println("[UntilTheEndServer] 正在启用快捷动作指令功能中...");
             new ActionCommand();
+
+            System.out.println("[UntilTheEndServer] 正在启用自定义升级经验功能中...");
+            new CustomExpMechenism();
 
         } catch (Exception exception) {
             System.out.println("[UntilTheEndServer] 哎呀这步好像出了些小问题呢！");

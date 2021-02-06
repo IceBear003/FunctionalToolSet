@@ -1,11 +1,5 @@
 package utes.onlinetimes;
 
-import java.io.File;
-import java.io.IOException;
-import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.UUID;
-
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -14,11 +8,16 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
-
 import utes.UntilTheEndServer;
 
+import java.io.File;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.UUID;
+
 public class OnlineTimes implements Listener {
-    private static HashMap<UUID, IPlayer> stats = new HashMap<UUID, IPlayer>();
+    private static final HashMap<UUID, IPlayer> stats = new HashMap<UUID, IPlayer>();
 
     public OnlineTimes() {
         Bukkit.getPluginManager().registerEvents(this, UntilTheEndServer.getInstance());

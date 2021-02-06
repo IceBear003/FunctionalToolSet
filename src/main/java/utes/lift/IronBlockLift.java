@@ -1,7 +1,5 @@
 package utes.lift;
 
-import java.io.File;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -11,8 +9,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
-
 import utes.UntilTheEndServer;
+
+import java.io.File;
 
 public class IronBlockLift implements Listener {
     private static YamlConfiguration yaml;

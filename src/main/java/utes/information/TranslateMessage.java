@@ -1,24 +1,18 @@
 package utes.information;
 
-import java.io.File;
-import java.util.List;
-
-import org.bukkit.configuration.file.YamlConfiguration;
-
 import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.events.ListenerOptions;
-import com.comphenix.protocol.events.ListenerPriority;
-import com.comphenix.protocol.events.PacketAdapter;
-import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.events.*;
 import com.comphenix.protocol.injector.GamePhase;
 import com.comphenix.protocol.wrappers.EnumWrappers.ChatType;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
-
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
+import org.bukkit.configuration.file.YamlConfiguration;
 import utes.UntilTheEndServer;
+
+import java.io.File;
+import java.util.List;
 
 public class TranslateMessage {
     public static YamlConfiguration yaml;

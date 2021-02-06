@@ -1,2 +1,2 @@
 enable: true #是否开启经验飞行功能
-exhaustSpeed: 1 #经验消耗速率（越大越快）
+exhaustSpeed: 0.02 #经验消耗速率（越大越快）

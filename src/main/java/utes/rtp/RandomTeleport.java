@@ -1,11 +1,5 @@
 package utes.rtp;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -16,8 +10,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
-
 import utes.UntilTheEndServer;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 
 //TODO
 /*
@@ -26,8 +25,8 @@ import utes.UntilTheEndServer;
  * utes.rtp.ignoremove
  * */
 public class RandomTeleport implements Listener {
-    private static List<String> enableWorlds = new ArrayList<String>();
-    private static HashMap<UUID, Long> lastUseTimeStamp = new HashMap<UUID, Long>();
+    private static final List<String> enableWorlds = new ArrayList<String>();
+    private static final HashMap<UUID, Long> lastUseTimeStamp = new HashMap<UUID, Long>();
     private static YamlConfiguration yaml;
     private static int waitTime;
     private static int maxX;

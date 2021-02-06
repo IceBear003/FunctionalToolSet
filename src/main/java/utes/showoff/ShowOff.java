@@ -1,5 +1,10 @@
 package utes.showoff;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.events.*;
+import com.comphenix.protocol.injector.GamePhase;
+import com.comphenix.protocol.wrappers.EnumWrappers;
+import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -9,11 +14,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import utes.NMSManager;
 import utes.UntilTheEndServer;
 
@@ -25,7 +27,8 @@ import java.util.HashMap;
 import java.util.UUID;
 
 /* TODO
- * utes.showoff
+ * utes.showoff.can
+ * utes.showoff.ignorecd
  */
 public class ShowOff implements Listener {
     private static HashMap<UUID, Long> lastShowOffStamp = new HashMap<UUID, Long>();
@@ -45,51 +48,89 @@ public class ShowOff implements Listener {
         string = yaml.getString("string");
 
         Bukkit.getPluginManager().registerEvents(this, UntilTheEndServer.getInstance());
+
+        UntilTheEndServer.pm
+                .addPacketListener(new PacketAdapter(PacketAdapter.params().plugin(UntilTheEndServer.getInstance())
+                        .serverSide().listenerPriority(ListenerPriority.LOW).gamePhase(GamePhase.PLAYING).optionAsync()
+                        .options(ListenerOptions.SKIP_PLUGIN_VERIFIER).types(PacketType.Play.Server.CHAT)) {
+                    @Override
+                    public void onPacketSending(PacketEvent event) {
+                        PacketContainer packet = event.getPacket();
+                        PacketType packetType = event.getPacketType();
+                        if (packetType.equals(PacketType.Play.Server.CHAT)) {
+                            if (packet.getChatTypes().getValues().get(0) != EnumWrappers.ChatType.SYSTEM)
+                                return;
+                            WrappedChatComponent warppedComponent = packet.getChatComponents().getValues().get(0);
+                            String json = warppedComponent.getJson();
+
+                            BaseComponent[] origin = ComponentSerializer.parse(json);
+                            String message = TextComponent.toLegacyText(origin);
+
+                            for(String str:owners.keySet()){
+                                if(message.contains(str)){
+                                    BaseComponent[] adapted=getBaseComponents(Bukkit.getPlayer(owners.get(str)),message);
+                                    String newJson = ComponentSerializer.toString(adapted);
+                                    warppedComponent.setJson(newJson);
+                                    packet.getChatComponents().write(0, warppedComponent);
+                                }
+                            }
+                        }
+                    }
+                });
     }
 
     @EventHandler
     public void onChat(PlayerChatEvent event) {
         Player player = event.getPlayer();
-        if (!player.hasPermission("utes.showoff")) return;
+        if (!player.hasPermission("utes.showoff.can"))
+            return;
         String message = event.getMessage();
         if (message.contains(string)) {
-            String[] tmp = message.split(string);
-            ArrayList<Integer> indexes = new ArrayList<Integer>();
-            for (int i = 1; i < tmp.length; i++) {
-                if (tmp[i].length() <= 0) continue;
-                if (!(tmp[i].charAt(0) <= '9' && tmp[i].charAt(0) >= '1')) continue;
-                indexes.add(Integer.valueOf(tmp[i].charAt(0) - 48));
-            }
-
             if (lastShowOffStamp.containsKey(player.getUniqueId())) {
                 long lastUse = lastShowOffStamp.get(player.getUniqueId());
-                if (System.currentTimeMillis() - lastUse < cooldown * 1000) {
+                if (System.currentTimeMillis() - lastUse < cooldown * 1000 && !player.hasPermission("utes.showoff.ignorecd")) {
                     player.sendMessage("炫耀物品失败，请等待冷却！");
-                    return;
-                }
-                lastShowOffStamp.put(player.getUniqueId(), System.currentTimeMillis());
-            }
-
-            ArrayList<TextComponent> textes = new ArrayList<TextComponent>();
-
-            int tot = 0;
-            for (int i = 0; i < tmp.length; i++) {
-                if (i == 0) {
-                    String first = tmp[i];
-                    textes.add(new TextComponent(first));
-                } else {
-                    ItemStack item = player.getInventory().getItem(indexes.get(tot));
-                    textes.add(itemToTextComponent(item));
-                    textes.add(new TextComponent(tmp[i].replace(string + indexes.get(tot++), "")));
                 }
             }
-
-            TextComponent[] tmps = (TextComponent[]) textes.toArray();
-            player.spigot().sendMessage((BaseComponent[]) tmps);
+            lastShowOffStamp.put(player.getUniqueId(), System.currentTimeMillis());
+            owners.put(message,player.getUniqueId());
         }
     }
 
-    public String getJsonMessage(ItemStack itemStack) {
+    private static HashMap<String,UUID> owners=new HashMap<String,UUID>();
+
+    private static BaseComponent[] getBaseComponents(Player player,String message){
+        String[] tmp = message.split(string);
+        HashMap<Integer,Integer> indexes = new HashMap<Integer,Integer>();
+        for (int i = 1; i < tmp.length; i++) {
+            if (tmp[i].length() <= 0) continue;
+            if (!(tmp[i].charAt(0) <= '9' && tmp[i].charAt(0) >= '1')) continue;
+            indexes.put(i,Integer.valueOf(tmp[i].charAt(0) - 49));
+            tmp[i]=tmp[i].substring(1);
+        }
+
+        ArrayList<TextComponent> textes = new ArrayList<TextComponent>();
+
+        int cnt=1,tot=0;
+        String first = tmp[0];
+        textes.add(new TextComponent(first));
+        for (int i = 1; i < tmp.length; i++) {
+            if(indexes.containsKey(i)) {
+                ItemStack item = player.getInventory().getItem(indexes.get(i));
+                textes.add(itemToTextComponent(item)); cnt++;
+            }
+            textes.add(new TextComponent(tmp[i])); cnt++;
+        }
+        String newMessage="";
+        TextComponent[] tmps = new TextComponent[cnt];
+        for(TextComponent text:textes){
+            tmps[tot++]=text;
+
+        }
+        return (BaseComponent[]) tmps;
+    }
+
+    private static String getJsonMessage(ItemStack itemStack) {
         Class clazz1 = NMSManager.getClass("inventory.CraftItemStack"),
                 clazz2 = NMSManager.getClass("ItemStack"),
                 clazz3 = NMSManager.getClass("NBTTagCompound");
@@ -121,7 +162,7 @@ public class ShowOff implements Listener {
         return result.toString();
     }
 
-    public TextComponent itemToTextComponent(ItemStack item) {
+    private static TextComponent itemToTextComponent(ItemStack item) {
         String json = getJsonMessage(item);
         BaseComponent[] hoverEventComponents = {new TextComponent(json)};
         HoverEvent event = new HoverEvent(HoverEvent.Action.SHOW_ITEM, hoverEventComponents);

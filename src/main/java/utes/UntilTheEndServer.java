@@ -7,6 +7,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 
+import utes.action.ActionCommand;
 import utes.bancmd.CommandBanner;
 import utes.bugfix.BugFixer;
 import utes.deathchest.DeathChest;
@@ -77,6 +78,9 @@ public class UntilTheEndServer extends JavaPlugin {
 
             System.out.println("[UntilTheEndServer] 正在启用炫耀物品功能中...");
             new ShowOff();
+
+            System.out.println("[UntilTheEndServer] 正在启用快捷动作指令功能中...");
+            new ActionCommand();
 
         } catch (Exception exception) {
             System.out.println("[UntilTheEndServer] 哎呀这步好像出了些小问题呢！");

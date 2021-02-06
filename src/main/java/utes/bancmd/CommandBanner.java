@@ -21,40 +21,41 @@ import java.util.List;
  * utes.cmdban.ignore
  */
 public class CommandBanner implements Listener {
-    private static HashMap<String, List<String>> worlds=new HashMap<String,List<String>>();
+    private static HashMap<String, List<String>> worlds = new HashMap<String, List<String>>();
     private static YamlConfiguration yaml;
 
-    public CommandBanner(){
-        File file=new File(UntilTheEndServer.getInstance().getDataFolder(),"cmdban.yml");
-        if(!file.exists())
-            UntilTheEndServer.getInstance().saveResource("cmdban.yml",false);
-        yaml= YamlConfiguration.loadConfiguration(file);
-        if(!yaml.getBoolean("enable")) {
+    public CommandBanner() {
+        File file = new File(UntilTheEndServer.getInstance().getDataFolder(), "cmdban.yml");
+        if (!file.exists())
+            UntilTheEndServer.getInstance().saveResource("cmdban.yml", false);
+        yaml = YamlConfiguration.loadConfiguration(file);
+        if (!yaml.getBoolean("enable")) {
             return;
         }
 
-        for(String path:yaml.getKeys(false)){
-            if(path.equalsIgnoreCase("enable"))
+        for (String path : yaml.getKeys(false)) {
+            if (path.equalsIgnoreCase("enable"))
                 continue;
-            worlds.put(path,yaml.getStringList(path));
+            worlds.put(path, yaml.getStringList(path));
         }
 
         Bukkit.getPluginManager().registerEvents(this, UntilTheEndServer.getInstance());
     }
-    @EventHandler(priority= EventPriority.LOWEST)
-    public void onCommand(PlayerCommandPreprocessEvent event){
-        Player player=event.getPlayer();
-        if(player.hasPermission("utes.cmdban.ignore")) return;
-        World world=player.getWorld();
-        String cmd=event.getMessage();
-        while(cmd.startsWith(" ")){
-            cmd.replaceFirst(" ","");
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onCommand(PlayerCommandPreprocessEvent event) {
+        Player player = event.getPlayer();
+        if (player.hasPermission("utes.cmdban.ignore")) return;
+        World world = player.getWorld();
+        String cmd = event.getMessage();
+        while (cmd.startsWith(" ")) {
+            cmd.replaceFirst(" ", "");
         }
-        while(cmd.startsWith("/ ")){
-            cmd.replaceFirst(" ","");
+        while (cmd.startsWith("/ ")) {
+            cmd.replaceFirst(" ", "");
         }
-        for(String label:worlds.get(world.getName())){
-            if(cmd.startsWith("/"+label)){
+        for (String label : worlds.get(world.getName())) {
+            if (cmd.startsWith("/" + label)) {
                 event.setCancelled(true);
                 player.sendMessage("该世界无法使用此指令");
             }

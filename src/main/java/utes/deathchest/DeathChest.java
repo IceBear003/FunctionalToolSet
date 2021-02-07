@@ -61,6 +61,8 @@ public class DeathChest implements Listener {
         dieLoc.getBlock().setType(Material.CHEST);
         Chest chest = (Chest) dieLoc.getBlock().getState();
         for (ItemStack item : player.getInventory().getContents()) {
+            if(item==null)
+                continue;
             if (chest.getInventory().contains(Material.AIR)) {
                 chest.getInventory().addItem(item.clone());
             } else {

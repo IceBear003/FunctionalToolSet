@@ -102,11 +102,15 @@ public class RandomTeleport implements Listener {
         int y = -1, counter = 0;
         do {
             counter++;
-            if (counter == 100) {
+            if (counter == 100)
                 break;
-            }
+
             loc = current.clone();
             loc.add(minX + Math.random() * (maxX - minX), 0, minZ + Math.random() * (maxZ - minZ));
+
+            y = isSafe(loc);
+            if (y != -1) break;
+
         } while (y == -1);
         if (y == -1) {
             return null;

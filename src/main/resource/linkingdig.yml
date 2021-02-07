@@ -1,0 +1,21 @@
+enable: true #是否启用连锁挖掘功能
+exhaustSpeed: 0.2 #每连锁挖一个方块消耗多少饱食度
+
+AXE: #斧头可以连锁挖掘哪些方块，只要方块的material名中包含以下一个字段，就可连锁挖掘
+- "WOOD"
+- "LOG"
+- "PLANK"
+PICKAXE: #镐子可以连锁挖掘哪些方块
+- "ORE"
+- "STONE"
+- "ROCK"
+SPADE: #铲子可以连锁挖掘那些方块
+- "GRASS"
+- "SAND"
+- "DIRT"
+- "SNOW"
+SWORD:
+- "WEB"
+SCISSOR:
+- "WOOL"
+- "LEAVE"

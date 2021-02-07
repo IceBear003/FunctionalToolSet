@@ -32,8 +32,6 @@ public class CustomExpMechenism implements Listener {
             expNeedToUpgrade.put(level, exp);
         }
 
-        System.out.println(expNeedToUpgrade);
-
         Bukkit.getPluginManager().registerEvents(this, UntilTheEndServer.getInstance());
     }
 

@@ -13,6 +13,7 @@ import utes.deathchest.DeathChest;
 import utes.information.NoLoginQuitMessage;
 import utes.information.TranslateMessage;
 import utes.lift.IronBlockLift;
+import utes.linkingdig.LinkingDig;
 import utes.onlinetimes.OnlineTimes;
 import utes.particle.ParticleOverHead;
 import utes.particle.ParticleUnderFeet;
@@ -83,6 +84,9 @@ public class UntilTheEndServer extends JavaPlugin {
 
             System.out.println("[UntilTheEndServer] 正在启用自定义升级经验功能中...");
             new CustomExpMechenism();
+
+            System.out.println("[UntilTheEndServer] 正在启用连锁挖矿功能中...");
+            new LinkingDig();
 
         } catch (Exception exception) {
             System.out.println("[UntilTheEndServer] 哎呀这步好像出了些小问题呢！");

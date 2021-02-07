@@ -56,7 +56,8 @@ public class Loc3D implements Serializable {
         return loc;
     }
 
-    public static @NotNull Loc3D from(@NotNull Location location) {
+    public static @NotNull
+    Loc3D from(@NotNull Location location) {
         World world = location.getWorld();
         String worldName = world == null ? null : world.getName();
         return new Loc3D(worldName, location.getBlockX(), location.getBlockY(), location.getBlockZ());

@@ -21,7 +21,6 @@ import utes.superjump.SuperJump;
 import utes.xpfly.XPFly;
 
 import java.util.Collection;
-import java.util.List;
 
 public class UTESCommands implements CommandExecutor {
 
@@ -99,38 +98,38 @@ public class UTESCommands implements CommandExecutor {
             else
                 RandomCredits.goRandomCommand(sender, Bukkit.getPlayer(args[1]));
         } else if (command.startsWith("utes addgui")) {
-            Player player= (Player) sender;
-            Location loc=player.getEyeLocation();
-            while(loc.getBlock().getType()== Material.AIR){
-                if(loc.distance(player.getEyeLocation())>=10.0) {
+            Player player = (Player) sender;
+            Location loc = player.getEyeLocation();
+            while (loc.getBlock().getType() == Material.AIR) {
+                if (loc.distance(player.getEyeLocation()) >= 10.0) {
                     player.sendMessage("您没有看向一个方块!");
                     return true;
                 }
                 loc.add(loc.getDirection());
             }
-            CapableGui.addItemStack(player,loc,args[1]);
+            CapableGui.addItemStack(player, loc, args[1]);
         } else if (command.startsWith("utes addmerchant")) {
-            Player player= (Player) sender;
-            Location loc=player.getEyeLocation();
-            Collection<Entity> entities=player.getWorld().getNearbyEntities(loc,0.2,0.2,0.2);
-            boolean flag=false;
+            Player player = (Player) sender;
+            Location loc = player.getEyeLocation();
+            Collection<Entity> entities = player.getWorld().getNearbyEntities(loc, 0.2, 0.2, 0.2);
+            boolean flag = false;
             Villager villager = null;
-            while(!flag){
-                if(loc.distance(player.getEyeLocation())>=10.0) {
+            while (!flag) {
+                if (loc.distance(player.getEyeLocation()) >= 10.0) {
                     player.sendMessage("您没有看向一个村民!");
                     return true;
                 }
-                for(Entity entity:entities)
-                    if(entity.getType()== EntityType.VILLAGER) {
-                        flag=true;
-                        villager= (Villager) entity;
+                for (Entity entity : entities)
+                    if (entity.getType() == EntityType.VILLAGER) {
+                        flag = true;
+                        villager = (Villager) entity;
                     }
                 loc.add(loc.getDirection());
-                entities=player.getWorld().getNearbyEntities(loc,0.2,0.2,0.2);
+                entities = player.getWorld().getNearbyEntities(loc, 0.2, 0.2, 0.2);
             }
-            CapableGui.addItemStack(player,villager,args[1]);
+            CapableGui.addItemStack(player, villager, args[1]);
         } else if (command.startsWith("utes opengui")) {
-            Player player= (Player) sender;
+            Player player = (Player) sender;
             CapableGui.openGui(player);
         } else if (command.startsWith("utes help")) {
             sender.sendMessage("{ignore}§e-----------§6§lUntilTheEndServer插件指令简介§e-----------");

@@ -52,7 +52,7 @@ public class CustomExpMechenism implements Listener {
                             player.setExp((current + exp - expNeedToUpgrade.get(level)) / expNeedToUpgrade.get(level));
                         else
                             player.setExp((current + exp - expNeedToUpgrade.get(level)) / getExpToLevel(level + 1));
-                        player.setLevel(level+1);
+                        player.setLevel(level + 1);
                     } else if (current + exp < 0) {
                         player.setLevel(player.getLevel() - 1);
                         if (expNeedToUpgrade.containsKey(level - 1)) {
@@ -60,7 +60,7 @@ public class CustomExpMechenism implements Listener {
                         } else {
                             player.setExp((getExpToLevel(level - 1) + current + exp) / getExpToLevel(level - 1));
                         }
-                        player.setLevel(level-1);
+                        player.setLevel(level - 1);
                     } else {
                         player.setExp((current + exp) / expNeedToUpgrade.get(level));
                         player.setLevel(level);

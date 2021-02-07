@@ -116,7 +116,8 @@ public class BlockApi {
         return Base64.getEncoder().encodeToString(output.toByteArray());
     }
 
-    public static @NotNull String locToStr(@NotNull Location loc) {
+    public static @NotNull
+    String locToStr(@NotNull Location loc) {
         return locToStr(Loc3D.from(loc));
     }
 }

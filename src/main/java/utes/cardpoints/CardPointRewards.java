@@ -23,11 +23,11 @@ import java.util.UUID;
  * utes.cardpoints.double
  */
 public class CardPointRewards implements Listener {
-    private static YamlConfiguration yaml;
-    public static HashMap<UUID, IPlayer> stats = new HashMap<UUID, IPlayer>();
     private static final HashMap<String, List<String>> rewards = new HashMap<String, List<String>>();
     private static final HashMap<String, Integer> needs = new HashMap<String, Integer>();
     private static final HashMap<String, Boolean> consumes = new HashMap<String, Boolean>();
+    public static HashMap<UUID, IPlayer> stats = new HashMap<UUID, IPlayer>();
+    private static YamlConfiguration yaml;
     private static int startDate;
     private static int period;
 
@@ -95,19 +95,6 @@ public class CardPointRewards implements Listener {
         }
 
         stat.received.add(reward);
-    }
-
-    @EventHandler
-    public void onJoin(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
-        stats.put(player.getUniqueId(), loadYaml(player));
-    }
-
-    @EventHandler
-    public void onQuit(PlayerQuitEvent event) {
-        Player player = event.getPlayer();
-        saveYaml(player);
-        stats.remove(player.getUniqueId());
     }
 
     private static IPlayer loadYaml(Player player) {
@@ -181,9 +168,22 @@ public class CardPointRewards implements Listener {
             sender.sendMessage("玩家不存在或不在线！");
     }
 
+    @EventHandler
+    public void onJoin(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
+        stats.put(player.getUniqueId(), loadYaml(player));
+    }
+
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        Player player = event.getPlayer();
+        saveYaml(player);
+        stats.remove(player.getUniqueId());
+    }
+
     public static class IPlayer {
-        public int points;
         private final List<String> received;
+        public int points;
 
         public IPlayer(int points, List<String> received) {
             this.points = points;

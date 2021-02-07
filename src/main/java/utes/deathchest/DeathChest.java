@@ -25,11 +25,14 @@ import java.util.UUID;
  */
 
 public class DeathChest implements Listener {
+    private static final HashMap<Location, UUID> messageArmor = new HashMap<Location, UUID>();
+    private static final HashMap<Location, UUID> owner = new HashMap<Location, UUID>();
+    private static final HashMap<Location, Integer> storeLevel = new HashMap<Location, Integer>();
+    private static final HashMap<Location, Float> storeExperience = new HashMap<Location, Float>();
     private static YamlConfiguration yaml;
     private static boolean storeExp;
     private static boolean showMeesage;
     private static boolean onlyOwnerCanOpen;
-
     public DeathChest() {
         File file = new File(UntilTheEndServer.getInstance().getDataFolder(), "deathchest.yml");
         if (!file.exists())
@@ -44,11 +47,6 @@ public class DeathChest implements Listener {
 
         Bukkit.getPluginManager().registerEvents(this, UntilTheEndServer.getInstance());
     }
-
-    private static final HashMap<Location, UUID> messageArmor = new HashMap<Location, UUID>();
-    private static final HashMap<Location, UUID> owner = new HashMap<Location, UUID>();
-    private static final HashMap<Location, Integer> storeLevel = new HashMap<Location, Integer>();
-    private static final HashMap<Location, Float> storeExperience = new HashMap<Location, Float>();
 
     @EventHandler
     public void onDeath(PlayerDeathEvent event) {

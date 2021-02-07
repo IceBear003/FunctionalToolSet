@@ -20,6 +20,7 @@ import java.util.UUID;
 public class ActionCommand implements Listener {
     private static final HashMap<String, IActions> standardActions = new HashMap<String, IActions>();
     private static final HashMap<UUID, Actions> playerActions = new HashMap<UUID, Actions>();
+    private static final ArrayList<UUID> jumpers = new ArrayList<UUID>();
     private static int judgeTime;
     private static YamlConfiguration yaml;
 
@@ -90,8 +91,6 @@ public class ActionCommand implements Listener {
         playerActions.get(player.getUniqueId()).addAction(ActionType.INTERACTENTITY, 1, System.currentTimeMillis());
     }
 
-    private static final ArrayList<UUID> jumpers = new ArrayList<UUID>();
-
     @EventHandler
     public void onMove(PlayerMoveEvent event) {
         Location to = event.getTo();
@@ -113,6 +112,10 @@ public class ActionCommand implements Listener {
             playerActions.get(player.getUniqueId()).addAction(ActionType.UP, 1, System.currentTimeMillis());
         if (pitch >= 30)
             playerActions.get(player.getUniqueId()).addAction(ActionType.DOWN, 1, System.currentTimeMillis());
+    }
+
+    enum ActionType {
+        SNEAK, SWAP, LEFTCLICK, RIGHTCLICK, INTERACTENTITY, JUMP, UP, DOWN
     }
 
     private static class Actions {
@@ -216,9 +219,5 @@ public class ActionCommand implements Listener {
             this.cmds = cmds;
             this.messages = messages;
         }
-    }
-
-    enum ActionType {
-        SNEAK, SWAP, LEFTCLICK, RIGHTCLICK, INTERACTENTITY, JUMP, UP, DOWN
     }
 }

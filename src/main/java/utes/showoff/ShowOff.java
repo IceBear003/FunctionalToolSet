@@ -32,6 +32,7 @@ import java.util.UUID;
  */
 public class ShowOff implements Listener {
     private static final HashMap<UUID, Long> lastShowOffStamp = new HashMap<UUID, Long>();
+    private static final HashMap<String, UUID> owners = new HashMap<String, UUID>();
     private static YamlConfiguration yaml;
     private static int cooldown;
     private static String string;
@@ -78,26 +79,6 @@ public class ShowOff implements Listener {
                     }
                 });
     }
-
-    @EventHandler
-    public void onChat(PlayerChatEvent event) {
-        Player player = event.getPlayer();
-        if (!player.hasPermission("utes.showoff.can"))
-            return;
-        String message = event.getMessage();
-        if (message.contains(string)) {
-            if (lastShowOffStamp.containsKey(player.getUniqueId())) {
-                long lastUse = lastShowOffStamp.get(player.getUniqueId());
-                if (System.currentTimeMillis() - lastUse < cooldown * 1000 && !player.hasPermission("utes.showoff.ignorecd")) {
-                    player.sendMessage("炫耀物品失败，请等待冷却！");
-                }
-            }
-            lastShowOffStamp.put(player.getUniqueId(), System.currentTimeMillis());
-            owners.put(message, player.getUniqueId());
-        }
-    }
-
-    private static final HashMap<String, UUID> owners = new HashMap<String, UUID>();
 
     private static BaseComponent[] getBaseComponents(Player player, String message) {
         String[] tmp = message.split(string);
@@ -179,5 +160,23 @@ public class ShowOff implements Listener {
             else
                 return item.getItemMeta().getLocalizedName();
         return item.getType().name();
+    }
+
+    @EventHandler
+    public void onChat(PlayerChatEvent event) {
+        Player player = event.getPlayer();
+        if (!player.hasPermission("utes.showoff.can"))
+            return;
+        String message = event.getMessage();
+        if (message.contains(string)) {
+            if (lastShowOffStamp.containsKey(player.getUniqueId())) {
+                long lastUse = lastShowOffStamp.get(player.getUniqueId());
+                if (System.currentTimeMillis() - lastUse < cooldown * 1000 && !player.hasPermission("utes.showoff.ignorecd")) {
+                    player.sendMessage("炫耀物品失败，请等待冷却！");
+                }
+            }
+            lastShowOffStamp.put(player.getUniqueId(), System.currentTimeMillis());
+            owners.put(message, player.getUniqueId());
+        }
     }
 }

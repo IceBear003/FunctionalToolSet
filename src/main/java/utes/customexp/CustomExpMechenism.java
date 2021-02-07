@@ -13,8 +13,8 @@ import java.io.File;
 import java.util.HashMap;
 
 public class CustomExpMechenism implements Listener {
-    private static YamlConfiguration yaml;
     private static final HashMap<Integer, Integer> expNeedToUpgrade = new HashMap<Integer, Integer>();
+    private static YamlConfiguration yaml;
 
     public CustomExpMechenism() {
         File file = new File(UntilTheEndServer.getInstance().getDataFolder(), "customexp.yml");
@@ -33,6 +33,15 @@ public class CustomExpMechenism implements Listener {
         }
 
         Bukkit.getPluginManager().registerEvents(this, UntilTheEndServer.getInstance());
+    }
+
+    private static int getExpToLevel(int level) {
+        if (level <= 15)
+            return 2 * level + 7;
+        else if (level <= 30)
+            return 5 * level - 38;
+        else
+            return 9 * level - 158;
     }
 
     @EventHandler
@@ -68,14 +77,5 @@ public class CustomExpMechenism implements Listener {
                 }
             }.runTaskLater(UntilTheEndServer.getInstance(), 1L);
         }
-    }
-
-    private static int getExpToLevel(int level) {
-        if (level <= 15)
-            return 2 * level + 7;
-        else if (level <= 30)
-            return 5 * level - 38;
-        else
-            return 9 * level - 158;
     }
 }

@@ -12,6 +12,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class BlockApi {
+    @Beta
+    public static final Pattern loc3d = Pattern.compile(
+            // World-X-Y-Z
+            "(^.*)?((-|)[0-9]+)-((-|)[0-9]+)-((-|)[0-9]+)$"
+    );
+
     @SuppressWarnings("UnstableApiUsage")
     private static Loc3D binToLoc(byte[] data) {
         final ByteArrayDataInput input = ByteStreams.newDataInput(data);
@@ -23,12 +29,6 @@ public class BlockApi {
                 input.readInt()
         );
     }
-
-    @Beta
-    public static final Pattern loc3d = Pattern.compile(
-            // World-X-Y-Z
-            "(^.*)?((-|)[0-9]+)-((-|)[0-9]+)-((-|)[0-9]+)$"
-    );
 
     public static Loc3D strToLoc3d(@NotNull String location) {
         try {

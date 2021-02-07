@@ -19,24 +19,6 @@ public class ParticleUnderFeet implements Listener {
         Bukkit.getPluginManager().registerEvents(this, UntilTheEndServer.getInstance());
     }
 
-    @EventHandler
-    public void onMove(PlayerMoveEvent event) {
-        Player player = event.getPlayer();
-        if (users.containsKey(player.getUniqueId())) {
-            Location to = event.getTo();
-            Location from = event.getFrom();
-            Location loc = player.getLocation();
-            if ((to.getX() != from.getBlockX()) || (to.getY() != from.getY()) || (to.getZ() != from.getZ())) {
-                loc.setY(loc.getY() - 1.0D);
-                player.getWorld().playEffect(loc, users.get(player.getUniqueId()), 1, 25);
-            } else {
-                event.setCancelled(false);
-            }
-        } else {
-            event.setCancelled(false);
-        }
-    }
-
     public static void drawParticle(Player player, String particleName) {
         Effect particle = Effect.MOBSPAWNER_FLAMES;
         try {
@@ -54,5 +36,23 @@ public class ParticleUnderFeet implements Listener {
 
     public static void stop(Player player) {
         users.remove(player.getUniqueId());
+    }
+
+    @EventHandler
+    public void onMove(PlayerMoveEvent event) {
+        Player player = event.getPlayer();
+        if (users.containsKey(player.getUniqueId())) {
+            Location to = event.getTo();
+            Location from = event.getFrom();
+            Location loc = player.getLocation();
+            if ((to.getX() != from.getBlockX()) || (to.getY() != from.getY()) || (to.getZ() != from.getZ())) {
+                loc.setY(loc.getY() - 1.0D);
+                player.getWorld().playEffect(loc, users.get(player.getUniqueId()), 1, 25);
+            } else {
+                event.setCancelled(false);
+            }
+        } else {
+            event.setCancelled(false);
+        }
     }
 }

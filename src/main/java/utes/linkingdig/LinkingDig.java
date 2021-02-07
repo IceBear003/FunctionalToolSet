@@ -21,6 +21,7 @@ import java.util.*;
  * utes.linkdig
  */
 public class LinkingDig implements Listener {
+    private static final HashSet<Location> linked = new HashSet<Location>();
     private static YamlConfiguration yaml;
     private static double exhaustSpeed;
     private static List<String> axe;
@@ -46,52 +47,6 @@ public class LinkingDig implements Listener {
         spade = yaml.getStringList("SWORD");
 
         Bukkit.getPluginManager().registerEvents(this, UntilTheEndServer.getInstance());
-    }
-
-    private static final HashSet<Location> linked = new HashSet<Location>();
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onDig(BlockBreakEvent event) {
-        if (event.isCancelled())
-            return;
-        if (event.getPlayer() == null)
-            return;
-        Player player = event.getPlayer();
-        Block block = event.getBlock();
-        if (!player.hasPermission("utes.linkdig")) return;
-        if (!player.isSneaking()) return;
-        if (linked.contains(block.getLocation())) return;
-        ItemStack tool = player.getInventory().getItemInMainHand();
-        if (tool == null) return;
-        Material toolType = tool.getType();
-        Material blockType = block.getType();
-        boolean flag = false;
-        if (toolType.toString().contains("AXE"))
-            for (String str : axe)
-                if (blockType.toString().contains(str))
-                    flag = true;
-        if (toolType.toString().contains("PICKAXE"))
-            for (String str : pickaxe)
-                if (blockType.toString().contains(str))
-                    flag = true;
-        if (toolType.toString().contains("SPADE"))
-            for (String str : spade)
-                if (blockType.toString().contains(str))
-                    flag = true;
-        if (toolType.toString().contains("SWORD"))
-            for (String str : sword)
-                if (blockType.toString().contains(str))
-                    flag = true;
-        if (toolType.toString().contains("SCISSOR"))
-            for (String str : scissor)
-                if (blockType.toString().contains(str))
-                    flag = true;
-        if (flag) {
-            for (Location nearBlock : getNearbyBlocks(blockType, block.getLocation(), player, tool)) {
-                nearBlock.getBlock().breakNaturally();
-                linked.remove(nearBlock);
-            }
-        }
     }
 
     private static HashSet<Location> getNearbyBlocks(Material blockType, Location location, Player player, ItemStack tool) {
@@ -153,5 +108,49 @@ public class LinkingDig implements Listener {
             tool.setType(Material.AIR);
         player.setFoodLevel((int) foodlevel);
         return blocks;
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onDig(BlockBreakEvent event) {
+        if (event.isCancelled())
+            return;
+        if (event.getPlayer() == null)
+            return;
+        Player player = event.getPlayer();
+        Block block = event.getBlock();
+        if (!player.hasPermission("utes.linkdig")) return;
+        if (!player.isSneaking()) return;
+        if (linked.contains(block.getLocation())) return;
+        ItemStack tool = player.getInventory().getItemInMainHand();
+        if (tool == null) return;
+        Material toolType = tool.getType();
+        Material blockType = block.getType();
+        boolean flag = false;
+        if (toolType.toString().contains("AXE"))
+            for (String str : axe)
+                if (blockType.toString().contains(str))
+                    flag = true;
+        if (toolType.toString().contains("PICKAXE"))
+            for (String str : pickaxe)
+                if (blockType.toString().contains(str))
+                    flag = true;
+        if (toolType.toString().contains("SPADE"))
+            for (String str : spade)
+                if (blockType.toString().contains(str))
+                    flag = true;
+        if (toolType.toString().contains("SWORD"))
+            for (String str : sword)
+                if (blockType.toString().contains(str))
+                    flag = true;
+        if (toolType.toString().contains("SCISSOR"))
+            for (String str : scissor)
+                if (blockType.toString().contains(str))
+                    flag = true;
+        if (flag) {
+            for (Location nearBlock : getNearbyBlocks(blockType, block.getLocation(), player, tool)) {
+                nearBlock.getBlock().breakNaturally();
+                linked.remove(nearBlock);
+            }
+        }
     }
 }

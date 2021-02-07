@@ -26,8 +26,12 @@ import utes.trueexplode.TrueExplode;
 import utes.xpfly.XPFly;
 
 public class UntilTheEndServer extends JavaPlugin {
-    private static UntilTheEndServer instance;
     public static ProtocolManager pm;
+    private static UntilTheEndServer instance;
+
+    public static UntilTheEndServer getInstance() {
+        return instance;
+    }
 
     @Override
     public void onEnable() {
@@ -107,9 +111,5 @@ public class UntilTheEndServer extends JavaPlugin {
         for (Player player : Bukkit.getOnlinePlayers()) {
             player.kickPlayer("服务器重载，请稍后再进");
         }
-    }
-
-    public static UntilTheEndServer getInstance() {
-        return instance;
     }
 }

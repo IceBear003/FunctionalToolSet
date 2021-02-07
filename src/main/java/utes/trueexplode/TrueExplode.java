@@ -19,6 +19,19 @@ public class TrueExplode implements Listener {
         Bukkit.getPluginManager().registerEvents(this, UntilTheEndServer.getInstance());
     }
 
+    private static void createTrueExplode(List<Block> blocks) {
+        for (Block block : blocks) {
+            float x = (float) (-1.0D + 2.0 * Math.random());
+            float y = (float) (1.0 * Math.random());
+            float z = (float) (-1.0D + 2.0 * Math.random());
+            FallingBlock fallingblock = block.getWorld().spawnFallingBlock(block.getLocation(), block.getType(), block.getData());
+            fallingblock.setDropItem(false);
+            fallingblock.setFireTicks(200);
+            fallingblock.setVelocity(new Vector(x, y, z));
+            block.setType(Material.AIR);
+        }
+    }
+
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onExplode(BlockExplodeEvent event) {
         if (event.isCancelled())
@@ -33,18 +46,5 @@ public class TrueExplode implements Listener {
             return;
         event.setCancelled(true);
         createTrueExplode(event.blockList());
-    }
-
-    private static void createTrueExplode(List<Block> blocks) {
-        for (Block block : blocks) {
-            float x = (float) (-1.0D + 2.0 * Math.random());
-            float y = (float) (1.0 * Math.random());
-            float z = (float) (-1.0D + 2.0 * Math.random());
-            FallingBlock fallingblock = block.getWorld().spawnFallingBlock(block.getLocation(), block.getType(), block.getData());
-            fallingblock.setDropItem(false);
-            fallingblock.setFireTicks(200);
-            fallingblock.setVelocity(new Vector(x, y, z));
-            block.setType(Material.AIR);
-        }
     }
 }

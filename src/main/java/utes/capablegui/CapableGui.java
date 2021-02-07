@@ -40,6 +40,8 @@ import java.util.*;
 public class CapableGui implements Listener {
     private static final HashMap<UUID, ArrayList<Inventory>> choseGuis = new HashMap<UUID, ArrayList<Inventory>>();
     private static final HashMap<ItemStack, String> guiName = new HashMap<ItemStack, String>();
+    private static final HashSet<UUID> openers = new HashSet<UUID>();
+    private static final HashMap<UUID, Location> operating = new HashMap<UUID, Location>();
 
     public CapableGui() {
         Bukkit.getPluginManager().registerEvents(this, UntilTheEndServer.getInstance());
@@ -101,107 +103,6 @@ public class CapableGui implements Listener {
             return;
         }
         player.openMerchant(villager, true);
-    }
-
-    @EventHandler
-    public void onClick(InventoryClickEvent event) {
-        Inventory inv = event.getClickedInventory();
-        if (inv == null)
-            return;
-        if (inv.getHolder() instanceof HolderChoseGui) {
-            event.setCancelled(true);
-            Player player = (Player) event.getWhoClicked();
-            int slot = event.getSlot();
-            ItemStack item = inv.getItem(slot);
-            if (item == null)
-                return;
-            if (item.getType() == Material.AIR)
-                return;
-
-            if (slot == 10) {
-                openWorkbench(player);
-            } else if (slot == 37) {
-                openEnderChest(player);
-            } else if (slot == 47) {
-                ArrayList<Inventory> invs = choseGuis.get(player.getUniqueId());
-                if (invs.indexOf(inv) == invs.size() - 1)
-                    return;
-                player.openInventory(invs.get(invs.indexOf(inv) + 1));
-            } else if (slot == 45) {
-                ArrayList<Inventory> invs = choseGuis.get(player.getUniqueId());
-                if (invs.indexOf(inv) == 0)
-                    return;
-                player.openInventory(invs.get(invs.indexOf(inv) - 1));
-            } else if (slot % 9 > 2) {
-                if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
-                    inv.setItem(slot, new ItemStack(Material.AIR));
-                    player.sendMessage("删除远程容器/商店成功");
-                    return;
-                }
-                String lore = item.getItemMeta().getLore().get(0);
-                if (item.getType() == Material.ENCHANTMENT_TABLE) {
-                    openEnchant(player, BlockApi.strToLoc(lore));
-                } else if (lore.startsWith("uuid:")) {
-                    Villager villager = (Villager) Bukkit.getEntity(UUID.fromString(lore.replace("uuid:", "")));
-                    openMerchant(player, villager);
-                } else
-                    openSpecialContainer(player, BlockApi.strToLoc(item.getItemMeta().getLore().get(0)));
-            }
-        }
-    }
-
-    private static final HashSet<UUID> openers = new HashSet<UUID>();
-
-    @EventHandler
-    public void onOperate(InventoryClickEvent event) {
-        if (openers.contains(event.getWhoClicked().getUniqueId())) {
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler
-    public void onOpen(InventoryOpenEvent event) {
-        if (event.getInventory().getHolder() instanceof HolderChoseGui) {
-            openers.add(event.getPlayer().getUniqueId());
-        }
-    }
-
-    @EventHandler
-    public void onCloseGui(InventoryCloseEvent event) {
-        if (event.getInventory().getHolder() instanceof HolderChoseGui) {
-            openers.remove(event.getPlayer().getUniqueId());
-        }
-    }
-
-
-    private static final HashMap<UUID, Location> operating = new HashMap<UUID, Location>();
-
-    @EventHandler
-    public void onClose(InventoryCloseEvent event) {
-        Player player = (Player) event.getPlayer();
-        if (operating.containsKey(player.getUniqueId())) {
-            Block block = operating.get(player.getUniqueId()).getBlock();
-            block.getState().update();
-            operating.remove(player.getUniqueId());
-        }
-    }
-
-    @EventHandler
-    public void onQuit(PlayerQuitEvent event) {
-        Player player = event.getPlayer();
-        save(player, true);
-        choseGuis.remove(player.getUniqueId());
-        if (operating.containsKey(player.getUniqueId())) {
-            Block block = operating.get(player.getUniqueId()).getBlock();
-            block.getState().update();
-            operating.remove(player.getUniqueId());
-        }
-    }
-
-    @EventHandler
-    public void onJoin(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
-        load(player);
     }
 
     public static void addItemStack(Player player, Location loc, String name) {
@@ -369,6 +270,102 @@ public class CapableGui implements Listener {
         item.setItemMeta(meta);
         item.setDurability((short) id);
         return item;
+    }
+
+    @EventHandler
+    public void onClick(InventoryClickEvent event) {
+        Inventory inv = event.getClickedInventory();
+        if (inv == null)
+            return;
+        if (inv.getHolder() instanceof HolderChoseGui) {
+            event.setCancelled(true);
+            Player player = (Player) event.getWhoClicked();
+            int slot = event.getSlot();
+            ItemStack item = inv.getItem(slot);
+            if (item == null)
+                return;
+            if (item.getType() == Material.AIR)
+                return;
+
+            if (slot == 10) {
+                openWorkbench(player);
+            } else if (slot == 37) {
+                openEnderChest(player);
+            } else if (slot == 47) {
+                ArrayList<Inventory> invs = choseGuis.get(player.getUniqueId());
+                if (invs.indexOf(inv) == invs.size() - 1)
+                    return;
+                player.openInventory(invs.get(invs.indexOf(inv) + 1));
+            } else if (slot == 45) {
+                ArrayList<Inventory> invs = choseGuis.get(player.getUniqueId());
+                if (invs.indexOf(inv) == 0)
+                    return;
+                player.openInventory(invs.get(invs.indexOf(inv) - 1));
+            } else if (slot % 9 > 2) {
+                if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
+                    inv.setItem(slot, new ItemStack(Material.AIR));
+                    player.sendMessage("删除远程容器/商店成功");
+                    return;
+                }
+                String lore = item.getItemMeta().getLore().get(0);
+                if (item.getType() == Material.ENCHANTMENT_TABLE) {
+                    openEnchant(player, BlockApi.strToLoc(lore));
+                } else if (lore.startsWith("uuid:")) {
+                    Villager villager = (Villager) Bukkit.getEntity(UUID.fromString(lore.replace("uuid:", "")));
+                    openMerchant(player, villager);
+                } else
+                    openSpecialContainer(player, BlockApi.strToLoc(item.getItemMeta().getLore().get(0)));
+            }
+        }
+    }
+
+    @EventHandler
+    public void onOperate(InventoryClickEvent event) {
+        if (openers.contains(event.getWhoClicked().getUniqueId())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onOpen(InventoryOpenEvent event) {
+        if (event.getInventory().getHolder() instanceof HolderChoseGui) {
+            openers.add(event.getPlayer().getUniqueId());
+        }
+    }
+
+    @EventHandler
+    public void onCloseGui(InventoryCloseEvent event) {
+        if (event.getInventory().getHolder() instanceof HolderChoseGui) {
+            openers.remove(event.getPlayer().getUniqueId());
+        }
+    }
+
+    @EventHandler
+    public void onClose(InventoryCloseEvent event) {
+        Player player = (Player) event.getPlayer();
+        if (operating.containsKey(player.getUniqueId())) {
+            Block block = operating.get(player.getUniqueId()).getBlock();
+            block.getState().update();
+            operating.remove(player.getUniqueId());
+        }
+    }
+
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        Player player = event.getPlayer();
+        save(player, true);
+        choseGuis.remove(player.getUniqueId());
+        if (operating.containsKey(player.getUniqueId())) {
+            Block block = operating.get(player.getUniqueId()).getBlock();
+            block.getState().update();
+            operating.remove(player.getUniqueId());
+        }
+    }
+
+    @EventHandler
+    public void onJoin(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
+        load(player);
     }
 
     private static class HolderChoseGui implements UTEInvHolder {

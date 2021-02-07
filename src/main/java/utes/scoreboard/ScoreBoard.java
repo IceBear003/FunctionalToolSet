@@ -69,11 +69,6 @@ public class ScoreBoard implements Listener {
         }.runTaskTimer(UntilTheEndServer.getInstance(), 1L, 20L);
     }
 
-    @EventHandler
-    public void onJoin(PlayerQuitEvent event) {
-        disablers.remove(event.getPlayer().getUniqueId());
-    }
-
     public static void changeState(Player player) {
         if (!player.hasPermission("utes.sb.toggle")) {
             player.sendMessage("您没有权限操控计分板！");
@@ -87,5 +82,10 @@ public class ScoreBoard implements Listener {
             disablers.remove(player.getUniqueId());
             player.sendMessage("计分板已经开启");
         }
+    }
+
+    @EventHandler
+    public void onJoin(PlayerQuitEvent event) {
+        disablers.remove(event.getPlayer().getUniqueId());
     }
 }

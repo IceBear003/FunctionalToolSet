@@ -39,19 +39,6 @@ public class OnlineTimes implements Listener {
         }.runTaskTimer(UntilTheEndServer.getInstance(), 0L, 20L);
     }
 
-    @EventHandler
-    public void onJoin(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
-        stats.put(player.getUniqueId(), loadYaml(player));
-    }
-
-    @EventHandler
-    public void onQuit(PlayerQuitEvent event) {
-        Player player = event.getPlayer();
-        saveYaml(player);
-        stats.remove(player.getUniqueId());
-    }
-
     private static IPlayer loadYaml(Player player) {
         File file = new File(UntilTheEndServer.getInstance().getDataFolder() + "/onlinetimes/",
                 player.getUniqueId().toString() + ".yml");
@@ -74,23 +61,6 @@ public class OnlineTimes implements Listener {
             yaml.save(file);
         } catch (IOException e) {
             e.printStackTrace();
-        }
-    }
-
-    private static class IPlayer {
-        private int dayTime;
-        private int totalTime;
-        private int lastLoginDate;
-
-        private IPlayer(int dayTime, int totalTime, int lastLoginDate) {
-            this.dayTime = dayTime;
-            this.totalTime = totalTime;
-            this.lastLoginDate = lastLoginDate;
-            LocalDate date = LocalDate.now();
-            if (date.getDayOfMonth() != this.lastLoginDate) {
-                this.dayTime = 0;
-                this.lastLoginDate = date.getDayOfMonth();
-            }
         }
     }
 
@@ -119,5 +89,35 @@ public class OnlineTimes implements Listener {
                 return h + "小时" + m + "分钟" + s + "秒";
         else
             return d + "天" + h + "小时" + m + "分钟" + s + "秒";
+    }
+
+    @EventHandler
+    public void onJoin(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
+        stats.put(player.getUniqueId(), loadYaml(player));
+    }
+
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        Player player = event.getPlayer();
+        saveYaml(player);
+        stats.remove(player.getUniqueId());
+    }
+
+    private static class IPlayer {
+        private int dayTime;
+        private int totalTime;
+        private int lastLoginDate;
+
+        private IPlayer(int dayTime, int totalTime, int lastLoginDate) {
+            this.dayTime = dayTime;
+            this.totalTime = totalTime;
+            this.lastLoginDate = lastLoginDate;
+            LocalDate date = LocalDate.now();
+            if (date.getDayOfMonth() != this.lastLoginDate) {
+                this.dayTime = 0;
+                this.lastLoginDate = date.getDayOfMonth();
+            }
+        }
     }
 }

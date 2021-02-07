@@ -12,10 +12,10 @@ import java.io.File;
 import java.util.HashMap;
 
 public class RandomCredits {
-    private static Permission vaultPermission = null;
     private static final HashMap<String, String> permissionGroups = new HashMap<String, String>();
     private static final HashMap<String, String> commandGroups = new HashMap<String, String>();
     private static final HashMap<String, Double> percents = new HashMap<String, Double>();
+    private static Permission vaultPermission = null;
     private static double totalPercents = 0.0;
     private static YamlConfiguration yaml;
 

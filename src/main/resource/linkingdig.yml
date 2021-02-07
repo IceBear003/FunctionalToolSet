@@ -14,8 +14,9 @@ SPADE: #铲子可以连锁挖掘那些方块
 - "SAND"
 - "DIRT"
 - "SNOW"
-SWORD:
+SWORD: #剑可以连锁挖掘那些方块
 - "WEB"
-SCISSOR:
+SCISSOR: #剪刀可以连锁挖掘那些方块
 - "WOOL"
 - "LEAVE"
+- "WEB"

@@ -1,10 +1,16 @@
 package utes;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Villager;
+import utes.capablegui.CapableGui;
 import utes.cardpoints.CardPointRewards;
 import utes.particle.ParticleOverHead;
 import utes.particle.ParticleUnderFeet;
@@ -13,6 +19,9 @@ import utes.rtp.RandomTeleport;
 import utes.scoreboard.ScoreBoard;
 import utes.superjump.SuperJump;
 import utes.xpfly.XPFly;
+
+import java.util.Collection;
+import java.util.List;
 
 public class UTESCommands implements CommandExecutor {
 
@@ -89,6 +98,40 @@ public class UTESCommands implements CommandExecutor {
                 RandomCredits.goRandomPermission(sender, Bukkit.getPlayer(args[1]));
             else
                 RandomCredits.goRandomCommand(sender, Bukkit.getPlayer(args[1]));
+        } else if (command.startsWith("utes addgui")) {
+            Player player= (Player) sender;
+            Location loc=player.getEyeLocation();
+            while(loc.getBlock().getType()== Material.AIR){
+                if(loc.distance(player.getEyeLocation())>=10.0) {
+                    player.sendMessage("您没有看向一个方块!");
+                    return true;
+                }
+                loc.add(loc.getDirection());
+            }
+            CapableGui.addItemStack(player,loc,args[1]);
+        } else if (command.startsWith("utes addmerchant")) {
+            Player player= (Player) sender;
+            Location loc=player.getEyeLocation();
+            Collection<Entity> entities=player.getWorld().getNearbyEntities(loc,0.2,0.2,0.2);
+            boolean flag=false;
+            Villager villager = null;
+            while(!flag){
+                if(loc.distance(player.getEyeLocation())>=10.0) {
+                    player.sendMessage("您没有看向一个村民!");
+                    return true;
+                }
+                for(Entity entity:entities)
+                    if(entity.getType()== EntityType.VILLAGER) {
+                        flag=true;
+                        villager= (Villager) entity;
+                    }
+                loc.add(loc.getDirection());
+                entities=player.getWorld().getNearbyEntities(loc,0.2,0.2,0.2);
+            }
+            CapableGui.addItemStack(player,villager,args[1]);
+        } else if (command.startsWith("utes opengui")) {
+            Player player= (Player) sender;
+            CapableGui.openGui(player);
         } else if (command.startsWith("utes help")) {
             sender.sendMessage("{ignore}§e-----------§6§lUntilTheEndServer插件指令简介§e-----------");
             sender.sendMessage("{ignore}§a/utes rtp §e-随机传送");
@@ -99,6 +142,8 @@ public class UTESCommands implements CommandExecutor {
             sender.sendMessage("{ignore}§a/utes cardpoints get <礼包名字> <TRUE/FALSE> §e-用已经得到的积分领取礼包(TRUE和FALSE表示是否双倍领取)");
             sender.sendMessage("{ignore}§a/utes particle <under/up/off> [粒子效果名称] §e-在头顶/脚下开启粒子效果，off代表关闭所有效果");
             sender.sendMessage("{ignore}§a/utes randomcredits <玩家名> §e-随机奖励权限和指令");
+            sender.sendMessage("{ignore}§a/utes addgui <方块备注> §e-在便携容器中加入一个新的方块");
+            sender.sendMessage("{ignore}§a/utes opengui §e-打开便携容器管理");
             sender.sendMessage("{ignore}§e----------------------------------------------------------");
         }
         return true;

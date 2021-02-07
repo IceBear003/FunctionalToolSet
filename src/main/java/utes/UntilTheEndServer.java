@@ -8,6 +8,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import utes.actioncmd.ActionCommand;
 import utes.bancmd.CommandBanner;
 import utes.bugfix.BugFixer;
+import utes.capablegui.CapableGui;
 import utes.customexp.CustomExpMechenism;
 import utes.deathchest.DeathChest;
 import utes.information.NoLoginQuitMessage;
@@ -21,6 +22,7 @@ import utes.randomcredit.RandomCredits;
 import utes.rtp.RandomTeleport;
 import utes.scoreboard.ScoreBoard;
 import utes.showoff.ShowOff;
+import utes.trueexplode.TrueExplode;
 import utes.xpfly.XPFly;
 
 public class UntilTheEndServer extends JavaPlugin {
@@ -87,6 +89,12 @@ public class UntilTheEndServer extends JavaPlugin {
 
             System.out.println("[UntilTheEndServer] 正在启用连锁挖矿功能中...");
             new LinkingDig();
+
+            System.out.println("[UntilTheEndServer] 正在启用更真实的爆炸功能中...");
+            new TrueExplode();
+
+            System.out.println("[UntilTheEndServer] 正在启用便携容器功能中...");
+            new CapableGui();
 
         } catch (Exception exception) {
             System.out.println("[UntilTheEndServer] 哎呀这步好像出了些小问题呢！");

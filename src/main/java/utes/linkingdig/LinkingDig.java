@@ -8,6 +8,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
@@ -47,8 +48,10 @@ public class LinkingDig implements Listener {
         Bukkit.getPluginManager().registerEvents(this, UntilTheEndServer.getInstance());
     }
     private static HashSet<Location> linked=new HashSet<Location>();
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onDig(BlockBreakEvent event){
+        if(event.isCancelled())
+            return;
         if(event.getPlayer()==null)
             return;
         Player player=event.getPlayer();

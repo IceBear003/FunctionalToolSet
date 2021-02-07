@@ -176,6 +176,8 @@ public class ShowOff implements Listener {
         if (item.hasItemMeta())
             if (item.getItemMeta().hasDisplayName())
                 return item.getItemMeta().getDisplayName();
-        return item.getType().toString();
+            else
+                return item.getItemMeta().getLocalizedName();
+        return item.getType().name();
     }
 }

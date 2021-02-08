@@ -13,6 +13,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import utes.UntilTheEndServer;
 
@@ -33,6 +34,7 @@ public class DeathChest implements Listener {
     private static boolean storeExp;
     private static boolean showMeesage;
     private static boolean onlyOwnerCanOpen;
+
     public DeathChest() {
         File file = new File(UntilTheEndServer.getInstance().getDataFolder(), "deathchest.yml");
         if (!file.exists())
@@ -48,6 +50,16 @@ public class DeathChest implements Listener {
         Bukkit.getPluginManager().registerEvents(this, UntilTheEndServer.getInstance());
     }
 
+    private static boolean hasNull(Inventory inv) {
+        for (int i = 0; i < inv.getSize(); i++) {
+            if (inv.getItem(i) == null)
+                return true;
+            if (inv.getItem(i).getType() == Material.AIR)
+                return true;
+        }
+        return false;
+    }
+
     @EventHandler
     public void onDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
@@ -61,7 +73,7 @@ public class DeathChest implements Listener {
         for (ItemStack item : player.getInventory().getContents()) {
             if (item == null)
                 continue;
-            if (chest.getInventory().contains(Material.AIR)) {
+            if (hasNull(chest.getInventory())) {
                 chest.getInventory().addItem(item.clone());
             } else {
                 dieLoc.getWorld().dropItemNaturally(dieLoc, item);

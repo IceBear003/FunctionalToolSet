@@ -43,8 +43,8 @@ public class LinkingDig implements Listener {
         axe = yaml.getStringList("AXE");
         pickaxe = yaml.getStringList("PICKAXE");
         spade = yaml.getStringList("SPADE");
-        pickaxe = yaml.getStringList("SCISSOR");
-        spade = yaml.getStringList("SWORD");
+        scissor = yaml.getStringList("SCISSOR");
+        sword = yaml.getStringList("SWORD");
 
         Bukkit.getPluginManager().registerEvents(this, UntilTheEndServer.getInstance());
     }
@@ -104,7 +104,7 @@ public class LinkingDig implements Listener {
             }
         }
 
-        if (tool.getDurability() >= tool.getType().getMaxDurability())
+        if (tool.getDurability() >= tool.getType().getMaxDurability() - 1)
             tool.setType(Material.AIR);
         player.setFoodLevel((int) foodlevel);
         return blocks;
@@ -126,7 +126,8 @@ public class LinkingDig implements Listener {
         Material toolType = tool.getType();
         Material blockType = block.getType();
         boolean flag = false;
-        if (toolType.toString().contains("AXE"))
+        if (toolType.toString().contains("AXE")
+                && !toolType.toString().contains("PICKAXE"))
             for (String str : axe)
                 if (blockType.toString().contains(str))
                     flag = true;
@@ -142,7 +143,7 @@ public class LinkingDig implements Listener {
             for (String str : sword)
                 if (blockType.toString().contains(str))
                     flag = true;
-        if (toolType.toString().contains("SCISSOR"))
+        if (toolType.toString().contains("SHEARS"))
             for (String str : scissor)
                 if (blockType.toString().contains(str))
                     flag = true;

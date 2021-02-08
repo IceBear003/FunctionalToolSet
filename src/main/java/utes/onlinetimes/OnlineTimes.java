@@ -50,6 +50,8 @@ public class OnlineTimes implements Listener {
     }
 
     private static void saveYaml(Player player) {
+        if (!stats.containsKey(player.getUniqueId()))
+            return;
         IPlayer stat = stats.get(player.getUniqueId());
         File file = new File(UntilTheEndServer.getInstance().getDataFolder() + "/onlinetimes/",
                 player.getUniqueId().toString() + ".yml");

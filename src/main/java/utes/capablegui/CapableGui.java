@@ -11,6 +11,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -116,6 +119,15 @@ public class CapableGui implements Listener {
             return;
         }
 
+        BlockBreakEvent event = new BlockBreakEvent(loc.getBlock(), player);
+        event.setDropItems(false);
+        event.setExpToDrop(0);
+        Bukkit.getPluginManager().callEvent(event);
+        if (event.isCancelled()) {
+            player.sendMessage("这个容器不属于你！");
+            return;
+        }
+
         ArrayList<Inventory> guis = choseGuis.get(player.getUniqueId());
         Inventory inv = guis.get(guis.size() - 1);
 
@@ -139,11 +151,20 @@ public class CapableGui implements Listener {
             addItemStack(player, loc, name);
         }
         guiName.put(item, name);
+
+        player.sendMessage("添加远程容器" + name + "成功！");
     }
 
     public static void addItemStack(Player player, Villager villager, String name) {
         if (!player.hasPermission("utes.capablegui.addgui")) {
             player.sendMessage("你没有权限增加远程商店！");
+            return;
+        }
+
+        EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, villager, EntityDamageEvent.DamageCause.CUSTOM, 0.1);
+        Bukkit.getPluginManager().callEvent(event);
+        if (event.isCancelled()) {
+            player.sendMessage("这个村民不属于你！");
             return;
         }
 
@@ -173,6 +194,8 @@ public class CapableGui implements Listener {
             addItemStack(player, villager, name);
         }
         guiName.put(item, name);
+
+        player.sendMessage("添加远程商店" + name + "成功！");
     }
 
     private static boolean hasNull(Inventory inv) {
@@ -219,6 +242,9 @@ public class CapableGui implements Listener {
     }
 
     private static void save(Player player, boolean remove) {
+        if (!choseGuis.containsKey(player.getUniqueId())) {
+            return;
+        }
         ArrayList<Inventory> invs = choseGuis.get(player.getUniqueId());
         File file = new File(UntilTheEndServer.getInstance().getDataFolder() + "/capableguis/",
                 player.getUniqueId().toString() + ".yml");

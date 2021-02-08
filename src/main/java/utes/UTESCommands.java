@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import utes.capablegui.CapableGui;
 import utes.cardpoints.CardPointRewards;
+import utes.chunkrestore.ChunkRestore;
 import utes.particle.ParticleOverHead;
 import utes.particle.ParticleUnderFeet;
 import utes.randomcredit.RandomCredits;
@@ -131,6 +132,9 @@ public class UTESCommands implements CommandExecutor {
         } else if (command.startsWith("utes opengui")) {
             Player player = (Player) sender;
             CapableGui.openGui(player);
+        } else if (command.startsWith("utes regenchunk")) {
+            Player player = (Player) sender;
+            ChunkRestore.regenChunk(player.getLocation().getChunk());
         } else if (command.startsWith("utes help")) {
             sender.sendMessage("{ignore}§e-----------§6§lUntilTheEndServer插件指令简介§e-----------");
             sender.sendMessage("{ignore}§a/utes rtp §e-随机传送");
@@ -143,6 +147,7 @@ public class UTESCommands implements CommandExecutor {
             sender.sendMessage("{ignore}§a/utes randomcredits <玩家名> §e-随机奖励权限和指令");
             sender.sendMessage("{ignore}§a/utes addgui <方块备注> §e-在便携容器中加入一个新的方块");
             sender.sendMessage("{ignore}§a/utes opengui §e-打开便携容器管理");
+            sender.sendMessage("{ignore}§a/utes regenchunk §e-重新生成区块");
             sender.sendMessage("{ignore}§e----------------------------------------------------------");
         }
         return true;

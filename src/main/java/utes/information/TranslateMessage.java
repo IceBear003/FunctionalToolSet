@@ -30,6 +30,8 @@ public class TranslateMessage {
         adapteds = yaml.getStringList("adapted");
         prefix = yaml.getString("prefix");
 
+        BaseComponent[] prefixAdapted = TextComponent.fromLegacyText(prefix);
+
         UntilTheEndServer.pm
                 .addPacketListener(new PacketAdapter(PacketAdapter.params().plugin(UntilTheEndServer.getInstance())
                         .serverSide().listenerPriority(ListenerPriority.LOW).gamePhase(GamePhase.PLAYING).optionAsync()
@@ -42,19 +44,25 @@ public class TranslateMessage {
                             if (packet.getChatTypes().getValues().get(0) != ChatType.SYSTEM)
                                 return;
                             WrappedChatComponent warppedComponent = packet.getChatComponents().getValues().get(0);
+
                             String json = warppedComponent.getJson();
+                            for (int index = 0; index < origins.size(); index++)
+                                json = json.replace(origins.get(index), adapteds.get(index));
+                            boolean flag = json.contains("{ignore}");
+                            json = json.replace("{ignore}", "");
 
                             BaseComponent[] origin = ComponentSerializer.parse(json);
+                            BaseComponent[] adapted = new BaseComponent[origin.length];
+                            int tot = 0;
                             String message = TextComponent.toLegacyText(origin);
-                            if (!message.contains(prefix) && !message.contains("{ignore}")) {
-                                message = prefix + message;
+                            if (!message.contains(prefix) && !flag) {
+                                adapted = new BaseComponent[prefixAdapted.length + origin.length];
+                                for (BaseComponent component : prefixAdapted)
+                                    adapted[tot++] = component;
                             }
-                            message = message.replace("{ignore}", "");
+                            for (BaseComponent component : origin)
+                                adapted[tot++] = component;
 
-                            for (int index = 0; index < origins.size(); index++)
-                                message = message.replace(origins.get(index), adapteds.get(index));
-
-                            BaseComponent[] adapted = TextComponent.fromLegacyText(message);
                             String newJson = ComponentSerializer.toString(adapted);
 
                             warppedComponent.setJson(newJson);

@@ -1,0 +1,6 @@
+enable: true #是否开启切换世界时模式锁定
+lockMode: true #是否锁定游戏模式
+lockHealth: true #是否锁定血量
+lockFoodLevel: true #是否锁定饥饿值
+lockFlying: true #是否锁定飞行模式
+lockEffect: true #是否锁定药水效果

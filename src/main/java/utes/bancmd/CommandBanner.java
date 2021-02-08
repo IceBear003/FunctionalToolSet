@@ -51,6 +51,9 @@ public class CommandBanner implements Listener {
         while (cmd.startsWith("/ ")) {
             cmd.replaceFirst(" ", "");
         }
+        if (!worlds.containsKey(world.getName())) {
+            return;
+        }
         for (String label : worlds.get(world.getName())) {
             if (cmd.startsWith("/" + label)) {
                 event.setCancelled(true);

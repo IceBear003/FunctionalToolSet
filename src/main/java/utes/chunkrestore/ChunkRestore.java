@@ -1,6 +1,5 @@
 package utes.chunkrestore;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -34,10 +33,10 @@ public class ChunkRestore implements Listener {
             return;
         }
 
-        judgeTime = yaml.getInt("judgeTime");
-
-        load();
-        Bukkit.getPluginManager().registerEvents(this, UntilTheEndServer.getInstance());
+//        judgeTime = yaml.getInt("judgeTime");
+//
+//        load();
+//        Bukkit.getPluginManager().registerEvents(this, UntilTheEndServer.getInstance());
     }
 
     public static void regenChunk(Chunk chunk) {

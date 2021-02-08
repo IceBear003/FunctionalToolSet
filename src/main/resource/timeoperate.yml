@@ -1,0 +1,9 @@
+synchronization: #同步现实系统时间（白天黑夜）
+  enable: #开启同步的世界名称
+    - "world1"
+  #可继续添加
+quickNight: #部分玩家睡觉加速夜晚流逝
+  enable: true #是否开启
+  percent: 0.3 #需要多少个玩家同时在睡觉：总人数乘以0.3
+  speed: 20 #流逝速度为原版的多少倍
+  title: true #流逝时全服玩家都可看到信息

@@ -69,7 +69,7 @@ public class DeathChest implements Listener {
 
         Location dieLoc = player.getLocation().getBlock().getLocation().clone().add(0, 1, 0);
         if (dieLoc.getY() <= 0)
-            for (int i = 128; i >= 0; i--) {
+            for (int i = 128; i > 0; i--) {
                 dieLoc.setY(i);
                 if (dieLoc.getBlock().getType() != Material.AIR) {
                     dieLoc.add(0, 2, 0);

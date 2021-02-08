@@ -25,6 +25,7 @@ import utes.rtp.RandomTeleport;
 import utes.scoreboard.ScoreBoard;
 import utes.showoff.ShowOff;
 import utes.trueexplode.TrueExplode;
+import utes.worldboarder.WorldBoarder;
 import utes.xpfly.XPFly;
 
 public class UntilTheEndServer extends JavaPlugin {
@@ -107,6 +108,9 @@ public class UntilTheEndServer extends JavaPlugin {
 
             getLogger().info("[UntilTheEndServer] 正在启用区块重生功能中...");
             new ChunkRestore();
+
+            getLogger().info("[UntilTheEndServer] 正在启用世界边界功能中...");
+            new WorldBoarder();
 
         } catch (Exception exception) {
             System.out.println("[UntilTheEndServer] 哎呀这步好像出了些小问题呢！");

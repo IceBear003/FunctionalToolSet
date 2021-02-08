@@ -68,6 +68,14 @@ public class DeathChest implements Listener {
         }
 
         Location dieLoc = player.getLocation().getBlock().getLocation().clone().add(0, 1, 0);
+        if (dieLoc.getY() <= 0)
+            for (int i = 128; i >= 0; i--) {
+                dieLoc.setY(i);
+                if (dieLoc.getBlock().getType() != Material.AIR) {
+                    dieLoc.add(0, 2, 0);
+                    break;
+                }
+            }
         dieLoc.getBlock().setType(Material.CHEST);
         Chest chest = (Chest) dieLoc.getBlock().getState();
         for (ItemStack item : player.getInventory().getContents()) {
@@ -98,6 +106,8 @@ public class DeathChest implements Listener {
             player.setLevel(0);
             player.setExp(0);
         }
+
+        player.sendMessage("你的物品和经验掉落于x:§e" + dieLoc.getBlockX() + "§r z:§e" + dieLoc.getBlockZ());
     }
 
     @EventHandler

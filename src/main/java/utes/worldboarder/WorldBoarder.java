@@ -17,6 +17,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
+/*
+ * TODO
+ * utes.boarder.ignore
+ */
 public class WorldBoarder implements Listener {
     private static YamlConfiguration yaml;
     private static HashMap<String, BoarderType> types = new HashMap<String, BoarderType>();
@@ -62,6 +66,8 @@ public class WorldBoarder implements Listener {
         Player player = event.getPlayer();
         World world = player.getWorld();
         if (boarders.keySet().contains(world.getName())) {
+            if (player.hasPermission("utes.boarder.ignore"))
+                return;
             Location loc = event.getTo().getBlock().getLocation();
             Boarder boarder = boarders.get(world.getName());
             BoarderType type = types.get(world.getName());

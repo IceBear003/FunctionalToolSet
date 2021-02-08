@@ -1,6 +1,5 @@
 package utes.scoreboard;
 
-import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -50,11 +49,11 @@ public class ScoreBoard implements Listener {
                             continue;
                         Scoreboard board = Bukkit.getServer().getScoreboardManager().getNewScoreboard();
                         Objective object = board.registerNewObjective("Scoreboard", "scoreboard");
-                        object.setDisplayName(PlaceholderAPI.setPlaceholders(player, title));
+                        object.setDisplayName(UntilTheEndServer.getPapi(player, title));
                         object.setDisplaySlot(DisplaySlot.SIDEBAR);
                         int size = lines.size();
                         for (String line : lines) {
-                            line = PlaceholderAPI.setPlaceholders(player, line);
+                            line = UntilTheEndServer.getPapi(player, line);
                             line = line.replace("%name%", player.getName());
                             line = line.replace("%dayOnlineTime%",
                                     OnlineTimes.turnToString(OnlineTimes.getDayTime(player)));

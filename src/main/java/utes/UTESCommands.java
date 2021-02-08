@@ -47,6 +47,7 @@ public class UTESCommands implements CommandExecutor {
         String command = label;
         for (String arg : args)
             command += " " + arg;
+
         if (command.startsWith("utes rtp")) {
             RandomTeleport.initRTP((Player) sender);
         } else if (command.startsWith("utes xpfly")) {
@@ -149,6 +150,8 @@ public class UTESCommands implements CommandExecutor {
             sender.sendMessage("{ignore}§a/utes opengui §e-打开便携容器管理");
             sender.sendMessage("{ignore}§a/utes regenchunk §e-重新生成区块");
             sender.sendMessage("{ignore}§e----------------------------------------------------------");
+        } else {
+            sender.sendMessage("输入/utes help 查看帮助");
         }
         return true;
     }

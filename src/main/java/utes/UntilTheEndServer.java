@@ -2,8 +2,11 @@ package utes;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
+import me.clip.placeholderapi.PlaceholderAPI;
+import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import utes.actioncmd.ActionCommand;
 import utes.bancmd.CommandBanner;
@@ -12,6 +15,7 @@ import utes.capablegui.CapableGui;
 import utes.chunkrestore.ChunkRestore;
 import utes.customexp.CustomExpMechenism;
 import utes.deathchest.DeathChest;
+import utes.easycmd.EasyCommand;
 import utes.information.NoLoginQuitMessage;
 import utes.information.TranslateMessage;
 import utes.lift.IronBlockLift;
@@ -30,15 +34,40 @@ import utes.xpfly.XPFly;
 
 public class UntilTheEndServer extends JavaPlugin {
     public static ProtocolManager pm;
+    public static Permission vaultPermission = null;
     private static UntilTheEndServer instance;
 
     public static UntilTheEndServer getInstance() {
         return instance;
     }
 
+    public static String getPapi(Player player, String origin) {
+        try {
+            return PlaceholderAPI.setPlaceholders(player, origin);
+        } catch (Exception e) {
+            return origin;
+        }
+    }
+
+    private static boolean initVault() {
+        boolean hasNull = false;
+        RegisteredServiceProvider<Permission> permissionProvider = Bukkit.getServicesManager()
+                .getRegistration(Permission.class);
+        if (permissionProvider != null) {
+            if ((vaultPermission = permissionProvider.getProvider()) == null)
+                hasNull = true;
+        }
+        return !hasNull;
+    }
+
     @Override
     public void onEnable() {
         try {
+            if (!initVault()) {
+                UntilTheEndServer.getInstance().getLogger().severe("Vault未安装|无法加载随机抽取权限的功能.");
+                return;
+            }
+
             getLogger().info("[UntilTheEndServer] 正在启用核心功能插件UTES中...");
             instance = this;
 
@@ -111,6 +140,12 @@ public class UntilTheEndServer extends JavaPlugin {
 
             getLogger().info("[UntilTheEndServer] 正在启用世界边界功能中...");
             new WorldBoarder();
+
+//            getLogger().info("[UntilTheEndServer] 正在启用更棒的聊天功能中...");
+//            new ChatBar();
+
+            getLogger().info("[UntilTheEndServer] 正在启用指令简化功能中...");
+            new EasyCommand();
 
         } catch (Exception exception) {
             System.out.println("[UntilTheEndServer] 哎呀这步好像出了些小问题呢！");

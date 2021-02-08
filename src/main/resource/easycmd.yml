@@ -1,0 +1,19 @@
+enable: true #是否开启简化指令的功能
+
+#注意：
+#第一类指令替换是把一个指令替换成很多条指令（或一条）（如下面的回城）
+#第二类指令替换是把检测任何玩家输入的指令中匹配的字符，将其替换成目标字符（如下面的 u awa）
+#第一类指令替换后只能是无参数的简单指令
+#第二类指令替换后原指令的参数数量和内容和位置都不变
+
+回城: #/回城 代表/spawn 和/say 我回城了
+  - "spawn"
+  - "say 我回城了"
+
+#/u help代表 /utes help
+#/u rtp代表 /utes rtp
+u: "utes"
+
+#/awa HamsterYDS kkk代表 /tell HamsterYDS kkk
+#/awa HamsterYDS awa代表 /tell HamsterYDS tell
+awa: "tell"

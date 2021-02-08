@@ -1,11 +1,9 @@
 package utes.randomcredit;
 
-import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import utes.UntilTheEndServer;
 
 import java.io.File;
@@ -15,15 +13,10 @@ public class RandomCredits {
     private static final HashMap<String, String> permissionGroups = new HashMap<String, String>();
     private static final HashMap<String, String> commandGroups = new HashMap<String, String>();
     private static final HashMap<String, Double> percents = new HashMap<String, Double>();
-    private static Permission vaultPermission = null;
     private static double totalPercents = 0.0;
     private static YamlConfiguration yaml;
 
     public RandomCredits() {
-        if (!initVault()) {
-            UntilTheEndServer.getInstance().getLogger().severe("Vault无法启动");
-            return;
-        }
         File file = new File(UntilTheEndServer.getInstance().getDataFolder(), "randomcredits.yml");
         if (!file.exists())
             UntilTheEndServer.getInstance().saveResource("randomcredits.yml", false);
@@ -73,7 +66,7 @@ public class RandomCredits {
                 permission = index;
             }
         }
-        vaultPermission.playerAdd(player, permission);
+        UntilTheEndServer.vaultPermission.playerAdd(player, permission);
         String message = permissionGroups.get(permission);
         Bukkit.broadcastMessage(message.replace("%player%", player.getName()).replace("%permission%", permission));
     }
@@ -106,16 +99,5 @@ public class RandomCredits {
             player.performCommand(cmd.replace("[空格]", " ").replace("{player}", player.getName()));
             player.setOp(false);
         }
-    }
-
-    private static boolean initVault() {
-        boolean hasNull = false;
-        RegisteredServiceProvider<Permission> permissionProvider = Bukkit.getServicesManager()
-                .getRegistration(Permission.class);
-        if (permissionProvider != null) {
-            if ((vaultPermission = permissionProvider.getProvider()) == null)
-                hasNull = true;
-        }
-        return !hasNull;
     }
 }

@@ -104,11 +104,9 @@ public class ShowOff implements Listener {
             textes.add(new TextComponent(tmp[i]));
             cnt++;
         }
-        String newMessage = "";
         TextComponent[] tmps = new TextComponent[cnt];
         for (TextComponent text : textes) {
             tmps[tot++] = text;
-
         }
         return tmps;
     }

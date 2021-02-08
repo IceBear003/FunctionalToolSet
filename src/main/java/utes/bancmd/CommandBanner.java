@@ -39,7 +39,7 @@ public class CommandBanner implements Listener {
         Bukkit.getPluginManager().registerEvents(this, UntilTheEndServer.getInstance());
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOW)
     public void onCommand(PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
         if (player.hasPermission("utes.cmdban.ignore")) return;

@@ -32,25 +32,34 @@ public class QuickNight {
             @Override
             public void run() {
                 for (World world : Bukkit.getWorlds()) {
-                    if (world.getTime() < 12600)
+                    //白天不进行计算
+                    if (world.getTime() < 12600) {
                         continue;
+                    }
+                    //计算某世界总睡觉玩家人数
                     int amount = 0;
-                    if (world.getPlayers().size() == 0)
+                    if (world.getPlayers().size() == 0) {
                         continue;
-                    for (Player player : world.getPlayers())
+                    }
+                    for (Player player : world.getPlayers()) {
                         if (player.isSleeping()) {
                             amount++;
                         }
-                    if (amount == world.getPlayers().size())
+                    }
+                    //如果全部都在入睡，就按原版机制跳到第二天
+                    if (amount == world.getPlayers().size()) {
                         continue;
+                    }
+                    //如果入睡人数超过占比，则加速时间流动
                     if (amount >= world.getPlayers().size() * percent) {
                         long newTime = world.getTime() + 2 * (speed - 1);
                         System.out.println(newTime);
-                        if (newTime >= 24000)
+                        if (newTime >= 24000) {
                             world.setTime(newTime - 24000);
-                        else
+                        } else {
                             world.setTime(newTime);
-
+                        }
+                        //告诉玩家几点了
                         if (title) {
                             for (Player player : world.getPlayers()) {
                                 player.resetTitle();
@@ -63,13 +72,20 @@ public class QuickNight {
         }.runTaskTimer(UntilTheEndServer.getInstance(), 0L, 2L);
     }
 
+    //把世界时间刻变为刻度的hh:mm
     private static String getFormatTime(long newTime) {
         long hour = newTime / 1000;
         long minute = (long) (newTime % 1000 * 0.06);
         String tmp = "";
-        if (minute < 10) tmp += "0" + minute;
-        else tmp += minute;
-        if (hour + 6 >= 24) return "0" + (hour + 6 - 24) + ":" + tmp;
-        else return (hour + 6) + ":" + tmp;
+        if (minute < 10) {
+            tmp += "0" + minute;
+        } else {
+            tmp += minute;
+        }
+        if (hour + 6 >= 24) {
+            return "0" + (hour + 6 - 24) + ":" + tmp;
+        } else {
+            return (hour + 6) + ":" + tmp;
+        }
     }
 }

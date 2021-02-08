@@ -12,6 +12,7 @@ import utes.actioncmd.ActionCommand;
 import utes.bancmd.CommandBanner;
 import utes.bugfix.BugFixer;
 import utes.capablegui.CapableGui;
+import utes.chatbar.ChatBar;
 import utes.chunkrestore.ChunkRestore;
 import utes.customexp.CustomExpMechenism;
 import utes.deathchest.DeathChest;
@@ -143,8 +144,8 @@ public class UntilTheEndServer extends JavaPlugin {
             getLogger().info("正在启用世界边界功能中...");
             new WorldBoarder();
 
-//            getLogger().info("正在启用更棒的聊天功能中...");
-//            new ChatBar();
+            getLogger().info("正在启用更棒的聊天功能中...");
+            new ChatBar();
 
             getLogger().info("正在启用指令简化功能中...");
             new EasyCommand();

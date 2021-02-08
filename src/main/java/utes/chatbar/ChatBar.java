@@ -7,16 +7,27 @@ import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerChatEvent;
 import utes.UntilTheEndServer;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.UUID;
 
-//TODO
-public class ChatBar {
+public class ChatBar implements Listener {
     public static YamlConfiguration yaml;
+    private static HashMap<String, UUID> owners = new HashMap<String, UUID>();
+    private static ArrayList<UUID> cooldowning = new ArrayList<UUID>();
+    private static String legacyHover;
 
     public ChatBar() {
         File file = new File(UntilTheEndServer.getInstance().getDataFolder(), "chatbar.yml");
@@ -26,6 +37,10 @@ public class ChatBar {
 
         if (!yaml.getBoolean("enable"))
             return;
+
+        legacyHover = yaml.getString("hover");
+
+        Bukkit.getPluginManager().registerEvents(this, UntilTheEndServer.getInstance());
 
         UntilTheEndServer.pm
                 .addPacketListener(new PacketAdapter(PacketAdapter.params().plugin(UntilTheEndServer.getInstance())
@@ -41,36 +56,38 @@ public class ChatBar {
                             WrappedChatComponent warppedComponent = packet.getChatComponents().getValues().get(0);
                             String json = warppedComponent.getJson();
                             BaseComponent[] components = ComponentSerializer.parse(json);
-                            BaseComponent[] answers = components;
+                            BaseComponent[] results = new BaseComponent[100];
+                            int tot = 0;
 
                             String message = TextComponent.toLegacyText(components);
-//                            if (message.lastIndexOf("[start]") != message.indexOf("[start]"))
-//                                return;
-//                            if (message.lastIndexOf("[end]") != message.indexOf("[end]"))
-//                                return;
+//TODO
+                            for (String str : owners.keySet()) {
+                                if (message.contains(str)) {
+                                    Player player = Bukkit.getPlayer(owners.get(str));
+                                    System.out.println(player.getName());
+                                    String playerName = player.getName();
+                                    owners.remove(str);
+                                    String[] fixes = str.split(playerName);
 
-                            if (message.contains("[start]") && message.contains("[end]")) {
-                                String tmp1 = message.split("[" + "start" + "]")[2];
-                                String tmp2 = message.split("[" + "end" + "]")[1];
-                                String result = getMaxString(tmp1, tmp2);
-
-                                System.out.println(message.split("[" + "start" + "]")[2]);
-                                System.out.println(message.split("[" + "end" + "]")[1]);
-                                String origin_result = "[start]" + result + "[end]";
-                                json.replace(origin_result, "[按钮]");
-
-                                int tot = 0;
-                                for (BaseComponent component : components) {
-                                    if (component.toLegacyText().contains("[按钮]")) {
-                                        component.setBold(true);
-                                        component.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, result));
+                                    for (int i = 0; i < fixes.length; i++) {
+                                        String passage = fixes[i];
+                                        results[tot++] = TextComponent.fromLegacyText(passage)[0];
+                                        if (i == fixes.length - 1)
+                                            break;
+                                        BaseComponent tmp = getBaseComponents(player);
+                                        results[tot++] = tmp;
                                     }
-                                    answers[tot] = component;
-                                    tot++;
+
+                                    components[components.length - 1].setClickEvent(
+                                            new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/say " + str));
+                                    components[components.length - 1].setHoverEvent(
+                                            new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("§c点击+1复读")));
+
+                                    break;
                                 }
                             }
 
-                            String newJson = ComponentSerializer.toString(answers);
+                            String newJson = ComponentSerializer.toString(results);
                             warppedComponent.setJson(newJson);
                             packet.getChatComponents().write(0, warppedComponent);
                         }
@@ -78,18 +95,20 @@ public class ChatBar {
                 });
     }
 
-    private static String getMaxString(String str1, String str2) {
-        String max = null;
-        String min = null;
-        max = (str1.length() > str2.length() ? str1 : str2);
-        min = max.equals(str1) ? str2 : str1;
-        for (int i = 0; i < min.length(); i++) {
-            for (int start = 0, end = min.length() - i; end != min.length() + 1; start++, end++) {
-                String sub = min.substring(start, end);
-                if (max.contains(sub))
-                    return sub;
-            }
-        }
-        return null;
+    private static BaseComponent getBaseComponents(Player player) {
+        BaseComponent component = TextComponent.fromLegacyText(player.getName())[0];
+        String legacy = UntilTheEndServer.getPapi(player, legacyHover);
+        BaseComponent[] hover = TextComponent.fromLegacyText(legacy);
+        component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover));
+        component.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tell " + player.getName() + " "));
+        return component;
+    }
+
+    @EventHandler
+    public void onChat(PlayerChatEvent event) {
+        Player player = event.getPlayer();
+        String message = event.getMessage();
+        event.setMessage(message + " §c§l[+1]");
+        owners.put(message, player.getUniqueId());
     }
 }

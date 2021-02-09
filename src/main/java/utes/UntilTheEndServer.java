@@ -47,7 +47,7 @@ public class UntilTheEndServer extends JavaPlugin {
     public static String getPapi(Player player, String origin) {
         try {
             return PlaceholderAPI.setPlaceholders(player, origin);
-        } catch (Exception e) {
+        } catch (NoClassDefFoundError error) {
             return origin;
         }
     }
@@ -168,5 +168,6 @@ public class UntilTheEndServer extends JavaPlugin {
             player.kickPlayer("服务器重载，请稍后再进");
         }
         ChunkRestore.save();
+        pm.removePacketListeners(this);
     }
 }

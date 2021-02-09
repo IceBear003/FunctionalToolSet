@@ -26,8 +26,13 @@ import java.util.UUID;
 public class ChatBar implements Listener {
     public static YamlConfiguration yaml;
     private static HashMap<String, UUID> owners = new HashMap<String, UUID>();
-    private static ArrayList<UUID> cooldowning = new ArrayList<UUID>();
     private static String legacyHover;
+    private static boolean hoverEnable;
+    private static boolean tellEnable;
+    private static boolean repeatEnable;
+    private static String repeatButtom;
+    private static String repeatHover;
+
 
     public ChatBar() {
         File file = new File(UntilTheEndServer.getInstance().getDataFolder(), "chatbar.yml");
@@ -39,6 +44,11 @@ public class ChatBar implements Listener {
             return;
 
         legacyHover = yaml.getString("hover");
+        hoverEnable = yaml.getBoolean("hoverEnable");
+        tellEnable = yaml.getBoolean("tellEnable");
+        repeatEnable = yaml.getBoolean("repeatEnable");
+        repeatButtom = yaml.getString("repeatButtom");
+        repeatHover = yaml.getString("repeatHover");
 
         Bukkit.getPluginManager().registerEvents(this, UntilTheEndServer.getInstance());
 
@@ -56,38 +66,47 @@ public class ChatBar implements Listener {
                             WrappedChatComponent warppedComponent = packet.getChatComponents().getValues().get(0);
                             String json = warppedComponent.getJson();
                             BaseComponent[] components = ComponentSerializer.parse(json);
-                            BaseComponent[] results = new BaseComponent[100];
-                            int tot = 0;
-
+                            ArrayList<BaseComponent> results = new ArrayList<BaseComponent>();
+                            boolean flag = false;
                             String message = TextComponent.toLegacyText(components);
-//TODO
+
                             for (String str : owners.keySet()) {
                                 if (message.contains(str)) {
                                     Player player = Bukkit.getPlayer(owners.get(str));
-                                    System.out.println(player.getName());
-                                    String playerName = player.getName();
                                     owners.remove(str);
-                                    String[] fixes = str.split(playerName);
+                                    String playerName = player.getName();
+
+                                    String[] fixes = UntilTheEndServer.getPapi(player, message).split(playerName);
 
                                     for (int i = 0; i < fixes.length; i++) {
                                         String passage = fixes[i];
-                                        results[tot++] = TextComponent.fromLegacyText(passage)[0];
+                                        for (BaseComponent element : TextComponent.fromLegacyText(passage))
+                                            results.add(element);
                                         if (i == fixes.length - 1)
                                             break;
                                         BaseComponent tmp = getBaseComponents(player);
-                                        results[tot++] = tmp;
+                                        results.add(tmp);
                                     }
 
-                                    components[components.length - 1].setClickEvent(
+                                    results.get(results.size() - 1).setClickEvent(
                                             new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/say " + str));
-                                    components[components.length - 1].setHoverEvent(
-                                            new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("§c点击+1复读")));
+                                    results.get(results.size() - 1).setHoverEvent(
+                                            new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(repeatHover)));
 
+                                    flag = true;
                                     break;
                                 }
                             }
 
-                            String newJson = ComponentSerializer.toString(results);
+                            if (!flag)
+                                return;
+
+                            BaseComponent[] tmp = new BaseComponent[results.size()];
+                            int tot = 0;
+                            for (BaseComponent element : results)
+                                tmp[tot++] = element;
+
+                            String newJson = ComponentSerializer.toString(tmp);
                             warppedComponent.setJson(newJson);
                             packet.getChatComponents().write(0, warppedComponent);
                         }
@@ -99,16 +118,21 @@ public class ChatBar implements Listener {
         BaseComponent component = TextComponent.fromLegacyText(player.getName())[0];
         String legacy = UntilTheEndServer.getPapi(player, legacyHover);
         BaseComponent[] hover = TextComponent.fromLegacyText(legacy);
-        component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover));
-        component.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tell " + player.getName() + " "));
+        if (hoverEnable)
+            component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover));
+        if (tellEnable)
+            component.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tell " + player.getName() + " "));
         return component;
     }
 
     @EventHandler
     public void onChat(PlayerChatEvent event) {
+        event.setMessage(UntilTheEndServer.getPapi(event.getPlayer(), event.getMessage()));
+        if (!repeatEnable)
+            return;
         Player player = event.getPlayer();
         String message = event.getMessage();
-        event.setMessage(message + " §c§l[+1]");
+        event.setMessage(message + repeatButtom);
         owners.put(message, player.getUniqueId());
     }
 }

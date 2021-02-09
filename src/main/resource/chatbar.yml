@@ -1,2 +1,7 @@
 enable: true #是否启用更好的聊天功能
-hover: "§e{name}§8: §a{exp}" #鼠标移到聊天栏玩家上面显示的信息
+tellEnable: true #是否启用鼠标点击玩家名立即输入/tell 玩家名 进行快捷聊天
+hoverEnable: true #是否启用鼠标移到玩家名上查看信息
+hover: "§e玩家%player_prefix%%player_name%%player_suffix%: §a%player_level%级 \n§r§e点击玩家名快速与其私聊" #鼠标移到聊天栏玩家上面显示的信息(支持papi变量)
+repeatEnable: true #是否启用复读+1功能
+repeatButtom: " §c§l[+1]" #复读按钮的文字
+repeatHover: "§c点击+1复读" #鼠标移到复读按钮上显示的文字

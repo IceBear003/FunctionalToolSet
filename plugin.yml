@@ -1,9 +1,11 @@
 name: UntilTheEndServer
 main: utes.UntilTheEndServer
 version: 1.0.0
-depend: 
-- PlaceholderAPI
-- ProtocolLib
+depend:
+  - ProtocolLib
+softdepend:
+  - PlaceholderAPI
+  - Vault
 commands:
   utes:
     usage: /utes

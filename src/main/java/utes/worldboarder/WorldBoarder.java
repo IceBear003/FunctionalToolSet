@@ -47,9 +47,6 @@ public class WorldBoarder implements Listener {
                     boarders.put(path, new RectangleBoarder(isTransparent,
                             yaml.getInt(path + ".x1"), yaml.getInt(path + ".z1"),
                             yaml.getInt(path + ".x2"), yaml.getInt(path + ".z2")));
-
-                    System.out.println(yaml.getInt(path + ".x1") + " " + yaml.getInt(path + ".z1") + " " +
-                            yaml.getInt(path + ".x2") + " " + yaml.getInt(path + ".z2"));
                     break;
                 case ROUND:
                     boarders.put(path, new RoundBoarder(isTransparent, yaml.getInt(path + ".radius")));

@@ -54,7 +54,6 @@ public class ScoreBoard implements Listener {
                         int size = lines.size();
                         for (String line : lines) {
                             line = UntilTheEndServer.getPapi(player, line);
-                            line = line.replace("%name%", player.getName());
                             line = line.replace("%dayOnlineTime%",
                                     OnlineTimes.turnToString(OnlineTimes.getDayTime(player)));
                             line = line.replace("%totalOnlineTime%",

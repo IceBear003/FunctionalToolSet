@@ -53,7 +53,6 @@ public class QuickNight {
                     //如果入睡人数超过占比，则加速时间流动
                     if (amount >= world.getPlayers().size() * percent) {
                         long newTime = world.getTime() + 2 * (speed - 1);
-                        System.out.println(newTime);
                         if (newTime >= 24000) {
                             world.setTime(newTime - 24000);
                         } else {

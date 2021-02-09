@@ -13,14 +13,14 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class ParticleUnderFeet implements Listener {
-    private static final HashMap<UUID, Effect> users = new HashMap<UUID, Effect>();
+    private static final HashMap<UUID, Effect> users = new HashMap<>();
 
-    public ParticleUnderFeet() {
-        Bukkit.getPluginManager().registerEvents(this, UntilTheEndServer.getInstance());
+    public static void initialize(UntilTheEndServer plugin) {
+        Bukkit.getPluginManager().registerEvents(new ParticleUnderFeet(), plugin);
     }
 
     public static void drawParticle(Player player, String particleName) {
-        Effect particle = Effect.MOBSPAWNER_FLAMES;
+        Effect particle;
         try {
             particle = Effect.valueOf(particleName);
         } catch (Exception exception) {

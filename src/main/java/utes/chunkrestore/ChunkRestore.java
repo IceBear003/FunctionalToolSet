@@ -22,29 +22,32 @@ import java.util.Random;
 public class ChunkRestore implements Listener {
     private static YamlConfiguration yaml;
     private static int judgeTime;
-    private static HashMap<String, Long> lastChangeStamps = new HashMap<String, Long>();
+    private static HashMap<String, Long> lastChangeStamps = new HashMap<>();
 
-    public ChunkRestore() {
-        File file = new File(UntilTheEndServer.getInstance().getDataFolder(), "chunkrestore.yml");
-        if (!file.exists())
-            UntilTheEndServer.getInstance().saveResource("chunkrestore.yml", false);
-        yaml = YamlConfiguration.loadConfiguration(file);
-        if (!yaml.getBoolean("enable")) {
-            return;
+    public static void initialize(UntilTheEndServer plugin) {
+        File file = new File(plugin.getDataFolder(), "chunkrestore.yml");
+        if (!file.exists()) {
+            plugin.saveResource("chunkrestore.yml", false);
         }
+        yaml = YamlConfiguration.loadConfiguration(file);
 
-//        judgeTime = yaml.getInt("judgeTime");
-//
-//        load();
-//        Bukkit.getPluginManager().registerEvents(this, UntilTheEndServer.getInstance());
+        //        if (!yaml.getBoolean("enable")) {
+        //            return;
+        //        }
+
+        //        judgeTime = yaml.getInt("judgeTime");
+        //
+        //        load();
+        //        Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
     public static void regenChunk(Chunk chunk) {
         World world = chunk.getWorld();
         world.unloadChunk(chunk);
         world.regenerateChunk(chunk.getX(), chunk.getZ());
-        for (BlockPopulator populator : world.getGenerator().getDefaultPopulators(world))
+        for (BlockPopulator populator : world.getGenerator().getDefaultPopulators(world)) {
             populator.populate(world, new Random(), chunk);
+        }
         world.loadChunk(chunk);
     }
 
@@ -77,8 +80,9 @@ public class ChunkRestore implements Listener {
             lastChangeStamps.put(toString, System.currentTimeMillis());
         }
         if ((!event.isNewChunk()) && chunk.getTileEntities().length == 0) {
-            if (!lastChangeStamps.containsKey(toString))
+            if (!lastChangeStamps.containsKey(toString)) {
                 lastChangeStamps.put(toString, System.currentTimeMillis());
+            }
             long lastChangeStamp = lastChangeStamps.get(toString);
             if (System.currentTimeMillis() - lastChangeStamp >= judgeTime * 1000) {
                 regenChunk(chunk);

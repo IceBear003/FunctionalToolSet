@@ -20,10 +20,11 @@ public class TranslateMessage {
     private static List<String> adapteds;
     private static String prefix;
 
-    public TranslateMessage() {
-        File file = new File(UntilTheEndServer.getInstance().getDataFolder(), "information.yml");
-        if (!file.exists())
-            UntilTheEndServer.getInstance().saveResource("information.yml", false);
+    public static void initialize(UntilTheEndServer plugin) {
+        File file = new File(plugin.getDataFolder(), "information.yml");
+        if (!file.exists()) {
+            plugin.saveResource("information.yml", false);
+        }
         yaml = YamlConfiguration.loadConfiguration(file);
 
         origins = yaml.getStringList("origins");
@@ -33,7 +34,7 @@ public class TranslateMessage {
         BaseComponent[] prefixAdapted = TextComponent.fromLegacyText(prefix);
 
         UntilTheEndServer.pm
-                .addPacketListener(new PacketAdapter(PacketAdapter.params().plugin(UntilTheEndServer.getInstance())
+                .addPacketListener(new PacketAdapter(PacketAdapter.params().plugin(plugin)
                         .serverSide().listenerPriority(ListenerPriority.LOW).gamePhase(GamePhase.PLAYING).optionAsync()
                         .options(ListenerOptions.SKIP_PLUGIN_VERIFIER).types(PacketType.Play.Server.CHAT)) {
                     @Override
@@ -41,13 +42,15 @@ public class TranslateMessage {
                         PacketContainer packet = event.getPacket();
                         PacketType packetType = event.getPacketType();
                         if (packetType.equals(PacketType.Play.Server.CHAT)) {
-                            if (packet.getChatTypes().getValues().get(0) != ChatType.SYSTEM)
+                            if (packet.getChatTypes().getValues().get(0) != ChatType.SYSTEM) {
                                 return;
+                            }
                             WrappedChatComponent warppedComponent = packet.getChatComponents().getValues().get(0);
 
                             String json = warppedComponent.getJson();
-                            for (int index = 0; index < origins.size(); index++)
+                            for (int index = 0; index < origins.size(); index++) {
                                 json = json.replace(origins.get(index), adapteds.get(index));
+                            }
                             boolean flag = json.contains("{ignore}");
                             json = json.replace("{ignore}", "");
 
@@ -57,11 +60,13 @@ public class TranslateMessage {
                             String message = TextComponent.toLegacyText(origin);
                             if (!message.contains(prefix) && !flag) {
                                 adapted = new BaseComponent[prefixAdapted.length + origin.length];
-                                for (BaseComponent component : prefixAdapted)
+                                for (BaseComponent component : prefixAdapted) {
                                     adapted[tot++] = component;
+                                }
                             }
-                            for (BaseComponent component : origin)
+                            for (BaseComponent component : origin) {
                                 adapted[tot++] = component;
+                            }
 
                             String newJson = ComponentSerializer.toString(adapted);
 

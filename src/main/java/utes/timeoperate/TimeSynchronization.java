@@ -13,21 +13,20 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 
-//TODO
 public class TimeSynchronization {
-    private static YamlConfiguration yaml;
-    private static ArrayList<String> worlds = new ArrayList<String>();
+    private static ArrayList<String> worlds = new ArrayList<>();
 
-    public TimeSynchronization() {
-        File file = new File(UntilTheEndServer.getInstance().getDataFolder(), "timeoperate.yml");
-        if (!file.exists())
-            UntilTheEndServer.getInstance().saveResource("timeoperate.yml", false);
-        yaml = YamlConfiguration.loadConfiguration(file);
+    public static void initialize(UntilTheEndServer plugin) {
+        File file = new File(plugin.getDataFolder(), "timeoperate.yml");
+        if (!file.exists()) {
+            plugin.saveResource("timeoperate.yml", false);
+        }
+        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
 
         for (String name : yaml.getStringList("synchronization.enable")) {
-            if (Bukkit.getWorld(name) == null)
-                continue;
-            else worlds.add(name);
+            if (Bukkit.getWorld(name) != null) {
+                worlds.add(name);
+            }
         }
         if (worlds.size() != 0) {
             for (String name : worlds) {
@@ -42,14 +41,17 @@ public class TimeSynchronization {
                         world.setTime((long) (getTimePercent() * 24000));
                     }
                 }
-            }.runTaskTimer(UntilTheEndServer.getInstance(), 0L, 5L);
+            }.runTaskTimer(plugin, 0L, 5L);
         }
     }
 
     private static double getTimePercent() {
         double seconds = 86400 - getRemainSecondsOneDay();
-        if (seconds >= 21600) return (seconds - 21600) / 86400.00;
-        else return 1.0 - seconds / 86400.00;
+        if (seconds >= 21600) {
+            return (seconds - 21600) / 86400.00;
+        } else {
+            return 1.0 - seconds / 86400.00;
+        }
     }
 
     private static Integer getRemainSecondsOneDay() {

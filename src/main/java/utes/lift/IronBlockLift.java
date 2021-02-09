@@ -14,17 +14,17 @@ import utes.UntilTheEndServer;
 import java.io.File;
 
 public class IronBlockLift implements Listener {
-    private static YamlConfiguration yaml;
     private static int maxHeight;
     private static int minHeight;
     private static int consumeHunger;
     private static int consumeExp;
 
-    public IronBlockLift() {
-        File file = new File(UntilTheEndServer.getInstance().getDataFolder(), "lift.yml");
-        if (!file.exists())
-            UntilTheEndServer.getInstance().saveResource("lift.yml", false);
-        yaml = YamlConfiguration.loadConfiguration(file);
+    public static void initialize(UntilTheEndServer plugin) {
+        File file = new File(plugin.getDataFolder(), "lift.yml");
+        if (!file.exists()) {
+            plugin.saveResource("lift.yml", false);
+        }
+        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
 
         if (!yaml.getBoolean("enable")) {
             return;
@@ -35,14 +35,15 @@ public class IronBlockLift implements Listener {
         consumeHunger = yaml.getInt("consumeHunger");
         consumeExp = yaml.getInt("consumeExp");
 
-        Bukkit.getPluginManager().registerEvents(this, UntilTheEndServer.getInstance());
+        Bukkit.getPluginManager().registerEvents(new IronBlockLift(), plugin);
     }
 
     @EventHandler
     public void onJump(PlayerMoveEvent event) {
         Player player = event.getPlayer();
-        if (player.getLocation().add(0, -1, 0).getBlock().getType() != Material.IRON_BLOCK)
+        if (player.getLocation().add(0, -1, 0).getBlock().getType() != Material.IRON_BLOCK) {
             return;
+        }
         if (event.getFrom().getBlockX() == event.getTo().getBlockX()
                 && event.getFrom().getBlockZ() == event.getTo().getBlockZ()) {
             if (event.getTo().getBlockY() > event.getFrom().getBlockY()) {
@@ -62,13 +63,15 @@ public class IronBlockLift implements Listener {
     @EventHandler
     public void onSneak(PlayerToggleSneakEvent event) {
         Player player = event.getPlayer();
-        if (player.getLocation().add(0, -1, 0).getBlock().getType() != Material.IRON_BLOCK)
+        if (player.getLocation().add(0, -1, 0).getBlock().getType() != Material.IRON_BLOCK) {
             return;
+        }
         Location loc = player.getLocation();
         for (int y = minHeight; y <= maxHeight; y++) {
             Location newLoc = loc.clone().add(0, -y, 0);
-            if (newLoc.getBlock() == null)
+            if (newLoc.getBlock() == null) {
                 return;
+            }
             if (newLoc.getBlock().getType() == Material.IRON_BLOCK) {
                 player.teleport(newLoc.add(0, 1, 0));
                 consume(player);
@@ -78,8 +81,7 @@ public class IronBlockLift implements Listener {
     }
 
     private void consume(Player player) {
-        player.setFoodLevel(player.getFoodLevel() - consumeHunger >= 0 ? player.getFoodLevel() - consumeHunger : 0);
-        player.setTotalExperience(
-                player.getTotalExperience() - consumeExp >= 0 ? player.getTotalExperience() - consumeExp : 0);
+        player.setFoodLevel(Math.max(player.getFoodLevel() - consumeHunger, 0));
+        player.setTotalExperience(Math.max(player.getTotalExperience() - consumeExp, 0));
     }
 }

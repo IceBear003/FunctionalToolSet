@@ -13,35 +13,38 @@ import java.io.File;
 import java.util.HashMap;
 
 public class CustomExpMechenism implements Listener {
-    private static final HashMap<Integer, Integer> expNeedToUpgrade = new HashMap<Integer, Integer>();
-    private static YamlConfiguration yaml;
+    private static final HashMap<Integer, Integer> expNeedToUpgrade = new HashMap<>();
 
-    public CustomExpMechenism() {
-        File file = new File(UntilTheEndServer.getInstance().getDataFolder(), "customexp.yml");
-        if (!file.exists())
-            UntilTheEndServer.getInstance().saveResource("customexp.yml", false);
-        yaml = YamlConfiguration.loadConfiguration(file);
+    public static void initialize(UntilTheEndServer plugin) {
+        File file = new File(plugin.getDataFolder(), "customexp.yml");
+        if (!file.exists()) {
+            plugin.saveResource("customexp.yml", false);
+        }
+        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
         if (!yaml.getBoolean("enable")) {
             return;
         }
 
         for (String path : yaml.getKeys(false)) {
-            if (path.equalsIgnoreCase("enable")) continue;
-            int level = Integer.valueOf(path) - 1;
+            if (path.equalsIgnoreCase("enable")) {
+                continue;
+            }
+            int level = Integer.parseInt(path) - 1;
             int exp = yaml.getInt(path);
             expNeedToUpgrade.put(level, exp);
         }
 
-        Bukkit.getPluginManager().registerEvents(this, UntilTheEndServer.getInstance());
+        Bukkit.getPluginManager().registerEvents(new CustomExpMechenism(), plugin);
     }
 
     private static int getExpToLevel(int level) {
-        if (level <= 15)
+        if (level <= 15) {
             return 2 * level + 7;
-        else if (level <= 30)
+        } else if (level <= 30) {
             return 5 * level - 38;
-        else
+        } else {
             return 9 * level - 158;
+        }
     }
 
     @EventHandler
@@ -57,10 +60,11 @@ public class CustomExpMechenism implements Listener {
                 public void run() {
                     if (current + exp >= expNeedToUpgrade.get(level)) {
                         player.setLevel(player.getLevel() + 1);
-                        if (expNeedToUpgrade.containsKey(level + 1))
+                        if (expNeedToUpgrade.containsKey(level + 1)) {
                             player.setExp((current + exp - expNeedToUpgrade.get(level)) / expNeedToUpgrade.get(level));
-                        else
+                        } else {
                             player.setExp((current + exp - expNeedToUpgrade.get(level)) / getExpToLevel(level + 1));
+                        }
                         player.setLevel(level + 1);
                     } else if (current + exp < 0) {
                         player.setLevel(player.getLevel() - 1);

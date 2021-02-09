@@ -26,20 +26,20 @@ import java.util.UUID;
  */
 
 public class DeathChest implements Listener {
-    private static final HashMap<Location, UUID> messageArmor = new HashMap<Location, UUID>();
-    private static final HashMap<Location, UUID> owner = new HashMap<Location, UUID>();
-    private static final HashMap<Location, Integer> storeLevel = new HashMap<Location, Integer>();
-    private static final HashMap<Location, Float> storeExperience = new HashMap<Location, Float>();
-    private static YamlConfiguration yaml;
+    private static final HashMap<Location, UUID> messageArmor = new HashMap<>();
+    private static final HashMap<Location, UUID> owner = new HashMap<>();
+    private static final HashMap<Location, Integer> storeLevel = new HashMap<>();
+    private static final HashMap<Location, Float> storeExperience = new HashMap<>();
     private static boolean storeExp;
     private static boolean showMeesage;
     private static boolean onlyOwnerCanOpen;
 
-    public DeathChest() {
-        File file = new File(UntilTheEndServer.getInstance().getDataFolder(), "deathchest.yml");
-        if (!file.exists())
-            UntilTheEndServer.getInstance().saveResource("deathchest.yml", false);
-        yaml = YamlConfiguration.loadConfiguration(file);
+    public static void initialize(UntilTheEndServer plugin) {
+        File file = new File(plugin.getDataFolder(), "deathchest.yml");
+        if (!file.exists()) {
+            plugin.saveResource("deathchest.yml", false);
+        }
+        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
         if (!yaml.getBoolean("enable")) {
             return;
         }
@@ -47,15 +47,17 @@ public class DeathChest implements Listener {
         showMeesage = yaml.getBoolean("showMessage");
         onlyOwnerCanOpen = yaml.getBoolean("onlyOwnerCanOpen");
 
-        Bukkit.getPluginManager().registerEvents(this, UntilTheEndServer.getInstance());
+        Bukkit.getPluginManager().registerEvents(new DeathChest(), plugin);
     }
 
     private static boolean hasNull(Inventory inv) {
         for (int i = 0; i < inv.getSize(); i++) {
-            if (inv.getItem(i) == null)
+            if (inv.getItem(i) == null) {
                 return true;
-            if (inv.getItem(i).getType() == Material.AIR)
+            }
+            if (inv.getItem(i).getType() == Material.AIR) {
                 return true;
+            }
         }
         return false;
     }
@@ -68,7 +70,7 @@ public class DeathChest implements Listener {
         }
 
         Location dieLoc = player.getLocation().getBlock().getLocation().clone().add(0, 1, 0);
-        if (dieLoc.getY() <= 0)
+        if (dieLoc.getY() <= 0) {
             for (int i = 128; i > 0; i--) {
                 dieLoc.setY(i);
                 if (dieLoc.getBlock().getType() != Material.AIR) {
@@ -76,11 +78,13 @@ public class DeathChest implements Listener {
                     break;
                 }
             }
+        }
         dieLoc.getBlock().setType(Material.CHEST);
         Chest chest = (Chest) dieLoc.getBlock().getState();
         for (ItemStack item : player.getInventory().getContents()) {
-            if (item == null)
+            if (item == null) {
                 continue;
+            }
             if (hasNull(chest.getInventory())) {
                 chest.getInventory().addItem(item.clone());
             } else {
@@ -113,7 +117,9 @@ public class DeathChest implements Listener {
     @EventHandler
     public void onOpen(PlayerInteractEvent event) {
         Player player = event.getPlayer();
-        if (event.getClickedBlock() == null) return;
+        if (event.getClickedBlock() == null) {
+            return;
+        }
         Location loc = event.getClickedBlock().getLocation();
         if (owner.containsKey(loc)) {
             if (onlyOwnerCanOpen && owner.get(loc) != player.getUniqueId()) {

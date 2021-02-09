@@ -19,6 +19,7 @@ import utes.deathchest.DeathChest;
 import utes.easycmd.EasyCommand;
 import utes.information.NoLoginQuitMessage;
 import utes.information.TranslateMessage;
+import utes.joincmd.JoinCommand;
 import utes.lift.IronBlockLift;
 import utes.linkingdig.LinkingDig;
 import utes.modelock.ModeLocking;
@@ -57,8 +58,9 @@ public class UntilTheEndServer extends JavaPlugin {
         RegisteredServiceProvider<Permission> permissionProvider = Bukkit.getServicesManager()
                 .getRegistration(Permission.class);
         if (permissionProvider != null) {
-            if ((vaultPermission = permissionProvider.getProvider()) == null)
+            if ((vaultPermission = permissionProvider.getProvider()) == null) {
                 hasNull = true;
+            }
         }
         return !hasNull;
     }
@@ -67,94 +69,74 @@ public class UntilTheEndServer extends JavaPlugin {
     public void onEnable() {
         try {
             if (!initVault()) {
-                UntilTheEndServer.getInstance().getLogger().severe("Vault未安装|无法加载随机抽取权限的功能.");
+                getLogger().severe("Vault未安装|无法加载随机抽取权限的功能.");
+                return;
+            }
+            getLogger().info("正在启用核心功能插件UTES中...");
+            instance = this;
+            getLogger().info("正在启用收发包控制中...");
+            try {
+                pm = ProtocolLibrary.getProtocolManager();
+            } catch (NoClassDefFoundError error) {
+                getLogger().info("未找到ProtocolLib插件，插件自动关闭！");
                 return;
             }
 
-            getLogger().info("正在启用核心功能插件UTES中...");
-            instance = this;
-
-            getLogger().info("正在启用收发包控制中...");
-            pm = ProtocolLibrary.getProtocolManager();
-
             getLogger().info("正在注册指令中...");
             this.getCommand("utes").setExecutor(new UTESCommands());
-
             getLogger().info("正在启用随机传送功能中...");
-            new RandomTeleport();
-
+            RandomTeleport.initialize(this);
             getLogger().info("正在启用经验飞行功能中...");
-            new XPFly();
-
+            XPFly.initialize(this);
             getLogger().info("正在启用计分板功能中...");
-            new ScoreBoard();
-
+            ScoreBoard.initialize(this);
             getLogger().info("正在启用铁块电梯功能中...");
-            new IronBlockLift();
-
+            IronBlockLift.initialize(this);
             getLogger().info("正在启用增加信息前缀功能中...");
-            new TranslateMessage();
-
+            TranslateMessage.initialize(this);
             getLogger().info("正在启用屏蔽进出信息功能中...");
-            new NoLoginQuitMessage();
-
+            NoLoginQuitMessage.initialize(this);
             getLogger().info("正在启用统计在线时间功能中...");
-            new OnlineTimes();
-
+            OnlineTimes.initialize(this);
             getLogger().info("正在启用粒子特效功能中...");
-            new ParticleOverHead();
-            new ParticleUnderFeet();
-
+            ParticleOverHead.initialize(this);
+            ParticleUnderFeet.initialize(this);
             getLogger().info("正在启用随机抽奖功能中...");
-            new RandomCredits();
-
+            RandomCredits.initialize(this);
             getLogger().info("正在启用死亡物品存储箱功能中...");
-            new DeathChest();
-
+            DeathChest.initialize(this);
             getLogger().info("正在启用世界禁用指令功能中...");
-            new CommandBanner();
-
+            CommandBanner.initialize(this);
             getLogger().info("正在启用修复bug功能中...");
-            new BugFixer();
-
+            BugFixer.initialize(this);
             getLogger().info("正在启用炫耀物品功能中...");
-            new ShowOff();
-
+            ShowOff.initialize(this);
             getLogger().info("正在启用快捷动作指令功能中...");
-            new ActionCommand();
-
+            ActionCommand.initialize(this);
             getLogger().info("正在启用自定义升级经验功能中...");
-            new CustomExpMechenism();
-
+            CustomExpMechenism.initialize(this);
             getLogger().info("正在启用连锁挖矿功能中...");
-            new LinkingDig();
-
+            LinkingDig.initialize(this);
             getLogger().info("正在启用更真实的爆炸功能中...");
-            new TrueExplode();
-
+            TrueExplode.initialize(this);
             getLogger().info("正在启用便携容器功能中...");
-            new CapableGui();
-
+            CapableGui.initialize(this);
             getLogger().info("正在启用模式锁定功能中...");
-            new ModeLocking();
-
+            ModeLocking.initialize(this);
             getLogger().info("正在启用区块重生功能中...");
-            new ChunkRestore();
-
+            ChunkRestore.initialize(this);
             getLogger().info("正在启用世界边界功能中...");
-            new WorldBoarder();
-
+            WorldBoarder.initialize(this);
             getLogger().info("正在启用更棒的聊天功能中...");
-            new ChatBar();
-
+            ChatBar.initialize(this);
             getLogger().info("正在启用指令简化功能中...");
-            new EasyCommand();
-
+            EasyCommand.initialize(this);
             getLogger().info("正在启用同步时间功能中...");
-            new TimeSynchronization();
-
+            TimeSynchronization.initialize(this);
             getLogger().info("正在启用快速睡眠功能中...");
-            new QuickNight();
+            QuickNight.initialize(this);
+            getLogger().info("正在启用进服操作功能中...");
+            JoinCommand.initialize(this);
 
         } catch (Exception exception) {
             getLogger().info("哎呀这步好像出了些小问题呢！");
@@ -167,7 +149,11 @@ public class UntilTheEndServer extends JavaPlugin {
         for (Player player : Bukkit.getOnlinePlayers()) {
             player.kickPlayer("服务器重载，请稍后再进");
         }
-        ChunkRestore.save();
-        pm.removePacketListeners(this);
+        try {
+            pm.removePacketListeners(this);
+            ChunkRestore.save();
+        } catch (Throwable ignored) {
+
+        }
     }
 }

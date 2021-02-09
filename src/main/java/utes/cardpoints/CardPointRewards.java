@@ -23,21 +23,19 @@ import java.util.UUID;
  * utes.cardpoints.double
  */
 public class CardPointRewards implements Listener {
-    private static final HashMap<String, List<String>> rewards = new HashMap<String, List<String>>();
-    private static final HashMap<String, Integer> needs = new HashMap<String, Integer>();
-    private static final HashMap<String, Boolean> consumes = new HashMap<String, Boolean>();
-    public static HashMap<UUID, IPlayer> stats = new HashMap<UUID, IPlayer>();
-    private static YamlConfiguration yaml;
-    private static int startDate;
-    private static int period;
+    private static final HashMap<String, List<String>> rewards = new HashMap<>();
+    private static final HashMap<String, Integer> needs = new HashMap<>();
+    private static final HashMap<String, Boolean> consumes = new HashMap<>();
+    public static HashMap<UUID, IPlayer> stats = new HashMap<>();
 
-    public CardPointRewards() {
-        File file = new File(UntilTheEndServer.getInstance().getDataFolder(), "cardpoints.yml");
-        if (!file.exists())
-            UntilTheEndServer.getInstance().saveResource("cardpoints.yml", false);
-        yaml = YamlConfiguration.loadConfiguration(file);
+    public static void initialize(UntilTheEndServer plugin) {
+        File file = new File(plugin.getDataFolder(), "cardpoints.yml");
+        if (!file.exists()) {
+            plugin.saveResource("cardpoints.yml", false);
+        }
+        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
 
-        startDate = yaml.getInt("startDate");
+        int startDate = yaml.getInt("startDate");
         if (startDate == -1) {
             yaml.set("startDate", LocalDate.now().getDayOfMonth());
             try {
@@ -46,11 +44,12 @@ public class CardPointRewards implements Listener {
                 e.printStackTrace();
             }
         }
-        period = yaml.getInt("period");
+        int period = yaml.getInt("period");
 
         for (String path : yaml.getKeys(false)) {
-            if (!path.startsWith("reward"))
+            if (!path.startsWith("reward")) {
                 continue;
+            }
             needs.put(path, yaml.getInt(path + ".need"));
             rewards.put(path, yaml.getStringList(path + ".reward"));
             consumes.put(path, yaml.getBoolean(path + ".consume"));
@@ -58,11 +57,11 @@ public class CardPointRewards implements Listener {
 
         LocalDate date = LocalDate.now();
         if (Math.abs(date.getDayOfMonth()) - startDate > period) {
-            File dataFile = new File(UntilTheEndServer.getInstance().getDataFolder() + "/cardpoints/");
+            File dataFile = new File(plugin.getDataFolder() + "/cardpoints/");
             dataFile.delete();
         }
 
-        Bukkit.getPluginManager().registerEvents(this, UntilTheEndServer.getInstance());
+        Bukkit.getPluginManager().registerEvents(new CardPointRewards(), plugin);
     }
 
     public static void getReward(Player player, String reward, boolean isDouble) {
@@ -85,13 +84,15 @@ public class CardPointRewards implements Listener {
         if (consumes.get(reward)) {
             player.sendMessage("您" + (isDouble ? "双倍" : "") + "领取此礼包，消耗了§e" + need + "§r积分");
             stat.points -= need;
-        } else
+        } else {
             player.sendMessage("您" + (isDouble ? "双倍" : "") + "领取了此礼包");
+        }
 
         for (String str : rewards.get(reward)) {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), str.replace("{player}", player.getName()));
-            if (isDouble)
+            if (isDouble) {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), str.replace("{player}", player.getName()));
+            }
         }
 
         stat.received.add(reward);
@@ -100,11 +101,11 @@ public class CardPointRewards implements Listener {
     private static IPlayer loadYaml(Player player) {
         File file = new File(UntilTheEndServer.getInstance().getDataFolder() + "/cardpoints/",
                 player.getUniqueId().toString() + ".yml");
-        if (!file.exists())
-            return (new IPlayer(0, new ArrayList<String>()));
+        if (!file.exists()) {
+            return (new IPlayer(0, new ArrayList<>()));
+        }
         YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
-        IPlayer stat = new IPlayer(yaml.getInt("points"), yaml.getStringList("received"));
-        return stat;
+        return new IPlayer(yaml.getInt("points"), yaml.getStringList("received"));
     }
 
     private static void saveYaml(Player player) {
@@ -122,50 +123,57 @@ public class CardPointRewards implements Listener {
     }
 
     public static void takePoints(CommandSender sender, Player player, int points) {
-        if (player != null)
+        if (player != null) {
             if (sender.hasPermission("utes.cardpoints.take")) {
                 IPlayer stat = stats.get(player.getUniqueId());
                 stat.points -= points;
                 player.sendMessage("您的积分减少了§6" + points + "§r点");
                 sender.sendMessage("操作成功");
-            } else
+            } else {
                 sender.sendMessage("您没有权限！");
-        else
+            }
+        } else {
             sender.sendMessage("玩家不存在或不在线！");
+        }
     }
 
     public static void givePoints(CommandSender sender, Player player, int points) {
-        if (player != null)
+        if (player != null) {
             if (sender.hasPermission("utes.cardpoints.give")) {
                 IPlayer stat = stats.get(player.getUniqueId());
                 stat.points += points;
                 player.sendMessage("您的积分增加了§6" + points + "§r点");
                 sender.sendMessage("操作成功");
-            } else
+            } else {
                 sender.sendMessage("您没有权限！");
-        else
+            }
+        } else {
             sender.sendMessage("玩家不存在或不在线！");
+        }
     }
 
     public static void setPoints(CommandSender sender, Player player, int points) {
-        if (player != null)
+        if (player != null) {
             if (sender.hasPermission("utes.cardpoints.set")) {
                 IPlayer stat = stats.get(player.getUniqueId());
                 stat.points = points;
                 player.sendMessage("您的积分被设置为§6" + points + "§r点");
                 sender.sendMessage("操作成功");
-            } else
+            } else {
                 sender.sendMessage("您没有权限！");
-        else
+            }
+        } else {
             sender.sendMessage("玩家不存在或不在线！");
+        }
     }
 
     public static void checkPoints(CommandSender sender, Player player) {
         if (player != null) {
             IPlayer stat = stats.get(player.getUniqueId());
             sender.sendMessage("玩家" + player.getName() + "拥有积分§e" + stat.points + "§r点");
-        } else
+        } else {
             sender.sendMessage("玩家不存在或不在线！");
+        }
     }
 
     @EventHandler

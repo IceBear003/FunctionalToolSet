@@ -10,19 +10,20 @@ import utes.UntilTheEndServer;
 import java.io.File;
 
 public class QuickNight {
-    private static YamlConfiguration yaml;
     private static double percent;
     private static int speed;
     private static boolean title;
 
-    public QuickNight() {
-        File file = new File(UntilTheEndServer.getInstance().getDataFolder(), "timeoperate.yml");
-        if (!file.exists())
-            UntilTheEndServer.getInstance().saveResource("timeoperate.yml", false);
-        yaml = YamlConfiguration.loadConfiguration(file);
+    public static void initialize(UntilTheEndServer plugin) {
+        File file = new File(plugin.getDataFolder(), "timeoperate.yml");
+        if (!file.exists()) {
+            plugin.saveResource("timeoperate.yml", false);
+        }
+        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
 
-        if (!yaml.getBoolean("quickNight.enable"))
+        if (!yaml.getBoolean("quickNight.enable")) {
             return;
+        }
 
         percent = yaml.getDouble("quickNight.percent");
         speed = yaml.getInt("quickNight.speed");
@@ -62,13 +63,13 @@ public class QuickNight {
                         if (title) {
                             for (Player player : world.getPlayers()) {
                                 player.resetTitle();
-                                player.sendTitle("§a" + getFormatTime(newTime), "§e世界时间");
+                                player.sendTitle("§a" + getFormatTime(newTime), "§e世界时间", 10, 70, 20);
                             }
                         }
                     }
                 }
             }
-        }.runTaskTimer(UntilTheEndServer.getInstance(), 0L, 2L);
+        }.runTaskTimer(plugin, 0L, 2L);
     }
 
     //把世界时间刻变为刻度的hh:mm

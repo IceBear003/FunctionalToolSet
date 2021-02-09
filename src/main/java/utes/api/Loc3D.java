@@ -10,7 +10,6 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 
 public class Loc3D implements Serializable {
-    private static final long serialVersionUID = 148757128437582932L;
     public final int x, y, z;
     public final String world;
 

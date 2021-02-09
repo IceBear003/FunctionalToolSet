@@ -14,7 +14,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerChatEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.ItemStack;
 import utes.NMSManager;
 import utes.UntilTheEndServer;
@@ -31,27 +31,27 @@ import java.util.UUID;
  * utes.showoff.ignorecd
  */
 public class ShowOff implements Listener {
-    private static final HashMap<UUID, Long> lastShowOffStamp = new HashMap<UUID, Long>();
-    private static final HashMap<String, UUID> owners = new HashMap<String, UUID>();
-    private static YamlConfiguration yaml;
+    private static final HashMap<UUID, Long> lastShowOffStamp = new HashMap<>();
+    private static final HashMap<String, UUID> owners = new HashMap<>();
     private static int cooldown;
     private static String string;
 
-    public ShowOff() {
-        File file = new File(UntilTheEndServer.getInstance().getDataFolder(), "showoff.yml");
-        if (!file.exists())
-            UntilTheEndServer.getInstance().saveResource("showoff.yml", false);
-        yaml = YamlConfiguration.loadConfiguration(file);
+    public static void initialize(UntilTheEndServer plugin) {
+        File file = new File(plugin.getDataFolder(), "showoff.yml");
+        if (!file.exists()) {
+            plugin.saveResource("showoff.yml", false);
+        }
+        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
         if (!yaml.getBoolean("enable")) {
             return;
         }
         cooldown = yaml.getInt("cooldown");
         string = yaml.getString("string");
 
-        Bukkit.getPluginManager().registerEvents(this, UntilTheEndServer.getInstance());
+        Bukkit.getPluginManager().registerEvents(new ShowOff(), plugin);
 
         UntilTheEndServer.pm
-                .addPacketListener(new PacketAdapter(PacketAdapter.params().plugin(UntilTheEndServer.getInstance())
+                .addPacketListener(new PacketAdapter(PacketAdapter.params().plugin(plugin)
                         .serverSide().listenerPriority(ListenerPriority.LOW).gamePhase(GamePhase.PLAYING).optionAsync()
                         .options(ListenerOptions.SKIP_PLUGIN_VERIFIER).types(PacketType.Play.Server.CHAT)) {
                     @Override
@@ -59,8 +59,9 @@ public class ShowOff implements Listener {
                         PacketContainer packet = event.getPacket();
                         PacketType packetType = event.getPacketType();
                         if (packetType.equals(PacketType.Play.Server.CHAT)) {
-                            if (packet.getChatTypes().getValues().get(0) != EnumWrappers.ChatType.SYSTEM)
+                            if (packet.getChatTypes().getValues().get(0) != EnumWrappers.ChatType.SYSTEM) {
                                 return;
+                            }
                             WrappedChatComponent warppedComponent = packet.getChatComponents().getValues().get(0);
                             String json = warppedComponent.getJson();
 
@@ -82,15 +83,19 @@ public class ShowOff implements Listener {
 
     private static BaseComponent[] getBaseComponents(Player player, String message) {
         String[] tmp = message.split(string);
-        HashMap<Integer, Integer> indexes = new HashMap<Integer, Integer>();
+        HashMap<Integer, Integer> indexes = new HashMap<>();
         for (int i = 1; i < tmp.length; i++) {
-            if (tmp[i].length() <= 0) continue;
-            if (!(tmp[i].charAt(0) <= '9' && tmp[i].charAt(0) >= '1')) continue;
-            indexes.put(i, Integer.valueOf(tmp[i].charAt(0) - 49));
+            if (tmp[i].length() <= 0) {
+                continue;
+            }
+            if (!(tmp[i].charAt(0) <= '9' && tmp[i].charAt(0) >= '1')) {
+                continue;
+            }
+            indexes.put(i, tmp[i].charAt(0) - 49);
             tmp[i] = tmp[i].substring(1);
         }
 
-        ArrayList<TextComponent> textes = new ArrayList<TextComponent>();
+        ArrayList<TextComponent> textes = new ArrayList<>();
 
         int cnt = 1, tot = 0;
         String first = tmp[0];
@@ -121,7 +126,7 @@ public class ShowOff implements Listener {
                     ItemStack.class);
             method2 = clazz2.getMethod("save",
                     clazz3);
-        } catch (NoSuchMethodException e) {
+        } catch (NoSuchMethodException | NullPointerException e) {
             UntilTheEndServer.getInstance().getLogger().info("nms内部错误，请检查版本！");
             return null;
         }
@@ -131,7 +136,7 @@ public class ShowOff implements Listener {
             result = method2.invoke(
                     method1.invoke(null, itemStack),
                     clazz3.newInstance());
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NullPointerException e) {
             UntilTheEndServer.getInstance().getLogger().info("nms内部错误，请检查版本！");
             return null;
         }
@@ -152,19 +157,22 @@ public class ShowOff implements Listener {
     }
 
     private static String getName(ItemStack item) {
-        if (item.hasItemMeta())
-            if (item.getItemMeta().hasDisplayName())
+        if (item.hasItemMeta()) {
+            if (item.getItemMeta().hasDisplayName()) {
                 return item.getItemMeta().getDisplayName();
-            else
+            } else {
                 return item.getItemMeta().getLocalizedName();
+            }
+        }
         return item.getType().name();
     }
 
     @EventHandler
-    public void onChat(PlayerChatEvent event) {
+    public void onChat(AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
-        if (!player.hasPermission("utes.showoff.can"))
+        if (!player.hasPermission("utes.showoff.can")) {
             return;
+        }
         String message = event.getMessage();
         if (message.contains(string)) {
             if (lastShowOffStamp.containsKey(player.getUniqueId())) {

@@ -6,7 +6,6 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -24,10 +23,9 @@ import java.util.UUID;
  * utes.rtp.ignoreworld
  * utes.rtp.ignoremove
  * */
-public class RandomTeleport implements Listener {
-    private static final List<String> enableWorlds = new ArrayList<String>();
-    private static final HashMap<UUID, Long> lastUseTimeStamp = new HashMap<UUID, Long>();
-    private static YamlConfiguration yaml;
+public class RandomTeleport {
+    private static final List<String> enableWorlds = new ArrayList<>();
+    private static final HashMap<UUID, Long> lastUseTimeStamp = new HashMap<>();
     private static int waitTime;
     private static int maxX;
     private static int maxZ;
@@ -35,11 +33,12 @@ public class RandomTeleport implements Listener {
     private static int minZ;
     private static int cooldown;
 
-    public RandomTeleport() {
-        File file = new File(UntilTheEndServer.getInstance().getDataFolder(), "rtp.yml");
-        if (!file.exists())
-            UntilTheEndServer.getInstance().saveResource("rtp.yml", false);
-        yaml = YamlConfiguration.loadConfiguration(file);
+    public static void initialize(UntilTheEndServer plugin) {
+        File file = new File(plugin.getDataFolder(), "rtp.yml");
+        if (!file.exists()) {
+            plugin.saveResource("rtp.yml", false);
+        }
+        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
         if (!yaml.getBoolean("enable")) {
             return;
         }
@@ -52,9 +51,11 @@ public class RandomTeleport implements Listener {
         cooldown = yaml.getInt("cooldown");
 
         List<String> disableWorlds = yaml.getStringList("disableWorlds");
-        for (World world : Bukkit.getWorlds())
-            if (!disableWorlds.contains(world.getName()))
+        for (World world : Bukkit.getWorlds()) {
+            if (!disableWorlds.contains(world.getName())) {
                 enableWorlds.add(world.getName());
+            }
+        }
     }
 
     public static void initRTP(Player player) {
@@ -62,13 +63,14 @@ public class RandomTeleport implements Listener {
             player.sendMessage("本世界禁止随机传送！");
             return;
         }
-        if (lastUseTimeStamp.containsKey(player.getUniqueId()) && (!player.hasPermission("utes.rtp.ignorecd")))
+        if (lastUseTimeStamp.containsKey(player.getUniqueId()) && (!player.hasPermission("utes.rtp.ignorecd"))) {
             if (System.currentTimeMillis() - lastUseTimeStamp.get(player.getUniqueId()) < cooldown * 1000) {
                 player.sendMessage("传送冷却未到！还有§6"
                         + (cooldown - System.currentTimeMillis() - lastUseTimeStamp.get(player.getUniqueId()) / 1000)
                         + "§r秒");
                 return;
             }
+        }
         player.sendMessage("等待随机传送中，3s内请不要移动！");
         Location from = player.getLocation();
         Location destination = getRandomDestination(from.clone());
@@ -80,8 +82,9 @@ public class RandomTeleport implements Listener {
 
             @Override
             public void run() {
-                if ((!player.isOnline()) || player == null)
+                if (!player.isOnline()) {
                     return;
+                }
                 if (player.getLocation().distance(from) >= 0.3 && (!player.hasPermission("utes.rtp.ignoremove"))) {
                     player.sendMessage("您移动了，随机传送取消！");
                     return;
@@ -102,16 +105,18 @@ public class RandomTeleport implements Listener {
         int y = -1, counter = 0;
         do {
             counter++;
-            if (counter == 100)
+            if (counter == 100) {
                 break;
+            }
 
             loc = current.clone();
             loc.add(minX + Math.random() * (maxX - minX), 0, minZ + Math.random() * (maxZ - minZ));
 
             y = isSafe(loc);
-            if (y != -1) break;
-
-        } while (y == -1);
+            if (y != -1) {
+                break;
+            }
+        } while (true);
         if (y == -1) {
             return null;
         }
@@ -125,8 +130,9 @@ public class RandomTeleport implements Listener {
             Location upLoc = loc.clone().add(0, 1, 0);
             Location downLoc = loc.clone().add(0, -1, 0);
             if (loc.getBlock().getType() == Material.AIR && upLoc.getBlock().getType() == Material.AIR
-                    && downLoc.getBlock().getType() != Material.AIR && !downLoc.getBlock().getType().isSolid())
+                    && downLoc.getBlock().getType() != Material.AIR && !downLoc.getBlock().getType().isSolid()) {
                 return y;
+            }
         }
         return -1;
     }

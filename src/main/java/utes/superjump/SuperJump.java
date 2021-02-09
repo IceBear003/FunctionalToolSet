@@ -17,7 +17,6 @@ public class SuperJump {
             player.sendMessage("§6" + level + "§r级超级跳已经开启！");
         } else {
             player.sendMessage("您没有权限使用§6" + level + "§r级超级跳！");
-            return;
         }
     }
 

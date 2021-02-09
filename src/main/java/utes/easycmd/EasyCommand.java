@@ -17,51 +17,57 @@ import java.util.List;
  * utes.easycmd
  */
 public class EasyCommand implements Listener {
-    private static final HashMap<String, List<String>> cmds = new HashMap<String, List<String>>();
-    private static final HashMap<String, String> strs = new HashMap<String, String>();
-    private static YamlConfiguration yaml;
+    private static final HashMap<String, List<String>> cmds = new HashMap<>();
+    private static final HashMap<String, String> strs = new HashMap<>();
 
-    public EasyCommand() {
-        File file = new File(UntilTheEndServer.getInstance().getDataFolder(), "easycmd.yml");
-        if (!file.exists())
-            UntilTheEndServer.getInstance().saveResource("easycmd.yml", false);
-        yaml = YamlConfiguration.loadConfiguration(file);
+    public static void initialize(UntilTheEndServer plugin) {
+        File file = new File(plugin.getDataFolder(), "easycmd.yml");
+        if (!file.exists()) {
+            plugin.saveResource("easycmd.yml", false);
+        }
+        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
         if (!yaml.getBoolean("enable")) {
             return;
         }
 
         for (String path : yaml.getKeys(false)) {
-            if (path.equalsIgnoreCase("enable"))
+            if (path.equalsIgnoreCase("enable")) {
                 continue;
-            if (yaml.isList(path))
+            }
+            if (yaml.isList(path)) {
                 cmds.put(path, yaml.getStringList(path));
-            else
+            } else {
                 strs.put(path, yaml.getString(path));
+            }
         }
 
-        Bukkit.getPluginManager().registerEvents(this, UntilTheEndServer.getInstance());
+        Bukkit.getPluginManager().registerEvents(new EasyCommand(), plugin);
     }
 
     @EventHandler
     public void onCommand(PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
-        if (!player.hasPermission("utes.easycmd")) return;
+        if (!player.hasPermission("utes.easycmd")) {
+            return;
+        }
         String cmd = event.getMessage();
         if (cmds.containsKey(cmd.substring(1))) {
             event.setCancelled(true);
-            for (String line : cmds.get(cmd.substring(1)))
+            for (String line : cmds.get(cmd.substring(1))) {
                 player.performCommand(line);
+            }
         } else {
             String[] labels = cmd.substring(1).split(" ");
-            String result = "";
-            for (int i = 0; i < labels.length; i++) {
-                String label = labels[i];
+            StringBuilder result = new StringBuilder();
+            for (String s : labels) {
+                String label = s;
                 for (String str : strs.keySet()) {
-                    if (label.equalsIgnoreCase(str))
+                    if (label.equalsIgnoreCase(str)) {
                         label = strs.get(str);
+                    }
                 }
-                result += label;
-                result += " ";
+                result.append(label);
+                result.append(" ");
             }
             event.setMessage("/" + result);
         }

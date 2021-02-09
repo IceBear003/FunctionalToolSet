@@ -18,15 +18,15 @@ import java.util.UUID;
  * utes.xpfly
  */
 public class XPFly {
-    private static final ArrayList<UUID> flyingPlayers = new ArrayList<UUID>();
-    private static YamlConfiguration yaml;
+    private static final ArrayList<UUID> flyingPlayers = new ArrayList<>();
     private static double exhaustSpeed;
 
-    public XPFly() {
-        File file = new File(UntilTheEndServer.getInstance().getDataFolder(), "xpfly.yml");
-        if (!file.exists())
-            UntilTheEndServer.getInstance().saveResource("xpfly.yml", false);
-        yaml = YamlConfiguration.loadConfiguration(file);
+    public static void initialize(UntilTheEndServer plugin) {
+        File file = new File(plugin.getDataFolder(), "xpfly.yml");
+        if (!file.exists()) {
+            plugin.saveResource("xpfly.yml", false);
+        }
+        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
         if (!yaml.getBoolean("enable")) {
             return;
         }
@@ -51,14 +51,16 @@ public class XPFly {
                     float newExp = currentExp - (float) exhaustSpeed / 10;
 
                     if (newExp < 0.0f) {
-                        player.setLevel(player.getLevel() - 1 >= 0 ? player.getLevel() - 1 : 0);
+                        player.setLevel(Math.max(player.getLevel() - 1, 0));
                     }
 
                     if (player.hasPermission("utes.xpfly.slowexhaust")) {
-                        if (counter % 2 == 0)
+                        if (counter % 2 == 0) {
                             player.setExp(newExp);
-                    } else
+                        }
+                    } else {
                         player.setExp(newExp);
+                    }
 
                     if (player.isOnGround() && player.isSneaking()) {
                         player.sendMessage("您已经落地，自动停止飞行");
@@ -67,16 +69,17 @@ public class XPFly {
                 }
             }
 
-        }.runTaskTimer(UntilTheEndServer.getInstance(), 0L, 2L);
+        }.runTaskTimer(plugin, 0L, 2L);
     }
 
     private static int getExpToLevel(int level) {
-        if (level <= 15)
+        if (level <= 15) {
             return 2 * level + 7;
-        else if (level <= 30)
+        } else if (level <= 30) {
             return 5 * level - 38;
-        else
+        } else {
             return 9 * level - 158;
+        }
     }
 
     public static void initXPFly(Player player) {

@@ -11,15 +11,17 @@ import utes.UntilTheEndServer;
  * utes.ignorebugs
  */
 public class BugFixer implements Listener {
-    public BugFixer() {
+    public static void initialize(UntilTheEndServer plugin) {
         new BukkitRunnable() {
             @Override
             public void run() {
                 for (Player player : Bukkit.getOnlinePlayers()) {
-                    if (player.hasPermission("utes.ignorebugs")) continue;
+                    if (player.hasPermission("utes.ignorebugs")) {
+                        continue;
+                    }
                     player.getInventory().remove(Material.BOOK_AND_QUILL);
                 }
             }
-        }.runTaskTimer(UntilTheEndServer.getInstance(), 0L, 20L);
+        }.runTaskTimer(plugin, 0L, 20L);
     }
 }

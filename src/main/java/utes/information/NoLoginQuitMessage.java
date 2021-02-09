@@ -8,9 +8,9 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import utes.UntilTheEndServer;
 
 public class NoLoginQuitMessage implements Listener {
-    public NoLoginQuitMessage() {
+    public static void initialize(UntilTheEndServer plugin) {
         if (TranslateMessage.yaml.getBoolean("enableJoinMessage")) {
-            Bukkit.getPluginManager().registerEvents(this, UntilTheEndServer.getInstance());
+            Bukkit.getPluginManager().registerEvents(new NoLoginQuitMessage(), plugin);
         }
     }
 

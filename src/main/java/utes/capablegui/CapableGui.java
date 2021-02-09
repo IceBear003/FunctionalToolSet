@@ -41,31 +41,37 @@ import java.util.*;
  * utes.capablegui.merchant
  */
 public class CapableGui implements Listener {
-    private static final HashMap<UUID, ArrayList<Inventory>> choseGuis = new HashMap<UUID, ArrayList<Inventory>>();
-    private static final HashMap<ItemStack, String> guiName = new HashMap<ItemStack, String>();
-    private static final HashSet<UUID> openers = new HashSet<UUID>();
-    private static final HashMap<UUID, Location> operating = new HashMap<UUID, Location>();
+    private static final HashMap<UUID, ArrayList<Inventory>> choseGuis = new HashMap<>();
+    private static final HashMap<ItemStack, String> guiName = new HashMap<>();
+    private static final HashSet<UUID> openers = new HashSet<>();
+    private static final HashMap<UUID, Location> operating = new HashMap<>();
 
-    public CapableGui() {
-        Bukkit.getPluginManager().registerEvents(this, UntilTheEndServer.getInstance());
+    public static void initialize(UntilTheEndServer plugin) {
+        Bukkit.getPluginManager().registerEvents(new CapableGui(), plugin);
     }
 
     public static void openGui(Player player) {
-        if (player.hasPermission("utes.capablegui.opengui"))
+        if (player.hasPermission("utes.capablegui.opengui")) {
             player.openInventory(choseGuis.get(player.getUniqueId()).get(0));
-        else player.sendMessage("你没有使用远程操控容器的权限！");
+        } else {
+            player.sendMessage("你没有使用远程操控容器的权限！");
+        }
     }
 
     private static void openWorkbench(Player player) {
-        if (player.hasPermission("utes.capablegui.workbench"))
+        if (player.hasPermission("utes.capablegui.workbench")) {
             player.openWorkbench(null, true);
-        else player.sendMessage("你没有使用便携工作台的权限！");
+        } else {
+            player.sendMessage("你没有使用便携工作台的权限！");
+        }
     }
 
     private static void openEnderChest(Player player) {
-        if (player.hasPermission("utes.capablegui.enderchest"))
+        if (player.hasPermission("utes.capablegui.enderchest")) {
             player.openInventory(player.getEnderChest());
-        else player.sendMessage("你没有使用便携末影箱的权限！");
+        } else {
+            player.sendMessage("你没有使用便携末影箱的权限！");
+        }
     }
 
     private static void openSpecialContainer(Player player, Location loc) {
@@ -74,8 +80,9 @@ public class CapableGui implements Listener {
             return;
         }
         Block block = loc.getBlock();
-        if (!(block.getState() instanceof Container))
+        if (!(block.getState() instanceof Container)) {
             return;
+        }
         Container container = (Container) block.getState();
         player.openInventory(container.getInventory());
         operating.put(player.getUniqueId(), loc);
@@ -87,8 +94,9 @@ public class CapableGui implements Listener {
             return;
         }
         Block block = loc.getBlock();
-        if (!(block.getState() instanceof EnchantingTable))
+        if (!(block.getState() instanceof EnchantingTable)) {
             return;
+        }
         player.openEnchanting(loc, true);
     }
 
@@ -131,7 +139,7 @@ public class CapableGui implements Listener {
         ArrayList<Inventory> guis = choseGuis.get(player.getUniqueId());
         Inventory inv = guis.get(guis.size() - 1);
 
-        ArrayList<String> lore = new ArrayList<String>();
+        ArrayList<String> lore = new ArrayList<>();
         lore.add(BlockApi.locToStr(loc));
         ItemStack item = createItem(loc.getBlock().getType(), 0, name, lore);
 
@@ -168,13 +176,14 @@ public class CapableGui implements Listener {
             return;
         }
 
-        if (villager == null)
+        if (villager == null) {
             return;
+        }
 
         ArrayList<Inventory> guis = choseGuis.get(player.getUniqueId());
         Inventory inv = guis.get(guis.size() - 1);
 
-        ArrayList<String> lore = new ArrayList<String>();
+        ArrayList<String> lore = new ArrayList<>();
         lore.add("uuid:" + villager.getUniqueId());
         ItemStack item = createItem(Material.EMERALD, 0, name, lore);
 
@@ -200,10 +209,12 @@ public class CapableGui implements Listener {
 
     private static boolean hasNull(Inventory inv) {
         for (int i = 0; i < inv.getSize(); i++) {
-            if (inv.getItem(i) == null)
+            if (inv.getItem(i) == null) {
                 return true;
-            if (inv.getItem(i).getType() == Material.AIR)
+            }
+            if (inv.getItem(i).getType() == Material.AIR) {
                 return true;
+            }
         }
         return false;
     }
@@ -212,7 +223,7 @@ public class CapableGui implements Listener {
         File file = new File(UntilTheEndServer.getInstance().getDataFolder() + "/capableguis/",
                 player.getUniqueId().toString() + ".yml");
         YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
-        ArrayList<Inventory> invs = new ArrayList<Inventory>();
+        ArrayList<Inventory> invs = new ArrayList<>();
         if (file.exists()) {
             Inventory inv = initInventory();
             for (String path : yaml.getKeys(false)) {
@@ -221,11 +232,13 @@ public class CapableGui implements Listener {
                     inv = initInventory();
                 }
                 String typeStr = "";
-                for (int i = 0; i < path.length(); i++)
-                    if (path.charAt(i) <= '9' && path.charAt(i) >= '0')
+                for (int i = 0; i < path.length(); i++) {
+                    if (path.charAt(i) <= '9' && path.charAt(i) >= '0') {
                         typeStr = path.substring(0, i);
+                    }
+                }
                 Material type = Material.valueOf(typeStr);
-                ArrayList<String> lore = new ArrayList<String>();
+                ArrayList<String> lore = new ArrayList<>();
                 lore.add(yaml.getString(path + ".loc"));
                 lore.add("");
                 lore.add("§6shift+左击 删除本远程容器/商店");
@@ -241,7 +254,7 @@ public class CapableGui implements Listener {
         choseGuis.put(player.getUniqueId(), invs);
     }
 
-    private static void save(Player player, boolean remove) {
+    private static void save(Player player) {
         if (!choseGuis.containsKey(player.getUniqueId())) {
             return;
         }
@@ -253,17 +266,19 @@ public class CapableGui implements Listener {
         int tot = 0;
         for (Inventory inv : invs) {
             for (int i = 0; i <= 53; i++) {
-                if (i % 9 == 0 || i % 9 == 1 | i % 9 == 2)
+                if (i % 9 == 0 || i % 9 == 1 | i % 9 == 2) {
                     continue;
+                }
                 ItemStack item = inv.getItem(i);
-                if (item == null)
+                if (item == null) {
                     continue;
-                if (item.getType() == Material.AIR)
+                }
+                if (item.getType() == Material.AIR) {
                     continue;
+                }
                 String toString = item.getItemMeta().getLore().get(0);
                 yaml.set(item.getType().toString() + tot + ".name", guiName.get(item));
-                if (remove)
-                    guiName.remove(item);
+                guiName.remove(item);
                 yaml.set(item.getType().toString() + tot + ".loc", toString);
             }
         }
@@ -275,16 +290,18 @@ public class CapableGui implements Listener {
     }
 
     private static Inventory initInventory() {
-        ItemStack frame = createItem(Material.STAINED_GLASS_PANE, 15, "§8边框", new ArrayList<String>());
+        ItemStack frame = createItem(Material.STAINED_GLASS_PANE, 15, "§8边框", new ArrayList<>());
         Inventory inv = Bukkit.createInventory(new HolderChoseGui(), 54, "§l远程操控"); //TODO
-        for (int i = 0; i <= 53; i++)
-            if (i % 9 == 0 || i % 9 == 1 | i % 9 == 2)
+        for (int i = 0; i <= 53; i++) {
+            if (i % 9 == 0 || i % 9 == 1 | i % 9 == 2) {
                 inv.setItem(i, frame);
+            }
+        }
 
-        inv.setItem(10, createItem(Material.WORKBENCH, 0, "§6便携式工作台", new ArrayList<String>()));
-        inv.setItem(37, createItem(Material.ENDER_CHEST, 0, "§6便携式潜影箱", new ArrayList<String>()));
-        inv.setItem(45, createItem(Material.PAPER, 0, "§6上一页", new ArrayList<String>()));
-        inv.setItem(47, createItem(Material.PAPER, 0, "§e下一页", new ArrayList<String>()));
+        inv.setItem(10, createItem(Material.WORKBENCH, 0, "§6便携式工作台", new ArrayList<>()));
+        inv.setItem(37, createItem(Material.ENDER_CHEST, 0, "§6便携式潜影箱", new ArrayList<>()));
+        inv.setItem(45, createItem(Material.PAPER, 0, "§6上一页", new ArrayList<>()));
+        inv.setItem(47, createItem(Material.PAPER, 0, "§e下一页", new ArrayList<>()));
         return inv;
     }
 
@@ -301,17 +318,20 @@ public class CapableGui implements Listener {
     @EventHandler
     public void onClick(InventoryClickEvent event) {
         Inventory inv = event.getClickedInventory();
-        if (inv == null)
+        if (inv == null) {
             return;
+        }
         if (inv.getHolder() instanceof HolderChoseGui) {
             event.setCancelled(true);
             Player player = (Player) event.getWhoClicked();
             int slot = event.getSlot();
             ItemStack item = inv.getItem(slot);
-            if (item == null)
+            if (item == null) {
                 return;
-            if (item.getType() == Material.AIR)
+            }
+            if (item.getType() == Material.AIR) {
                 return;
+            }
 
             if (slot == 10) {
                 openWorkbench(player);
@@ -319,13 +339,15 @@ public class CapableGui implements Listener {
                 openEnderChest(player);
             } else if (slot == 47) {
                 ArrayList<Inventory> invs = choseGuis.get(player.getUniqueId());
-                if (invs.indexOf(inv) == invs.size() - 1)
+                if (invs.indexOf(inv) == invs.size() - 1) {
                     return;
+                }
                 player.openInventory(invs.get(invs.indexOf(inv) + 1));
             } else if (slot == 45) {
                 ArrayList<Inventory> invs = choseGuis.get(player.getUniqueId());
-                if (invs.indexOf(inv) == 0)
+                if (invs.indexOf(inv) == 0) {
                     return;
+                }
                 player.openInventory(invs.get(invs.indexOf(inv) - 1));
             } else if (slot % 9 > 2) {
                 if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
@@ -339,8 +361,9 @@ public class CapableGui implements Listener {
                 } else if (lore.startsWith("uuid:")) {
                     Villager villager = (Villager) Bukkit.getEntity(UUID.fromString(lore.replace("uuid:", "")));
                     openMerchant(player, villager);
-                } else
+                } else {
                     openSpecialContainer(player, BlockApi.strToLoc(item.getItemMeta().getLore().get(0)));
+                }
             }
         }
     }
@@ -379,7 +402,7 @@ public class CapableGui implements Listener {
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        save(player, true);
+        save(player);
         choseGuis.remove(player.getUniqueId());
         if (operating.containsKey(player.getUniqueId())) {
             Block block = operating.get(player.getUniqueId()).getBlock();

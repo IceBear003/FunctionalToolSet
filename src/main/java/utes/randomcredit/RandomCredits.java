@@ -10,17 +10,17 @@ import java.io.File;
 import java.util.HashMap;
 
 public class RandomCredits {
-    private static final HashMap<String, String> permissionGroups = new HashMap<String, String>();
-    private static final HashMap<String, String> commandGroups = new HashMap<String, String>();
-    private static final HashMap<String, Double> percents = new HashMap<String, Double>();
+    private static final HashMap<String, String> permissionGroups = new HashMap<>();
+    private static final HashMap<String, String> commandGroups = new HashMap<>();
+    private static final HashMap<String, Double> percents = new HashMap<>();
     private static double totalPercents = 0.0;
-    private static YamlConfiguration yaml;
 
-    public RandomCredits() {
-        File file = new File(UntilTheEndServer.getInstance().getDataFolder(), "randomcredits.yml");
-        if (!file.exists())
-            UntilTheEndServer.getInstance().saveResource("randomcredits.yml", false);
-        yaml = YamlConfiguration.loadConfiguration(file);
+    public static void initialize(UntilTheEndServer plugin) {
+        File file = new File(plugin.getDataFolder(), "randomcredits.yml");
+        if (!file.exists()) {
+            plugin.saveResource("randomcredits.yml", false);
+        }
+        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
 
         for (String path : yaml.getKeys(false)) {
             String message = yaml.getString(path + ".message");
@@ -92,9 +92,9 @@ public class RandomCredits {
         }
         String message = commandGroups.get(cmd);
         Bukkit.broadcastMessage(message.replace("%player%", player.getName()));
-        if (player.isOp())
+        if (player.isOp()) {
             player.performCommand(cmd.replace("[空格]", " ").replace("{player}", player.getName()));
-        else {
+        } else {
             player.setOp(true);
             player.performCommand(cmd.replace("[空格]", " ").replace("{player}", player.getName()));
             player.setOp(false);

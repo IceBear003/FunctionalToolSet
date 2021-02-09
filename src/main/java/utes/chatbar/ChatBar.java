@@ -15,17 +15,18 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerChatEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import utes.UntilTheEndServer;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.UUID;
 
 public class ChatBar implements Listener {
     public static YamlConfiguration yaml;
-    private static HashMap<String, UUID> owners = new HashMap<String, UUID>();
+    private static HashMap<String, UUID> owners = new HashMap<>();
     private static String legacyHover;
     private static boolean hoverEnable;
     private static boolean tellEnable;
@@ -34,14 +35,16 @@ public class ChatBar implements Listener {
     private static String repeatHover;
 
 
-    public ChatBar() {
-        File file = new File(UntilTheEndServer.getInstance().getDataFolder(), "chatbar.yml");
-        if (!file.exists())
-            UntilTheEndServer.getInstance().saveResource("chatbar.yml", false);
+    public static void initialize(UntilTheEndServer plugin) {
+        File file = new File(plugin.getDataFolder(), "chatbar.yml");
+        if (!file.exists()) {
+            plugin.saveResource("chatbar.yml", false);
+        }
         yaml = YamlConfiguration.loadConfiguration(file);
 
-        if (!yaml.getBoolean("enable"))
+        if (!yaml.getBoolean("enable")) {
             return;
+        }
 
         legacyHover = yaml.getString("hover");
         hoverEnable = yaml.getBoolean("hoverEnable");
@@ -50,10 +53,10 @@ public class ChatBar implements Listener {
         repeatButtom = yaml.getString("repeatButtom");
         repeatHover = yaml.getString("repeatHover");
 
-        Bukkit.getPluginManager().registerEvents(this, UntilTheEndServer.getInstance());
+        Bukkit.getPluginManager().registerEvents(new ChatBar(), plugin);
 
         UntilTheEndServer.pm
-                .addPacketListener(new PacketAdapter(PacketAdapter.params().plugin(UntilTheEndServer.getInstance())
+                .addPacketListener(new PacketAdapter(PacketAdapter.params().plugin(plugin)
                         .serverSide().listenerPriority(ListenerPriority.LOW).gamePhase(GamePhase.PLAYING).optionAsync()
                         .options(ListenerOptions.SKIP_PLUGIN_VERIFIER).types(PacketType.Play.Server.CHAT)) {
                     @Override
@@ -61,12 +64,13 @@ public class ChatBar implements Listener {
                         PacketContainer packet = event.getPacket();
                         PacketType packetType = event.getPacketType();
                         if (packetType.equals(PacketType.Play.Server.CHAT)) {
-                            if (packet.getChatTypes().getValues().get(0) != EnumWrappers.ChatType.SYSTEM)
+                            if (packet.getChatTypes().getValues().get(0) != EnumWrappers.ChatType.SYSTEM) {
                                 return;
+                            }
                             WrappedChatComponent warppedComponent = packet.getChatComponents().getValues().get(0);
                             String json = warppedComponent.getJson();
                             BaseComponent[] components = ComponentSerializer.parse(json);
-                            ArrayList<BaseComponent> results = new ArrayList<BaseComponent>();
+                            ArrayList<BaseComponent> results = new ArrayList<>();
                             boolean flag = false;
                             String message = TextComponent.toLegacyText(components);
 
@@ -80,10 +84,10 @@ public class ChatBar implements Listener {
 
                                     for (int i = 0; i < fixes.length; i++) {
                                         String passage = fixes[i];
-                                        for (BaseComponent element : TextComponent.fromLegacyText(passage))
-                                            results.add(element);
-                                        if (i == fixes.length - 1)
+                                        results.addAll(Arrays.asList(TextComponent.fromLegacyText(passage)));
+                                        if (i == fixes.length - 1) {
                                             break;
+                                        }
                                         BaseComponent tmp = getBaseComponents(player);
                                         results.add(tmp);
                                     }
@@ -98,13 +102,15 @@ public class ChatBar implements Listener {
                                 }
                             }
 
-                            if (!flag)
+                            if (!flag) {
                                 return;
+                            }
 
                             BaseComponent[] tmp = new BaseComponent[results.size()];
                             int tot = 0;
-                            for (BaseComponent element : results)
+                            for (BaseComponent element : results) {
                                 tmp[tot++] = element;
+                            }
 
                             String newJson = ComponentSerializer.toString(tmp);
                             warppedComponent.setJson(newJson);
@@ -118,18 +124,21 @@ public class ChatBar implements Listener {
         BaseComponent component = TextComponent.fromLegacyText(player.getName())[0];
         String legacy = UntilTheEndServer.getPapi(player, legacyHover);
         BaseComponent[] hover = TextComponent.fromLegacyText(legacy);
-        if (hoverEnable)
+        if (hoverEnable) {
             component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover));
-        if (tellEnable)
+        }
+        if (tellEnable) {
             component.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tell " + player.getName() + " "));
+        }
         return component;
     }
 
     @EventHandler
-    public void onChat(PlayerChatEvent event) {
+    public void onChat(AsyncPlayerChatEvent event) {
         event.setMessage(UntilTheEndServer.getPapi(event.getPlayer(), event.getMessage()));
-        if (!repeatEnable)
+        if (!repeatEnable) {
             return;
+        }
         Player player = event.getPlayer();
         String message = event.getMessage();
         event.setMessage(message + repeatButtom);

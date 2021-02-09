@@ -24,29 +24,33 @@ import java.util.UUID;
  * utes.sb.toggle
  */
 public class ScoreBoard implements Listener {
-    private static final ArrayList<UUID> disablers = new ArrayList<UUID>();
+    private static final ArrayList<UUID> disablers = new ArrayList<>();
     private static String title;
     private static List<String> lines;
-    private static YamlConfiguration yaml;
 
-    public ScoreBoard() {
-        File file = new File(UntilTheEndServer.getInstance().getDataFolder(), "scoreboard.yml");
-        if (!file.exists())
-            UntilTheEndServer.getInstance().saveResource("scoreboard.yml", false);
-        yaml = YamlConfiguration.loadConfiguration(file);
+    public static void initialize(UntilTheEndServer plugin) {
+        File file = new File(plugin.getDataFolder(), "scoreboard.yml");
+        if (!file.exists()) {
+            plugin.saveResource("scoreboard.yml", false);
+        }
+        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
         if (!yaml.getBoolean("enable")) {
             return;
         }
 
         title = yaml.getString("title");
         lines = yaml.getStringList("lines");
+
+        Bukkit.getPluginManager().registerEvents(new ScoreBoard(), plugin);
+
         new BukkitRunnable() {
             @Override
             public void run() {
                 for (World world : Bukkit.getWorlds()) {
                     for (Player player : world.getPlayers()) {
-                        if (disablers.contains(player.getUniqueId()))
+                        if (disablers.contains(player.getUniqueId())) {
                             continue;
+                        }
                         Scoreboard board = Bukkit.getServer().getScoreboardManager().getNewScoreboard();
                         Objective object = board.registerNewObjective("Scoreboard", "scoreboard");
                         object.setDisplayName(UntilTheEndServer.getPapi(player, title));
@@ -64,7 +68,7 @@ public class ScoreBoard implements Listener {
                     }
                 }
             }
-        }.runTaskTimer(UntilTheEndServer.getInstance(), 1L, 20L);
+        }.runTaskTimer(plugin, 1L, 20L);
     }
 
     public static void changeState(Player player) {

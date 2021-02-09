@@ -13,14 +13,14 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class ParticleOverHead implements Listener {
-    private static final HashMap<UUID, Effect> users = new HashMap<UUID, Effect>();
+    private static final HashMap<UUID, Effect> users = new HashMap<>();
 
-    public ParticleOverHead() {
-        Bukkit.getPluginManager().registerEvents(this, UntilTheEndServer.getInstance());
+    public static void initialize(UntilTheEndServer plugin) {
+        Bukkit.getPluginManager().registerEvents(new ParticleOverHead(), plugin);
     }
 
     public static void drawParticle(Player player, String particleName) {
-        Effect particle = Effect.MOBSPAWNER_FLAMES;
+        Effect particle;
         try {
             particle = Effect.valueOf(particleName);
         } catch (Exception exception) {
@@ -30,8 +30,9 @@ public class ParticleOverHead implements Listener {
         if (player.hasPermission("utes.particle.over." + particle.toString())) {
             users.remove(player.getUniqueId());
             users.put(player.getUniqueId(), particle);
-        } else
+        } else {
             player.sendMessage("您没有权限使用该粒子效果！");
+        }
     }
 
     public static void stop(Player player) {

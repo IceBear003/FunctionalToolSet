@@ -22,61 +22,63 @@ import java.util.UUID;
  * utes.boarder.ignore
  */
 public class WorldBoarder implements Listener {
-    private static YamlConfiguration yaml;
-    private static HashMap<String, BoarderType> types = new HashMap<String, BoarderType>();
-    private static HashMap<String, Boarder> boarders = new HashMap<String, Boarder>();
-    private static ArrayList<String> particles = new ArrayList<String>();
-    private static ArrayList<UUID> players = new ArrayList<UUID>();
+    private static HashMap<String, BoarderType> types = new HashMap<>();
+    private static HashMap<String, Boarder> boarders = new HashMap<>();
+    private static ArrayList<String> particles = new ArrayList<>();
+    private static ArrayList<UUID> players = new ArrayList<>();
 
-    public WorldBoarder() {
-        File file = new File(UntilTheEndServer.getInstance().getDataFolder(), "boarder.yml");
-        if (!file.exists())
-            UntilTheEndServer.getInstance().saveResource("boarder.yml", false);
-        yaml = YamlConfiguration.loadConfiguration(file);
+    public static void initialize(UntilTheEndServer plugin) {
+        File file = new File(plugin.getDataFolder(), "boarder.yml");
+        if (!file.exists()) {
+            plugin.saveResource("boarder.yml", false);
+        }
+        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
         if (!yaml.getBoolean("enable")) {
             return;
         }
 
         for (String path : yaml.getKeys(false)) {
-            if (path.equalsIgnoreCase("enable"))
+            if (path.equalsIgnoreCase("enable")) {
                 continue;
+            }
             BoarderType type = BoarderType.valueOf(yaml.getString(path + ".type"));
             boolean isTransparent = yaml.getBoolean(path + ".isTransparent");
             switch (type) {
-                case RECTANGLE:
-                    boarders.put(path, new RectangleBoarder(isTransparent,
-                            yaml.getInt(path + ".x1"), yaml.getInt(path + ".z1"),
-                            yaml.getInt(path + ".x2"), yaml.getInt(path + ".z2")));
-                    break;
-                case ROUND:
-                    boarders.put(path, new RoundBoarder(isTransparent, yaml.getInt(path + ".radius")));
-                    break;
+            case RECTANGLE:
+                boarders.put(path, new RectangleBoarder(isTransparent,
+                        yaml.getInt(path + ".x1"), yaml.getInt(path + ".z1"),
+                        yaml.getInt(path + ".x2"), yaml.getInt(path + ".z2")));
+                break;
+            case ROUND:
+                boarders.put(path, new RoundBoarder(isTransparent, yaml.getInt(path + ".radius")));
+                break;
             }
             types.put(path, type);
         }
 
-        Bukkit.getPluginManager().registerEvents(this, UntilTheEndServer.getInstance());
+        Bukkit.getPluginManager().registerEvents(new WorldBoarder(), plugin);
     }
 
     @EventHandler
     public void onMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
         World world = player.getWorld();
-        if (boarders.keySet().contains(world.getName())) {
-            if (player.hasPermission("utes.boarder.ignore"))
+        if (boarders.containsKey(world.getName())) {
+            if (player.hasPermission("utes.boarder.ignore")) {
                 return;
+            }
             Location loc = event.getTo().getBlock().getLocation();
             Boarder boarder = boarders.get(world.getName());
             BoarderType type = types.get(world.getName());
 
             boolean flag = false;
             switch (type) {
-                case RECTANGLE:
-                    flag = ((RectangleBoarder) boarder).isOutOfWorld(loc);
-                    break;
-                case ROUND:
-                    flag = ((RoundBoarder) boarder).isOutOfWorld(loc);
-                    break;
+            case RECTANGLE:
+                flag = ((RectangleBoarder) boarder).isOutOfWorld(loc);
+                break;
+            case ROUND:
+                flag = ((RoundBoarder) boarder).isOutOfWorld(loc);
+                break;
             }
 
             if (flag) {
@@ -95,8 +97,9 @@ public class WorldBoarder implements Listener {
                     }.runTaskLater(UntilTheEndServer.getInstance(), 100L);
                 } else {
                     event.setCancelled(true);
-                    if (particles.contains(BlockApi.locToStr(loc)))
+                    if (particles.contains(BlockApi.locToStr(loc))) {
                         return;
+                    }
                     world.spawnParticle(Particle.BARRIER, loc, 1);
                     particles.add(BlockApi.locToStr(loc));
                     player.sendMessage("你已经到地图的边界，无法继续前进");
@@ -107,15 +110,39 @@ public class WorldBoarder implements Listener {
 
     @EventHandler
     public void onTeleport(PlayerTeleportEvent event) {
+        Player player = event.getPlayer();
+        World world = player.getWorld();
+        if (boarders.containsKey(world.getName())) {
+            if (player.hasPermission("utes.boarder.ignore")) {
+                return;
+            }
+            Location loc = event.getTo().getBlock().getLocation();
+            Boarder boarder = boarders.get(world.getName());
+            BoarderType type = types.get(world.getName());
 
+            boolean flag = false;
+            switch (type) {
+            case RECTANGLE:
+                flag = ((RectangleBoarder) boarder).isOutOfWorld(loc);
+                break;
+            case ROUND:
+                flag = ((RoundBoarder) boarder).isOutOfWorld(loc);
+                break;
+            }
+
+            if (flag) {
+                event.setCancelled(true);
+                player.sendMessage("传送失败，目标点超出地图边界");
+            }
+        }
     }
 
     private enum BoarderType {
-        RECTANGLE, ROUND;
+        RECTANGLE, ROUND
     }
 
     private static class Boarder {
-        private boolean isTransparent;
+        boolean isTransparent;
 
         Boarder(boolean isTransparent) {
             this.isTransparent = isTransparent;
@@ -132,14 +159,15 @@ public class WorldBoarder implements Listener {
             result.add(vector);
 
             result.setY(256);
-            while (result.getBlock().getType() == Material.AIR)
+            while (result.getBlock().getType() == Material.AIR) {
                 result.add(0, -1, 0);
+            }
             return result.add(0, 1, 0);
         }
     }
 
     private static class RectangleBoarder extends Boarder {
-        private int x1, z1, x2, z2;
+        int x1, z1, x2, z2;
 
         public RectangleBoarder(boolean isTransparent, int x1, int z1, int x2, int z2) {
             super(isTransparent);
@@ -153,25 +181,23 @@ public class WorldBoarder implements Listener {
             int x = loc.getBlockX();
             int z = loc.getBlockZ();
             System.out.println(x + " " + z);
-            if (x1 <= x && x <= x2)
-                if (z1 <= z && z <= z2)
-                    return false;
+            if (x1 <= x && x <= x2) {
+                return z1 > z || z > z2;
+            }
             return true;
         }
     }
 
     private static class RoundBoarder extends Boarder {
-        private int radius;
+        int radius;
 
         public RoundBoarder(boolean isTransparent, int radius) {
             super(isTransparent);
-            this.radius = Math.min(radius, radius);
+            this.radius = radius;
         }
 
         boolean isOutOfWorld(Location loc) {
-            if (loc.distance(new Location(loc.getWorld(), 0, loc.getY(), 0)) <= radius)
-                return true;
-            return false;
+            return loc.distance(new Location(loc.getWorld(), 0, loc.getY(), 0)) <= radius;
         }
     }
 }

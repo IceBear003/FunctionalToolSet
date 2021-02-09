@@ -1,4 +1,4 @@
-enableJoinMessage: true #是否显示玩家进出信息
+enableJoinMessage: true #是否显示原版玩家进出信息
 enableAdaptMessage: true #是否启用以下的信息魔改功能
 origin: #原来的信息（与下面魔改后的信息一个一个对应）
 - "信息1"

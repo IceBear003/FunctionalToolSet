@@ -2,6 +2,7 @@ package utes.modelock;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -18,18 +19,18 @@ import java.util.Collection;
  * utes.modelock
  */
 public class ModeLocking implements Listener {
-    private static YamlConfiguration yaml;
     private static boolean lockMode;
     private static boolean lockHealth;
     private static boolean lockFoodLevel;
     private static boolean lockFlying;
     private static boolean lockEffect;
 
-    public ModeLocking() {
-        File file = new File(UntilTheEndServer.getInstance().getDataFolder(), "modelock.yml");
-        if (!file.exists())
-            UntilTheEndServer.getInstance().saveResource("modelock.yml", false);
-        yaml = YamlConfiguration.loadConfiguration(file);
+    public static void initialize(UntilTheEndServer plugin) {
+        File file = new File(plugin.getDataFolder(), "modelock.yml");
+        if (!file.exists()) {
+            plugin.saveResource("modelock.yml", false);
+        }
+        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
         if (!yaml.getBoolean("enable")) {
             return;
         }
@@ -40,7 +41,7 @@ public class ModeLocking implements Listener {
         lockFlying = yaml.getBoolean("lockFlying");
         lockEffect = yaml.getBoolean("lockEffect");
 
-        Bukkit.getPluginManager().registerEvents(this, UntilTheEndServer.getInstance());
+        Bukkit.getPluginManager().registerEvents(new ModeLocking(), plugin);
     }
 
     @EventHandler
@@ -52,24 +53,29 @@ public class ModeLocking implements Listener {
         GameMode mode = player.getGameMode();
         double health = player.getHealth();
         int foodLevel = player.getFoodLevel();
-        double maxHealth = player.getMaxHealth();
+        double maxHealth = player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
         boolean isFlying = player.isFlying();
         Collection<PotionEffect> effects = player.getActivePotionEffects();
         new BukkitRunnable() {
             @Override
             public void run() {
-                if (lockMode)
+                if (lockMode) {
                     player.setGameMode(mode);
+                }
                 if (lockHealth) {
-                    player.setMaxHealth(maxHealth);
+                    //TODO
+                    player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(maxHealth);
                     player.setHealth(health);
                 }
-                if (lockFoodLevel)
+                if (lockFoodLevel) {
                     player.setFoodLevel(foodLevel);
-                if (lockFlying)
+                }
+                if (lockFlying) {
                     player.setFlying(isFlying);
-                if (lockEffect)
+                }
+                if (lockEffect) {
                     player.addPotionEffects(effects);
+                }
             }
         }.runTaskLater(UntilTheEndServer.getInstance(), 2L);
 

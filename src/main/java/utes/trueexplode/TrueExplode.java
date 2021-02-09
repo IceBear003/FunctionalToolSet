@@ -15,8 +15,8 @@ import utes.UntilTheEndServer;
 import java.util.List;
 
 public class TrueExplode implements Listener {
-    public TrueExplode() {
-        Bukkit.getPluginManager().registerEvents(this, UntilTheEndServer.getInstance());
+    public static void initialize(UntilTheEndServer plugin) {
+        Bukkit.getPluginManager().registerEvents(new TrueExplode(), plugin);
     }
 
     private static void createTrueExplode(List<Block> blocks) {
@@ -34,16 +34,18 @@ public class TrueExplode implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onExplode(BlockExplodeEvent event) {
-        if (event.isCancelled())
+        if (event.isCancelled()) {
             return;
+        }
         event.setCancelled(true);
         createTrueExplode(event.blockList());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onExplode(EntityExplodeEvent event) {
-        if (event.isCancelled())
+        if (event.isCancelled()) {
             return;
+        }
         event.setCancelled(true);
         createTrueExplode(event.blockList());
     }

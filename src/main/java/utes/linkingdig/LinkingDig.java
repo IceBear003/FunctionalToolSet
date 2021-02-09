@@ -21,8 +21,7 @@ import java.util.*;
  * utes.linkdig
  */
 public class LinkingDig implements Listener {
-    private static final HashSet<Location> linked = new HashSet<Location>();
-    private static YamlConfiguration yaml;
+    private static final HashSet<Location> linked = new HashSet<>();
     private static double exhaustSpeed;
     private static List<String> axe;
     private static List<String> pickaxe;
@@ -30,11 +29,12 @@ public class LinkingDig implements Listener {
     private static List<String> scissor;
     private static List<String> sword;
 
-    public LinkingDig() {
-        File file = new File(UntilTheEndServer.getInstance().getDataFolder(), "linkingdig.yml");
-        if (!file.exists())
-            UntilTheEndServer.getInstance().saveResource("linkingdig.yml", false);
-        yaml = YamlConfiguration.loadConfiguration(file);
+    public static void initialize(UntilTheEndServer plugin) {
+        File file = new File(plugin.getDataFolder(), "linkingdig.yml");
+        if (!file.exists()) {
+            plugin.saveResource("linkingdig.yml", false);
+        }
+        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
         if (!yaml.getBoolean("enable")) {
             return;
         }
@@ -46,11 +46,11 @@ public class LinkingDig implements Listener {
         scissor = yaml.getStringList("SCISSOR");
         sword = yaml.getStringList("SWORD");
 
-        Bukkit.getPluginManager().registerEvents(this, UntilTheEndServer.getInstance());
+        Bukkit.getPluginManager().registerEvents(new LinkingDig(), plugin);
     }
 
     private static HashSet<Location> getNearbyBlocks(Material blockType, Location location, Player player, ItemStack tool) {
-        HashSet<Location> blocks = new HashSet<Location>();
+        HashSet<Location> blocks = new HashSet<>();
         Material toolType = tool.getType();
         double percent = 1;
         double foodlevel = player.getFoodLevel();
@@ -60,8 +60,8 @@ public class LinkingDig implements Listener {
             percent /= (1 + level);
         }
 
-        Queue<Location> queue = new LinkedList<Location>();
-        ArrayList<Location> visited = new ArrayList<Location>();
+        Queue<Location> queue = new LinkedList<>();
+        ArrayList<Location> visited = new ArrayList<>();
         queue.offer(location);
         visited.add(location);
 
@@ -69,6 +69,10 @@ public class LinkingDig implements Listener {
             Location currentLoc = queue.peek();
             queue.poll();
             visited.add(currentLoc);
+
+            if (currentLoc.getBlock() == null) {
+                continue;
+            }
 
             linked.add(currentLoc);
             BlockBreakEvent event = new BlockBreakEvent(currentLoc.getBlock(), player);
@@ -83,11 +87,12 @@ public class LinkingDig implements Listener {
 
             if (blocks.size() != size) {
                 foodlevel -= exhaustSpeed;
-                if (Math.random() <= percent)
+                if (Math.random() <= percent) {
                     tool.setDurability((short) (tool.getDurability() + 1));
+                }
             }
 
-            ArrayList<Location> tmps = new ArrayList<Location>();
+            ArrayList<Location> tmps = new ArrayList<>();
             tmps.add(currentLoc.clone().add(-1, 0, 0));
             tmps.add(currentLoc.clone().add(1, 0, 0));
             tmps.add(currentLoc.clone().add(0, 1, 0));
@@ -96,57 +101,85 @@ public class LinkingDig implements Listener {
             tmps.add(currentLoc.clone().add(0, 0, -1));
 
             for (Location loc : tmps) {
-                if (visited.contains(loc))
+                if (visited.contains(loc)) {
                     continue;
-                if (loc.getBlock().getType() != blockType)
+                }
+                if (loc.getBlock().getType() != blockType) {
                     continue;
+                }
                 queue.offer(loc);
             }
         }
 
-        if (tool.getDurability() >= tool.getType().getMaxDurability() - 1)
+        if (tool.getDurability() >= tool.getType().getMaxDurability() - 1) {
             tool.setType(Material.AIR);
+        }
         player.setFoodLevel((int) foodlevel);
         return blocks;
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onDig(BlockBreakEvent event) {
-        if (event.isCancelled())
+        if (event.isCancelled()) {
             return;
-        if (event.getPlayer() == null)
+        }
+        if (event.getPlayer() == null) {
             return;
+        }
         Player player = event.getPlayer();
         Block block = event.getBlock();
-        if (!player.hasPermission("utes.linkdig")) return;
-        if (!player.isSneaking()) return;
-        if (linked.contains(block.getLocation())) return;
+        if (!player.hasPermission("utes.linkdig")) {
+            return;
+        }
+        if (!player.isSneaking()) {
+            return;
+        }
+        if (linked.contains(block.getLocation())) {
+            return;
+        }
         ItemStack tool = player.getInventory().getItemInMainHand();
-        if (tool == null) return;
+        if (tool == null) {
+            return;
+        }
         Material toolType = tool.getType();
         Material blockType = block.getType();
         boolean flag = false;
         if (toolType.toString().contains("AXE")
-                && !toolType.toString().contains("PICKAXE"))
-            for (String str : axe)
-                if (blockType.toString().contains(str))
+                && !toolType.toString().contains("PICKAXE")) {
+            for (String str : axe) {
+                if (blockType.toString().contains(str)) {
                     flag = true;
-        if (toolType.toString().contains("PICKAXE"))
-            for (String str : pickaxe)
-                if (blockType.toString().contains(str))
+                }
+            }
+        }
+        if (toolType.toString().contains("PICKAXE")) {
+            for (String str : pickaxe) {
+                if (blockType.toString().contains(str)) {
                     flag = true;
-        if (toolType.toString().contains("SPADE"))
-            for (String str : spade)
-                if (blockType.toString().contains(str))
+                }
+            }
+        }
+        if (toolType.toString().contains("SPADE")) {
+            for (String str : spade) {
+                if (blockType.toString().contains(str)) {
                     flag = true;
-        if (toolType.toString().contains("SWORD"))
-            for (String str : sword)
-                if (blockType.toString().contains(str))
+                }
+            }
+        }
+        if (toolType.toString().contains("SWORD")) {
+            for (String str : sword) {
+                if (blockType.toString().contains(str)) {
                     flag = true;
-        if (toolType.toString().contains("SHEARS"))
-            for (String str : scissor)
-                if (blockType.toString().contains(str))
+                }
+            }
+        }
+        if (toolType.toString().contains("SHEARS")) {
+            for (String str : scissor) {
+                if (blockType.toString().contains(str)) {
                     flag = true;
+                }
+            }
+        }
         if (flag) {
             for (Location nearBlock : getNearbyBlocks(blockType, block.getLocation(), player, tool)) {
                 nearBlock.getBlock().breakNaturally();

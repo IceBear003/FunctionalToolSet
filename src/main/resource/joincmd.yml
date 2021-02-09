@@ -1,0 +1,26 @@
+enable: true #是否开启玩家进入时执行某些操作
+
+usualJoin: #正常进入
+  #以下4个文本，设置为""空即为无信息显示
+  message: "欢迎您进入本服务器游玩！" #对该玩家说的话
+  title: "祝您玩得愉快！" #显示给玩家的title信息
+  subtitle: "" #subtitle信息
+  broadcast: "欢迎玩家{player}进入游戏！" #全服公告信息
+
+  isOp: false #玩家是否以op权限执行以下指令，默认是无op权限
+  cmds: #玩家执行的指令
+    - "spawn"
+    #可以继续添加
+
+firstJoin: #第一次进入服务器
+  #以下4个文本，设置为""空即为无信息显示 {player}代替玩家名
+  message: "欢迎您进入本服务器游玩！" #对该玩家说的话
+  title: "祝您玩得愉快！" #显示给玩家的title信息
+  subtitle: "" #subtitle信息
+  broadcast: "欢迎新玩家{player}进入游戏！" #全服公告信息
+
+  isOp: true #玩家是否以op权限执行以下指令，默认是有op权限，不然怎么执行下面的effect呢？
+  cmds: #玩家执行的指令{player}代替玩家名
+    - "spawn"
+    - "effect {player} night_vision 100 1"
+    #可以继续添加

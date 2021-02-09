@@ -16,6 +16,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import utes.LanguageUtils;
 import utes.UntilTheEndServer;
 
 import java.io.File;
@@ -80,7 +81,7 @@ public class ChatBar implements Listener {
                                     owners.remove(str);
                                     String playerName = player.getName();
 
-                                    String[] fixes = UntilTheEndServer.getPapi(player, message).split(playerName);
+                                    String[] fixes = LanguageUtils.getPapi(player, message).split(playerName);
 
                                     for (int i = 0; i < fixes.length; i++) {
                                         String passage = fixes[i];
@@ -122,7 +123,7 @@ public class ChatBar implements Listener {
 
     private static BaseComponent getBaseComponents(Player player) {
         BaseComponent component = TextComponent.fromLegacyText(player.getName())[0];
-        String legacy = UntilTheEndServer.getPapi(player, legacyHover);
+        String legacy = LanguageUtils.getPapi(player, legacyHover);
         BaseComponent[] hover = TextComponent.fromLegacyText(legacy);
         if (hoverEnable) {
             component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover));
@@ -135,7 +136,7 @@ public class ChatBar implements Listener {
 
     @EventHandler
     public void onChat(AsyncPlayerChatEvent event) {
-        event.setMessage(UntilTheEndServer.getPapi(event.getPlayer(), event.getMessage()));
+        event.setMessage(LanguageUtils.getPapi(event.getPlayer(), event.getMessage()));
         if (!repeatEnable) {
             return;
         }

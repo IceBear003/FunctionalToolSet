@@ -180,7 +180,6 @@ public class WorldBoarder implements Listener {
         boolean isOutOfWorld(Location loc) {
             int x = loc.getBlockX();
             int z = loc.getBlockZ();
-            System.out.println(x + " " + z);
             if (x1 <= x && x <= x2) {
                 return z1 > z || z > z2;
             }

@@ -1,4 +1,5 @@
-enable: true #是否启用铁块电梯
+enable: true #是否启用方块电梯
+block: IRON_BLOCK #用做电梯的方块的material名
 maxHeight: 128 #电梯最大高度
 minHeight: 2 #电梯最小高度
 consumeHunger: 1 #坐电梯消耗的饥饿值

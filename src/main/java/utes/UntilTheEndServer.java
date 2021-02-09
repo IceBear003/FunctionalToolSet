@@ -2,7 +2,6 @@ package utes;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
-import me.clip.placeholderapi.PlaceholderAPI;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -10,7 +9,6 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import utes.actioncmd.ActionCommand;
 import utes.bancmd.CommandBanner;
-import utes.bugfix.BugFixer;
 import utes.capablegui.CapableGui;
 import utes.chatbar.ChatBar;
 import utes.chunkrestore.ChunkRestore;
@@ -45,11 +43,12 @@ public class UntilTheEndServer extends JavaPlugin {
         return instance;
     }
 
-    public static String getPapi(Player player, String origin) {
+    private static boolean initPapi() {
         try {
-            return PlaceholderAPI.setPlaceholders(player, origin);
-        } catch (NoClassDefFoundError error) {
-            return origin;
+            Class.forName("me.clip.placeholderapi.PlaceholderAPI");
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
         }
     }
 
@@ -67,19 +66,22 @@ public class UntilTheEndServer extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        instance = this;
+        getLogger().info("正在启用基础功能插件UTES中...");
+        LanguageUtils.initialize(this);
+        getLogger().info("您使用的语言是：" + getConfig().getString("language"));
         try {
-            if (!initVault()) {
-                getLogger().severe("Vault未安装|无法加载随机抽取权限的功能.");
-                return;
+            boolean hasVault = initVault();
+            if (!hasVault) {
+                getLogger().info("Vault未安装|无法加载随机抽取权限的功能.");
             }
-            getLogger().info("正在启用核心功能插件UTES中...");
-            instance = this;
-            getLogger().info("正在启用收发包控制中...");
-            try {
-                pm = ProtocolLibrary.getProtocolManager();
-            } catch (NoClassDefFoundError error) {
-                getLogger().info("未找到ProtocolLib插件，插件自动关闭！");
-                return;
+            boolean hasPapi = initPapi();
+            if (!hasPapi) {
+                getLogger().info("PAPI未安装|无法使用插件变量.");
+            }
+            boolean hasPLib = initPLib();
+            if (!hasPLib) {
+                getLogger().info("PLib未安装|无法使用发包相关功能");
             }
 
             getLogger().info("正在注册指令中...");
@@ -92,8 +94,10 @@ public class UntilTheEndServer extends JavaPlugin {
             ScoreBoard.initialize(this);
             getLogger().info("正在启用铁块电梯功能中...");
             IronBlockLift.initialize(this);
-            getLogger().info("正在启用增加信息前缀功能中...");
-            TranslateMessage.initialize(this);
+            if (hasPLib) {
+                getLogger().info("正在启用增加信息前缀功能中...");
+                TranslateMessage.initialize(this);
+            }
             getLogger().info("正在启用屏蔽进出信息功能中...");
             NoLoginQuitMessage.initialize(this);
             getLogger().info("正在启用统计在线时间功能中...");
@@ -101,16 +105,18 @@ public class UntilTheEndServer extends JavaPlugin {
             getLogger().info("正在启用粒子特效功能中...");
             ParticleOverHead.initialize(this);
             ParticleUnderFeet.initialize(this);
-            getLogger().info("正在启用随机抽奖功能中...");
-            RandomCredits.initialize(this);
+            if (hasVault) {
+                getLogger().info("正在启用随机抽奖功能中...");
+                RandomCredits.initialize(this);
+            }
             getLogger().info("正在启用死亡物品存储箱功能中...");
             DeathChest.initialize(this);
             getLogger().info("正在启用世界禁用指令功能中...");
             CommandBanner.initialize(this);
-            getLogger().info("正在启用修复bug功能中...");
-            BugFixer.initialize(this);
-            getLogger().info("正在启用炫耀物品功能中...");
-            ShowOff.initialize(this);
+            if (hasPLib) {
+                getLogger().info("正在启用炫耀物品功能中...");
+                ShowOff.initialize(this);
+            }
             getLogger().info("正在启用快捷动作指令功能中...");
             ActionCommand.initialize(this);
             getLogger().info("正在启用自定义升级经验功能中...");
@@ -127,8 +133,10 @@ public class UntilTheEndServer extends JavaPlugin {
             ChunkRestore.initialize(this);
             getLogger().info("正在启用世界边界功能中...");
             WorldBoarder.initialize(this);
-            getLogger().info("正在启用更棒的聊天功能中...");
-            ChatBar.initialize(this);
+            if (hasPLib) {
+                getLogger().info("正在启用更棒的聊天功能中...");
+                ChatBar.initialize(this);
+            }
             getLogger().info("正在启用指令简化功能中...");
             EasyCommand.initialize(this);
             getLogger().info("正在启用同步时间功能中...");
@@ -141,6 +149,15 @@ public class UntilTheEndServer extends JavaPlugin {
         } catch (Exception exception) {
             getLogger().info("哎呀这步好像出了些小问题呢！");
             exception.printStackTrace();
+        }
+    }
+
+    private boolean initPLib() {
+        try {
+            pm = ProtocolLibrary.getProtocolManager();
+            return true;
+        } catch (NoClassDefFoundError error) {
+            return false;
         }
     }
 

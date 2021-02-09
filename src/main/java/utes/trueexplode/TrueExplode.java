@@ -3,6 +3,7 @@ package utes.trueexplode;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -12,10 +13,21 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.util.Vector;
 import utes.UntilTheEndServer;
 
+import java.io.File;
 import java.util.List;
 
 public class TrueExplode implements Listener {
     public static void initialize(UntilTheEndServer plugin) {
+
+        File file = new File(plugin.getDataFolder(), "trueexplode.yml");
+        if (!file.exists()) {
+            plugin.saveResource("trueexplode.yml", false);
+        }
+        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
+        if (!yaml.getBoolean("enable")) {
+            return;
+        }
+
         Bukkit.getPluginManager().registerEvents(new TrueExplode(), plugin);
     }
 

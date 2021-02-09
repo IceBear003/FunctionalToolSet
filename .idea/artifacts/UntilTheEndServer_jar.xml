@@ -7,10 +7,28 @@
       <element id="file-copy" path="$PROJECT_DIR$/src/main/resource/cardpoints.yml" />
       <element id="file-copy" path="$PROJECT_DIR$/src/main/resource/information.yml" />
       <element id="file-copy" path="$PROJECT_DIR$/src/main/resource/lift.yml" />
-      <element id="file-copy" path="$PROJECT_DIR$/plugin.yml" />
       <element id="file-copy" path="$PROJECT_DIR$/src/main/resource/randomcredits.yml" />
       <element id="file-copy" path="$PROJECT_DIR$/src/main/resource/rtp.yml" />
       <element id="file-copy" path="$PROJECT_DIR$/src/main/resource/scoreboard.yml" />
+      <element id="file-copy" path="$PROJECT_DIR$/src/main/resource/plugin.yml" />
+      <element id="file-copy" path="$PROJECT_DIR$/src/main/resource/actcmd.yml" />
+      <element id="file-copy" path="$PROJECT_DIR$/src/main/resource/boarder.yml" />
+      <element id="file-copy" path="$PROJECT_DIR$/src/main/resource/chatbar.yml" />
+      <element id="file-copy" path="$PROJECT_DIR$/src/main/resource/chunkrestore.yml" />
+      <element id="file-copy" path="$PROJECT_DIR$/src/main/resource/cmdban.yml" />
+      <element id="file-copy" path="$PROJECT_DIR$/src/main/resource/config.yml" />
+      <element id="file-copy" path="$PROJECT_DIR$/src/main/resource/customexp.yml" />
+      <element id="file-copy" path="$PROJECT_DIR$/src/main/resource/deathchest.yml" />
+      <element id="file-copy" path="$PROJECT_DIR$/src/main/resource/easycmd.yml" />
+      <element id="file-copy" path="$PROJECT_DIR$/src/main/resource/joincmd.yml" />
+      <element id="file-copy" path="$PROJECT_DIR$/src/main/resource/linkingdig.yml" />
+      <element id="file-copy" path="$PROJECT_DIR$/src/main/resource/modelock.yml" />
+      <element id="file-copy" path="$PROJECT_DIR$/src/main/resource/showoff.yml" />
+      <element id="file-copy" path="$PROJECT_DIR$/src/main/resource/timeoperate.yml" />
+      <element id="file-copy" path="$PROJECT_DIR$/src/main/resource/trueexplode.yml" />
+      <element id="file-copy" path="$PROJECT_DIR$/src/main/resource/lang/en_us.yml" />
+      <element id="file-copy" path="$PROJECT_DIR$/src/main/resource/lang/zh_cn.yml" />
+      <element id="file-copy" path="$PROJECT_DIR$/src/main/resource/lang/zh_tw.yml" />
     </root>
   </artifact>
 </component>

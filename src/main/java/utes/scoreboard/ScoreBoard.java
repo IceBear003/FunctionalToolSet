@@ -11,6 +11,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
+import utes.LanguageUtils;
 import utes.UntilTheEndServer;
 import utes.onlinetimes.OnlineTimes;
 
@@ -53,11 +54,11 @@ public class ScoreBoard implements Listener {
                         }
                         Scoreboard board = Bukkit.getServer().getScoreboardManager().getNewScoreboard();
                         Objective object = board.registerNewObjective("Scoreboard", "scoreboard");
-                        object.setDisplayName(UntilTheEndServer.getPapi(player, title));
+                        object.setDisplayName(LanguageUtils.getPapi(player, title));
                         object.setDisplaySlot(DisplaySlot.SIDEBAR);
                         int size = lines.size();
                         for (String line : lines) {
-                            line = UntilTheEndServer.getPapi(player, line);
+                            line = LanguageUtils.getPapi(player, line);
                             line = line.replace("%dayOnlineTime%",
                                     OnlineTimes.turnToString(OnlineTimes.getDayTime(player)));
                             line = line.replace("%totalOnlineTime%",

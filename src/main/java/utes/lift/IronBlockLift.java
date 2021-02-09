@@ -18,6 +18,7 @@ public class IronBlockLift implements Listener {
     private static int minHeight;
     private static int consumeHunger;
     private static int consumeExp;
+    private static Material blockType;
 
     public static void initialize(UntilTheEndServer plugin) {
         File file = new File(plugin.getDataFolder(), "lift.yml");
@@ -34,6 +35,7 @@ public class IronBlockLift implements Listener {
         minHeight = yaml.getInt("minHeight");
         consumeHunger = yaml.getInt("consumeHunger");
         consumeExp = yaml.getInt("consumeExp");
+        blockType = Material.valueOf(yaml.getString("block"));
 
         Bukkit.getPluginManager().registerEvents(new IronBlockLift(), plugin);
     }
@@ -41,7 +43,7 @@ public class IronBlockLift implements Listener {
     @EventHandler
     public void onJump(PlayerMoveEvent event) {
         Player player = event.getPlayer();
-        if (player.getLocation().add(0, -1, 0).getBlock().getType() != Material.IRON_BLOCK) {
+        if (player.getLocation().add(0, -1, 0).getBlock().getType() != blockType) {
             return;
         }
         if (event.getFrom().getBlockX() == event.getTo().getBlockX()
@@ -50,7 +52,7 @@ public class IronBlockLift implements Listener {
                 Location loc = event.getFrom();
                 for (int y = minHeight; y <= maxHeight; y++) {
                     Location newLoc = loc.clone().add(0, y, 0);
-                    if (newLoc.getBlock().getType() == Material.IRON_BLOCK) {
+                    if (newLoc.getBlock().getType() == blockType) {
                         player.teleport(newLoc.add(0, 1, 0));
                         consume(player);
                         player.sendMessage("您乘坐铁块电梯上楼。");
@@ -63,7 +65,7 @@ public class IronBlockLift implements Listener {
     @EventHandler
     public void onSneak(PlayerToggleSneakEvent event) {
         Player player = event.getPlayer();
-        if (player.getLocation().add(0, -1, 0).getBlock().getType() != Material.IRON_BLOCK) {
+        if (player.getLocation().add(0, -1, 0).getBlock().getType() != blockType) {
             return;
         }
         Location loc = player.getLocation();
@@ -72,7 +74,7 @@ public class IronBlockLift implements Listener {
             if (newLoc.getBlock() == null) {
                 return;
             }
-            if (newLoc.getBlock().getType() == Material.IRON_BLOCK) {
+            if (newLoc.getBlock().getType() == blockType) {
                 player.teleport(newLoc.add(0, 1, 0));
                 consume(player);
                 player.sendMessage("您乘坐铁块电梯下楼。");

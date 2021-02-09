@@ -15,7 +15,6 @@ import java.io.File;
 import java.util.List;
 
 public class TranslateMessage {
-    public static YamlConfiguration yaml;
     private static List<String> origins;
     private static List<String> adapteds;
     private static String prefix;
@@ -25,6 +24,7 @@ public class TranslateMessage {
         if (!file.exists()) {
             plugin.saveResource("information.yml", false);
         }
+        YamlConfiguration yaml;
         yaml = YamlConfiguration.loadConfiguration(file);
 
         origins = yaml.getStringList("origins");

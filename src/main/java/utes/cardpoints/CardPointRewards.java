@@ -8,6 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import utes.ResourceUtils;
 import utes.UntilTheEndServer;
 
 import java.io.File;
@@ -29,10 +30,8 @@ public class CardPointRewards implements Listener {
     public static HashMap<UUID, IPlayer> stats = new HashMap<>();
 
     public static void initialize(UntilTheEndServer plugin) {
+        ResourceUtils.autoUpdateConfigs("cardpoints.yml");
         File file = new File(plugin.getDataFolder(), "cardpoints.yml");
-        if (!file.exists()) {
-            plugin.saveResource("cardpoints.yml", false);
-        }
         YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
 
         int startDate = yaml.getInt("startDate");

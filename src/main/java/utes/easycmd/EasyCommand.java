@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import utes.ResourceUtils;
 import utes.UntilTheEndServer;
 
 import java.io.File;
@@ -21,10 +22,8 @@ public class EasyCommand implements Listener {
     private static final HashMap<String, String> strs = new HashMap<>();
 
     public static void initialize(UntilTheEndServer plugin) {
+        ResourceUtils.autoUpdateConfigs("easycmd.yml");
         File file = new File(plugin.getDataFolder(), "easycmd.yml");
-        if (!file.exists()) {
-            plugin.saveResource("easycmd.yml", false);
-        }
         YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
         if (!yaml.getBoolean("enable")) {
             return;

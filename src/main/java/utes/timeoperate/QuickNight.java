@@ -5,6 +5,7 @@ import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import utes.ResourceUtils;
 import utes.UntilTheEndServer;
 
 import java.io.File;
@@ -15,10 +16,8 @@ public class QuickNight {
     private static boolean title;
 
     public static void initialize(UntilTheEndServer plugin) {
+        ResourceUtils.autoUpdateConfigs("timeoperate.yml");
         File file = new File(plugin.getDataFolder(), "timeoperate.yml");
-        if (!file.exists()) {
-            plugin.saveResource("timeoperate.yml", false);
-        }
         YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
 
         if (!yaml.getBoolean("quickNight.enable")) {
@@ -53,6 +52,7 @@ public class QuickNight {
                     }
                     //如果入睡人数超过占比，则加速时间流动
                     if (amount >= world.getPlayers().size() * percent) {
+                        world.setGameRuleValue("doDaylightCycle", "false");
                         long newTime = world.getTime() + 2 * (speed - 1);
                         if (newTime >= 24000) {
                             world.setTime(newTime - 24000);
@@ -66,6 +66,8 @@ public class QuickNight {
                                 player.sendTitle("§a" + getFormatTime(newTime), "§e世界时间", 10, 70, 20);
                             }
                         }
+                    } else {
+                        world.setGameRuleValue("doDaylightCycle", "true");
                     }
                 }
             }

@@ -11,7 +11,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
-import utes.LanguageUtils;
+import utes.ResourceUtils;
 import utes.UntilTheEndServer;
 import utes.onlinetimes.OnlineTimes;
 
@@ -30,10 +30,8 @@ public class ScoreBoard implements Listener {
     private static List<String> lines;
 
     public static void initialize(UntilTheEndServer plugin) {
+        ResourceUtils.autoUpdateConfigs("scoreboard.yml");
         File file = new File(plugin.getDataFolder(), "scoreboard.yml");
-        if (!file.exists()) {
-            plugin.saveResource("scoreboard.yml", false);
-        }
         YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
         if (!yaml.getBoolean("enable")) {
             return;
@@ -54,11 +52,11 @@ public class ScoreBoard implements Listener {
                         }
                         Scoreboard board = Bukkit.getServer().getScoreboardManager().getNewScoreboard();
                         Objective object = board.registerNewObjective("Scoreboard", "scoreboard");
-                        object.setDisplayName(LanguageUtils.getPapi(player, title));
+                        object.setDisplayName(ResourceUtils.getPapi(player, title));
                         object.setDisplaySlot(DisplaySlot.SIDEBAR);
                         int size = lines.size();
                         for (String line : lines) {
-                            line = LanguageUtils.getPapi(player, line);
+                            line = ResourceUtils.getPapi(player, line);
                             line = line.replace("%dayOnlineTime%",
                                     OnlineTimes.turnToString(OnlineTimes.getDayTime(player)));
                             line = line.replace("%totalOnlineTime%",

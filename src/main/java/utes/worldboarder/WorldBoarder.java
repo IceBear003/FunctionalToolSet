@@ -9,6 +9,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
+import utes.ResourceUtils;
 import utes.UntilTheEndServer;
 import utes.api.BlockApi;
 
@@ -28,10 +29,8 @@ public class WorldBoarder implements Listener {
     private static ArrayList<UUID> players = new ArrayList<>();
 
     public static void initialize(UntilTheEndServer plugin) {
+        ResourceUtils.autoUpdateConfigs("boarder.yml");
         File file = new File(plugin.getDataFolder(), "boarder.yml");
-        if (!file.exists()) {
-            plugin.saveResource("boarder.yml", false);
-        }
         YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
         if (!yaml.getBoolean("enable")) {
             return;

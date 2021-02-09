@@ -7,6 +7,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import utes.ResourceUtils;
 import utes.UntilTheEndServer;
 
 import java.io.File;
@@ -27,10 +28,8 @@ public class JoinCommand implements Listener {
     private static List<String> firstCommands;
 
     public static void initialize(UntilTheEndServer plugin) {
+        ResourceUtils.autoUpdateConfigs("joincmd.yml");
         File file = new File(plugin.getDataFolder(), "joincmd.yml");
-        if (!file.exists()) {
-            plugin.saveResource("joincmd.yml", false);
-        }
         YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
         if (!yaml.getBoolean("enable")) {
             return;

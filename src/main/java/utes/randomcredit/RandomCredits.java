@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import utes.ResourceUtils;
 import utes.UntilTheEndServer;
 
 import java.io.File;
@@ -16,10 +17,8 @@ public class RandomCredits {
     private static double totalPercents = 0.0;
 
     public static void initialize(UntilTheEndServer plugin) {
+        ResourceUtils.autoUpdateConfigs("randomcredits.yml");
         File file = new File(plugin.getDataFolder(), "randomcredits.yml");
-        if (!file.exists()) {
-            plugin.saveResource("randomcredits.yml", false);
-        }
         YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
 
         for (String path : yaml.getKeys(false)) {

@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import utes.ResourceUtils;
 import utes.UntilTheEndServer;
 
 import java.io.File;
@@ -22,10 +23,8 @@ public class XPFly {
     private static double exhaustSpeed;
 
     public static void initialize(UntilTheEndServer plugin) {
+        ResourceUtils.autoUpdateConfigs("xpfly.yml");
         File file = new File(plugin.getDataFolder(), "xpfly.yml");
-        if (!file.exists()) {
-            plugin.saveResource("xpfly.yml", false);
-        }
         YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
         if (!yaml.getBoolean("enable")) {
             return;
@@ -52,6 +51,7 @@ public class XPFly {
 
                     if (newExp < 0.0f) {
                         player.setLevel(Math.max(player.getLevel() - 1, 0));
+                        newExp = 1.0f;
                     }
 
                     if (player.hasPermission("utes.xpfly.slowexhaust")) {

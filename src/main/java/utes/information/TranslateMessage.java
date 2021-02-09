@@ -9,6 +9,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.configuration.file.YamlConfiguration;
+import utes.ResourceUtils;
 import utes.UntilTheEndServer;
 
 import java.io.File;
@@ -20,10 +21,8 @@ public class TranslateMessage {
     private static String prefix;
 
     public static void initialize(UntilTheEndServer plugin) {
+        ResourceUtils.autoUpdateConfigs("information.yml");
         File file = new File(plugin.getDataFolder(), "information.yml");
-        if (!file.exists()) {
-            plugin.saveResource("information.yml", false);
-        }
         YamlConfiguration yaml;
         yaml = YamlConfiguration.loadConfiguration(file);
 

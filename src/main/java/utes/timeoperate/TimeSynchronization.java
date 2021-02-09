@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
+import utes.ResourceUtils;
 import utes.UntilTheEndServer;
 
 import java.io.File;
@@ -17,10 +18,8 @@ public class TimeSynchronization {
     private static ArrayList<String> worlds = new ArrayList<>();
 
     public static void initialize(UntilTheEndServer plugin) {
+        ResourceUtils.autoUpdateConfigs("timeoperate.yml");
         File file = new File(plugin.getDataFolder(), "timeoperate.yml");
-        if (!file.exists()) {
-            plugin.saveResource("timeoperate.yml", false);
-        }
         YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
 
         for (String name : yaml.getStringList("synchronization.enable")) {

@@ -7,6 +7,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerExpChangeEvent;
 import org.bukkit.scheduler.BukkitRunnable;
+import utes.ResourceUtils;
 import utes.UntilTheEndServer;
 
 import java.io.File;
@@ -16,10 +17,8 @@ public class CustomExpMechenism implements Listener {
     private static final HashMap<Integer, Integer> expNeedToUpgrade = new HashMap<>();
 
     public static void initialize(UntilTheEndServer plugin) {
+        ResourceUtils.autoUpdateConfigs("customexp.yml");
         File file = new File(plugin.getDataFolder(), "customexp.yml");
-        if (!file.exists()) {
-            plugin.saveResource("customexp.yml", false);
-        }
         YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
         if (!yaml.getBoolean("enable")) {
             return;

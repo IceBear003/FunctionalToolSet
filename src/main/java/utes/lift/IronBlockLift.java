@@ -9,6 +9,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
+import utes.ResourceUtils;
 import utes.UntilTheEndServer;
 
 import java.io.File;
@@ -21,10 +22,8 @@ public class IronBlockLift implements Listener {
     private static Material blockType;
 
     public static void initialize(UntilTheEndServer plugin) {
+        ResourceUtils.autoUpdateConfigs("lift.yml");
         File file = new File(plugin.getDataFolder(), "lift.yml");
-        if (!file.exists()) {
-            plugin.saveResource("lift.yml", false);
-        }
         YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
 
         if (!yaml.getBoolean("enable")) {

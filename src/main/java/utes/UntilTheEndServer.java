@@ -68,7 +68,7 @@ public class UntilTheEndServer extends JavaPlugin {
     public void onEnable() {
         instance = this;
         getLogger().info("正在启用基础功能插件UTES中...");
-        LanguageUtils.initialize(this);
+        ResourceUtils.initialize(this);
         getLogger().info("您使用的语言是：" + getConfig().getString("language"));
         try {
             boolean hasVault = initVault();

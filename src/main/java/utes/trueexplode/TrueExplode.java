@@ -11,6 +11,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.util.Vector;
+import utes.ResourceUtils;
 import utes.UntilTheEndServer;
 
 import java.io.File;
@@ -19,10 +20,8 @@ import java.util.List;
 public class TrueExplode implements Listener {
     public static void initialize(UntilTheEndServer plugin) {
 
+        ResourceUtils.autoUpdateConfigs("trueexplode.yml");
         File file = new File(plugin.getDataFolder(), "trueexplode.yml");
-        if (!file.exists()) {
-            plugin.saveResource("trueexplode.yml", false);
-        }
         YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
         if (!yaml.getBoolean("enable")) {
             return;

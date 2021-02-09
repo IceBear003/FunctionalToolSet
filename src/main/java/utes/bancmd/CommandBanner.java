@@ -8,6 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import utes.ResourceUtils;
 import utes.UntilTheEndServer;
 import utes.actioncmd.ActionCommand;
 
@@ -22,10 +23,8 @@ public class CommandBanner implements Listener {
     private static final HashMap<String, List<String>> worlds = new HashMap<>();
 
     public static void initialize(UntilTheEndServer plugin) {
+        ResourceUtils.autoUpdateConfigs("cmdban.yml");
         File file = new File(plugin.getDataFolder(), "cmdban.yml");
-        if (!file.exists()) {
-            plugin.saveResource("cmdban.yml", false);
-        }
         YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
         if (!yaml.getBoolean("enable")) {
             return;

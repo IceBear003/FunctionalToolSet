@@ -11,6 +11,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.generator.BlockPopulator;
+import utes.ResourceUtils;
 import utes.UntilTheEndServer;
 import utes.api.BlockApi;
 
@@ -25,10 +26,8 @@ public class ChunkRestore implements Listener {
     private static HashMap<String, Long> lastChangeStamps = new HashMap<>();
 
     public static void initialize(UntilTheEndServer plugin) {
+        ResourceUtils.autoUpdateConfigs("chunkrestore.yml");
         File file = new File(plugin.getDataFolder(), "chunkrestore.yml");
-        if (!file.exists()) {
-            plugin.saveResource("chunkrestore.yml", false);
-        }
         yaml = YamlConfiguration.loadConfiguration(file);
 
         //        if (!yaml.getBoolean("enable")) {

@@ -6,16 +6,15 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import utes.ResourceUtils;
 import utes.UntilTheEndServer;
 
 import java.io.File;
 
 public class NoLoginQuitMessage implements Listener {
     public static void initialize(UntilTheEndServer plugin) {
+        ResourceUtils.autoUpdateConfigs("information.yml");
         File file = new File(plugin.getDataFolder(), "information.yml");
-        if (!file.exists()) {
-            plugin.saveResource("information.yml", false);
-        }
         YamlConfiguration yaml;
         yaml = YamlConfiguration.loadConfiguration(file);
 
@@ -33,4 +32,5 @@ public class NoLoginQuitMessage implements Listener {
     public void onQuit(PlayerQuitEvent event) {
         event.setQuitMessage(null);
     }
+
 }

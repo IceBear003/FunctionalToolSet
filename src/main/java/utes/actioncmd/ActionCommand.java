@@ -9,6 +9,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.*;
 import org.bukkit.scheduler.BukkitRunnable;
+import utes.ResourceUtils;
 import utes.UntilTheEndServer;
 
 import java.io.File;
@@ -24,15 +25,13 @@ public class ActionCommand implements Listener {
     private static int judgeTime;
 
     public static void initialize(UntilTheEndServer plugin) {
+        ResourceUtils.autoUpdateConfigs("actcmd.yml");
         File file = new File(plugin.getDataFolder(), "actcmd.yml");
-        if (!file.exists()) {
-            plugin.saveResource("actcmd.yml", false);
-        }
         YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
         if (!yaml.getBoolean("enable")) {
             return;
         }
-
+        //TODO
         judgeTime = yaml.getInt("judgeTime");
         for (String path : yaml.getKeys(false)) {
             if (path.equalsIgnoreCase("enable") || path.equalsIgnoreCase("judgeTime")) {

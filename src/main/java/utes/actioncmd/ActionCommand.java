@@ -29,6 +29,11 @@ public class ActionCommand implements Listener {
             return;
         }
         judgeTime = yaml.getInt("judgeTime");
+
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            playerActions.put(player.getUniqueId(), new Actions(player.getUniqueId()));
+        }
+
         for (String path : yaml.getKeys(false)) {
             if (path.equalsIgnoreCase("enable") || path.equalsIgnoreCase("judgeTime")) {
                 continue;

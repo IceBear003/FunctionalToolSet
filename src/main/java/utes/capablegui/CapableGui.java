@@ -48,6 +48,10 @@ public class CapableGui implements Listener {
     private static final HashMap<UUID, Location> operating = new HashMap<>();
 
     public static void initialize(UntilTheEndServer plugin) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            load(player);
+        }
+
         Bukkit.getPluginManager().registerEvents(new CapableGui(), plugin);
     }
 

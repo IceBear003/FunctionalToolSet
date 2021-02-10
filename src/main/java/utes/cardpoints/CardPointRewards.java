@@ -38,6 +38,10 @@ public class CardPointRewards implements Listener {
             return;
         }
 
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            stats.put(player.getUniqueId(), loadYaml(player));
+        }
+
         int startDate = yaml.getInt("startDate");
         if (startDate == -1) {
             yaml.set("startDate", LocalDate.now().getDayOfMonth());

@@ -20,6 +20,9 @@ public class OnlineTimes implements Listener {
     private static final HashMap<UUID, IPlayer> stats = new HashMap<>();
 
     public static void initialize(UntilTheEndServer plugin) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            stats.put(player.getUniqueId(), loadYaml(player));
+        }
         Bukkit.getPluginManager().registerEvents(new OnlineTimes(), plugin);
         new BukkitRunnable() {
             int counter = 0;

@@ -2,7 +2,6 @@ package utes.actioncmd;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -13,16 +12,14 @@ import utes.ResourceUtils;
 import utes.UntilTheEndServer;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class ActionCommand implements Listener {
     private static final HashMap<String, IActions> standardActions = new HashMap<>();
     private static final HashMap<UUID, Actions> playerActions = new HashMap<>();
     private static final ArrayList<UUID> jumpers = new ArrayList<>();
     private static int judgeTime;
+    private static HashSet<UUID> cd = new HashSet<>();
 
     public static void initialize(UntilTheEndServer plugin) {
         ResourceUtils.autoUpdateConfigs("actcmd.yml");
@@ -31,7 +28,6 @@ public class ActionCommand implements Listener {
         if (!yaml.getBoolean("enable")) {
             return;
         }
-        //TODO
         judgeTime = yaml.getInt("judgeTime");
         for (String path : yaml.getKeys(false)) {
             if (path.equalsIgnoreCase("enable") || path.equalsIgnoreCase("judgeTime")) {
@@ -52,6 +48,16 @@ public class ActionCommand implements Listener {
         Bukkit.getPluginManager().registerEvents(new ActionCommand(), plugin);
     }
 
+    private static void addCd(Player player) {
+        cd.add(player.getUniqueId());
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                cd.remove(player.getUniqueId());
+            }
+        }.runTaskLater(UntilTheEndServer.getInstance(), 2L);
+    }
+
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
@@ -70,7 +76,8 @@ public class ActionCommand implements Listener {
             return;
         }
         Player player = event.getPlayer();
-        if (!event.isSneaking()) {
+        if (!player.isSneaking() && !cd.contains(player.getUniqueId())) {
+            addCd(player);
             playerActions.get(player.getUniqueId()).addAction(ActionType.SNEAK);
         }
     }
@@ -81,7 +88,10 @@ public class ActionCommand implements Listener {
             return;
         }
         Player player = event.getPlayer();
-        playerActions.get(player.getUniqueId()).addAction(ActionType.SWAP);
+        if (!cd.contains(player.getUniqueId())) {
+            addCd(player);
+            playerActions.get(player.getUniqueId()).addAction(ActionType.SWAP);
+        }
     }
 
     @EventHandler
@@ -90,6 +100,10 @@ public class ActionCommand implements Listener {
             return;
         }
         Player player = event.getPlayer();
+        if (cd.contains(player.getUniqueId())) {
+            return;
+        }
+        addCd(player);
         if (event.getAction().toString().contains("LEFT")) {
             playerActions.get(player.getUniqueId()).addAction(ActionType.LEFTCLICK);
         }
@@ -120,8 +134,8 @@ public class ActionCommand implements Listener {
             jumpers.remove(player.getUniqueId());
         }
         if (!jumpers.contains(player.getUniqueId())) {
-            if (to.getBlockX() == from.getBlockX() && to.getBlockZ() == from.getBlockZ() && to.getY() > from.getY()) {
-                if (to.getBlock().getType() == Material.AIR && from.getBlock().getType() == Material.AIR && !player.isFlying()) {
+            if (to.getBlockX() == from.getBlockX() && to.getBlockZ() == from.getBlockZ() && to.getY() - from.getY() >= 0.3) {
+                if (!player.isFlying() && !to.getBlock().isLiquid()) {
                     jumpers.add(player.getUniqueId());
                     playerActions.get(player.getUniqueId()).addAction(ActionType.JUMP);
                 }
@@ -129,10 +143,10 @@ public class ActionCommand implements Listener {
         }
 
         float pitch = to.getPitch() - from.getPitch();
-        if (pitch <= -30) {
+        if (pitch <= -40 && to.getPitch() <= -70) {
             playerActions.get(player.getUniqueId()).addAction(ActionType.UP);
         }
-        if (pitch >= 30) {
+        if (pitch >= 40 && to.getPitch() >= 70) {
             playerActions.get(player.getUniqueId()).addAction(ActionType.DOWN);
         }
     }
@@ -180,13 +194,14 @@ public class ActionCommand implements Listener {
         }
 
         private void gc() {
-            for (int index = 0; index < types.size(); index++) {
+            int size = types.size();
+            for (int index = 0; index < size; index++) {
                 long stamp = stamps.get(index);
                 if (System.currentTimeMillis() - stamp > judgeTime * 2000) {
-                    //noinspection SuspiciousListRemoveInLoop
                     types.remove(index);
                     values.remove(index);
                     stamps.remove(index);
+                    size--;
                 }
             }
         }
@@ -205,7 +220,7 @@ public class ActionCommand implements Listener {
                         flag = false;
                         break;
                     }
-                    if (!values.get(types.size() - actions.types.size() + index).equals(actions.values.get(index))) {
+                    if (values.get(types.size() - actions.types.size() + index) < actions.values.get(index)) {
                         flag = false;
                         break;
                     }
@@ -213,20 +228,21 @@ public class ActionCommand implements Listener {
                 if (!flag) {
                     continue;
                 } else {
+                    int size = types.size();
                     for (int index = 0; index < actions.types.size(); index++) {
-                        int index$ = types.size() - index - 1;
+                        int index$ = size - index - 1;
                         types.remove(index$);
                         values.remove(index$);
                         stamps.remove(index$);
                     }
+                    for (String cmd : actions.cmds) {
+                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replace("{player}", Bukkit.getPlayer(uuid).getName()));
+                    }
+                    for (String message : actions.messages) {
+                        Bukkit.getPlayer(uuid).sendMessage(message);
+                    }
+                    break;
                 }
-                for (String cmd : actions.cmds) {
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replace("{player}", Bukkit.getPlayer(uuid).getName()));
-                }
-                for (String message : actions.messages) {
-                    Bukkit.getPlayer(uuid).sendMessage(message);
-                }
-                break;
             }
             new BukkitRunnable() {
 

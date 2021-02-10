@@ -10,6 +10,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import utes.actioncmd.ActionCommand;
 import utes.bancmd.CommandBanner;
 import utes.capablegui.CapableGui;
+import utes.cardpoints.CardPointRewards;
 import utes.chair.Chair;
 import utes.chatbar.ChatBar;
 import utes.checkplayer.CheckContainers;
@@ -93,6 +94,8 @@ public class UntilTheEndServer extends JavaPlugin {
             RandomTeleport.initialize(this);
             getLogger().info("正在启用经验飞行功能中...");
             XPFly.initialize(this);
+            getLogger().info("正在启用赛季积分功能中...");
+            CardPointRewards.initialize(this);
             getLogger().info("正在启用计分板功能中...");
             ScoreBoard.initialize(this);
             getLogger().info("正在启用铁块电梯功能中...");

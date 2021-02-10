@@ -104,7 +104,7 @@ public class ChatBar implements Listener {
                                     }
 
                                     results.get(results.size() - 1).setClickEvent(
-                                            new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/say " + str));
+                                            new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, str.replace("§", "&")));
                                     results.get(results.size() - 1).setHoverEvent(
                                             new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(repeatHover)));
 
@@ -135,7 +135,7 @@ public class ChatBar implements Listener {
                                             String otherName = other.getName();
 
                                             if (origin.toLegacyText().startsWith(cueColor + "@" + otherName)) {
-                                                BaseComponent[] otherComponents = getBaseComponents(other, cueColor + "@" + otherName);
+                                                BaseComponent[] otherComponents = getBaseComponents(other, cueColor + "@" + cueColor + otherName);
                                                 finalResult.addAll(Arrays.asList(otherComponents));
                                                 break;
                                             } else {

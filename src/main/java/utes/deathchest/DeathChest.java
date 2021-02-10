@@ -92,6 +92,7 @@ public class DeathChest implements Listener {
         }
 
         event.getDrops().clear();
+        event.setDroppedExp(0);
         player.getInventory().clear();
         owner.put(dieLoc, player.getUniqueId());
 

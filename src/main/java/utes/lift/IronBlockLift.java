@@ -74,7 +74,7 @@ public class IronBlockLift implements Listener {
             return;
         }
         Location loc = player.getLocation();
-        for (int y = minHeight; y <= maxHeight; y++) {
+        for (int y = maxHeight; y >= minHeight; y--) {
             Location newLoc = loc.clone().add(0, -y, 0);
             if (newLoc.getBlock() == null) {
                 return;
@@ -83,6 +83,7 @@ public class IronBlockLift implements Listener {
                 player.teleport(newLoc.add(0, 1, 0));
                 consume(player);
                 player.sendMessage("您乘坐铁块电梯下楼。");
+                return;
             }
         }
     }

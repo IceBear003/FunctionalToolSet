@@ -200,7 +200,7 @@ public class UTESCommands implements CommandExecutor {
             sender.sendMessage("{ignore}§a/utes randomcredits <玩家名> §e-随机奖励权限和指令");
             sender.sendMessage("{ignore}§a/utes addgui <方块备注> §e-在便携容器中加入一个新的方块");
             sender.sendMessage("{ignore}§a/utes opengui §e-打开便携容器管理");
-            sender.sendMessage("{ignore}§a/utes regenchunk §e-重新生成区块");
+            sender.sendMessage("{ignore}§a/utes regenchunk §e-重新生成区块（仅1.12.x-）");
             sender.sendMessage("{ignore}§a/utes checkinv <玩家名> §e-查水表-查询一个玩家的背包");
             sender.sendMessage("{ignore}§a/utes checkchest <玩家名> §e-查水表-查询一个玩家的末影箱");
             sender.sendMessage("{ignore}§a/utes checkcontainer <玩家名> §e-查水表-查询一个玩家的容器打开记录");

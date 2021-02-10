@@ -16,6 +16,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.ItemStack;
+import utes.ItemFactory;
 import utes.NMSManager;
 import utes.ResourceUtils;
 import utes.UntilTheEndServer;
@@ -159,11 +160,9 @@ public class ShowOff implements Listener {
         if (item.hasItemMeta()) {
             if (item.getItemMeta().hasDisplayName()) {
                 return item.getItemMeta().getDisplayName();
-            } else {
-                return item.getItemMeta().getLocalizedName();
             }
         }
-        return item.getType().name();
+        return ItemFactory.toString(item.getType());
     }
 
     @EventHandler

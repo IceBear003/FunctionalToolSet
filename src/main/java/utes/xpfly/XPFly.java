@@ -11,6 +11,7 @@ import utes.UntilTheEndServer;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.UUID;
 
 //TODO
@@ -32,6 +33,8 @@ public class XPFly {
 
         exhaustSpeed = yaml.getDouble("exhaustSpeed");
 
+        HashSet<UUID> tmp = new HashSet<>();
+
         new BukkitRunnable() {
             long counter = 0;
 
@@ -50,8 +53,20 @@ public class XPFly {
                     float newExp = currentExp - (float) exhaustSpeed / 10;
 
                     if (newExp < 0.0f) {
-                        player.setLevel(Math.max(player.getLevel() - 1, 0));
-                        newExp = 1.0f;
+                        if (tmp.contains(player.getUniqueId())) {
+                            newExp = 1.0f;
+                        } else {
+                            tmp.add(player.getUniqueId());
+                            player.setLevel(Math.max(player.getLevel() - 1, 0));
+                            new BukkitRunnable() {
+
+                                @Override
+                                public void run() {
+                                    tmp.remove(player.getUniqueId());
+                                }
+                            }.runTaskLater(UntilTheEndServer.getInstance(), 2L);
+                            newExp = 1.0f;
+                        }
                     }
 
                     if (player.hasPermission("utes.xpfly.slowexhaust")) {

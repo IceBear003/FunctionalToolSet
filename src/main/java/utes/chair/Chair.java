@@ -58,7 +58,7 @@ public class Chair implements Listener {
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
             return;
         }
-        if (!player.isSneaking()) {
+        if (player.isSneaking()) {
             return;
         }
         Block block = event.getClickedBlock();
@@ -70,7 +70,7 @@ public class Chair implements Listener {
             }
         }
         if (flag) {
-            Location loc = block.getLocation().add(0.5, 0, 0.5);
+            Location loc = block.getLocation().add(0.5, -0.1, 0.5);
             World world = block.getWorld();
             Arrow arrow = (Arrow) world.spawnEntity(loc, EntityType.ARROW);
             arrow.setGravity(false);

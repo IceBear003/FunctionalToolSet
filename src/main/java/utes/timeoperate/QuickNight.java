@@ -34,6 +34,7 @@ public class QuickNight {
                 for (World world : Bukkit.getWorlds()) {
                     //白天不进行计算
                     if (world.getTime() < 12600) {
+                        world.setGameRuleValue("doDaylightCycle", "true");
                         continue;
                     }
                     //计算某世界总睡觉玩家人数
@@ -45,10 +46,6 @@ public class QuickNight {
                         if (player.isSleeping()) {
                             amount++;
                         }
-                    }
-                    //如果全部都在入睡，就按原版机制跳到第二天
-                    if (amount == world.getPlayers().size()) {
-                        continue;
                     }
                     //如果入睡人数超过占比，则加速时间流动
                     if (amount >= world.getPlayers().size() * percent) {

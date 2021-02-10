@@ -10,6 +10,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -23,6 +24,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import utes.ItemFactory;
 import utes.UntilTheEndServer;
 import utes.api.BlockApi;
 import utes.api.UTEInvHolder;
@@ -42,7 +44,6 @@ import java.util.*;
  */
 public class CapableGui implements Listener {
     private static final HashMap<UUID, ArrayList<Inventory>> choseGuis = new HashMap<>();
-    private static final HashMap<ItemStack, String> guiName = new HashMap<>();
     private static final HashSet<UUID> openers = new HashSet<>();
     private static final HashMap<UUID, Location> operating = new HashMap<>();
 
@@ -81,6 +82,7 @@ public class CapableGui implements Listener {
         }
         Block block = loc.getBlock();
         if (!(block.getState() instanceof Container)) {
+            player.sendMessage("该方块不是容器！");
             return;
         }
         Container container = (Container) block.getState();
@@ -122,7 +124,8 @@ public class CapableGui implements Listener {
             return;
         }
 
-        if (!(loc.getBlock().getState() instanceof Container) && loc.getBlock().getType() != Material.ENCHANTMENT_TABLE) {
+        if (!(loc.getBlock().getState() instanceof Container) && !(loc.getBlock().getType().toString().contains("ENCHANT") &&
+                loc.getBlock().getType().toString().contains("TABLE"))) {
             player.sendMessage("您指向的方块不是容器！");
             return;
         }
@@ -160,7 +163,6 @@ public class CapableGui implements Listener {
             guis.add(initInventory());
             addItemStack(player, loc, name);
         }
-        guiName.put(item, name);
 
         player.sendMessage("添加远程容器" + name + "成功！");
     }
@@ -206,7 +208,6 @@ public class CapableGui implements Listener {
             guis.add(initInventory());
             addItemStack(player, villager, name);
         }
-        guiName.put(item, name);
 
         player.sendMessage("添加远程商店" + name + "成功！");
     }
@@ -248,7 +249,6 @@ public class CapableGui implements Listener {
                 lore.add("§6shift+左击 删除本远程容器/商店");
                 ItemStack item = createItem(type, 0, yaml.getString(path + ".name"), lore);
                 inv.addItem(item);
-                guiName.put(item, yaml.getString(path + ".name"));
             }
             invs.add(inv);
         }
@@ -281,9 +281,9 @@ public class CapableGui implements Listener {
                     continue;
                 }
                 String toString = item.getItemMeta().getLore().get(0);
-                yaml.set(item.getType().toString() + tot + ".name", guiName.get(item));
-                guiName.remove(item);
+                yaml.set(item.getType().toString() + tot + ".name", item.getItemMeta().getDisplayName());
                 yaml.set(item.getType().toString() + tot + ".loc", toString);
+                tot++;
             }
         }
         try {
@@ -294,15 +294,14 @@ public class CapableGui implements Listener {
     }
 
     private static Inventory initInventory() {
-        ItemStack frame = createItem(Material.STAINED_GLASS_PANE, 15, "§8边框", new ArrayList<>());
+        ItemStack frame = createItem(ItemFactory.valueOf("STAINED_GLASS_PANE"), 15, "§8边框", new ArrayList<>());
         Inventory inv = Bukkit.createInventory(new HolderChoseGui(), 54, "§l远程操控");
         for (int i = 0; i <= 53; i++) {
             if (i % 9 == 0 || i % 9 == 1 | i % 9 == 2) {
                 inv.setItem(i, frame);
             }
         }
-
-        inv.setItem(10, createItem(Material.WORKBENCH, 0, "§6便携式工作台", new ArrayList<>()));
+        inv.setItem(10, createItem(ItemFactory.valueOf("WORKBENCH"), 0, "§6便携式工作台", new ArrayList<>()));
         inv.setItem(37, createItem(Material.ENDER_CHEST, 0, "§6便携式潜影箱", new ArrayList<>()));
         inv.setItem(45, createItem(Material.PAPER, 0, "§6上一页", new ArrayList<>()));
         inv.setItem(47, createItem(Material.PAPER, 0, "§e下一页", new ArrayList<>()));
@@ -310,7 +309,7 @@ public class CapableGui implements Listener {
     }
 
     private static ItemStack createItem(Material type, int id, String name, List<String> lore) {
-        ItemStack item = new ItemStack(type);
+        ItemStack item = new ItemStack(type, 1, (short) id);
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(name);
         meta.setLore(lore);
@@ -319,7 +318,7 @@ public class CapableGui implements Listener {
         return item;
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onClick(InventoryClickEvent event) {
         if (event.isCancelled()) {
             return;
@@ -363,7 +362,7 @@ public class CapableGui implements Listener {
                     return;
                 }
                 String lore = item.getItemMeta().getLore().get(0);
-                if (item.getType() == Material.ENCHANTMENT_TABLE) {
+                if (item.getType().toString().contains("ENCHANT") && item.getType().toString().contains("TABLE")) {
                     openEnchant(player, BlockApi.strToLoc(lore));
                 } else if (lore.startsWith("uuid:")) {
                     Villager villager = (Villager) Bukkit.getEntity(UUID.fromString(lore.replace("uuid:", "")));
@@ -375,7 +374,7 @@ public class CapableGui implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOW)
     public void onOperate(InventoryClickEvent event) {
         if (openers.contains(event.getWhoClicked().getUniqueId())) {
             event.setCancelled(true);

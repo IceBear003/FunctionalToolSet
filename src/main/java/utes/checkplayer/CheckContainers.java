@@ -19,6 +19,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
+import utes.ItemFactory;
+import utes.ResourceUtils;
 import utes.UntilTheEndServer;
 import utes.api.BlockApi;
 import utes.api.UTEInvHolder;
@@ -34,6 +36,15 @@ public class CheckContainers implements Listener {
     private static ArrayList<UUID> operators = new ArrayList<>();
 
     public static void initialize(UntilTheEndServer plugin) {
+        ResourceUtils.autoUpdateConfigs("checkplayer.yml");
+        File file = new File(plugin.getDataFolder(), "checkplayer.yml");
+        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
+        if (!yaml.getBoolean("checkContainers")) {
+            return;
+        }
+
+        judgeTime = yaml.getInt("judgeTime");
+
         Bukkit.getPluginManager().registerEvents(new CheckContainers(), plugin);
     }
 
@@ -105,7 +116,7 @@ public class CheckContainers implements Listener {
         Inventory inv = Bukkit.createInventory(new HolderCheckContainerGui(), 54, "玩家" + player.getName() + "的容器打开记录");
         inv.setItem(45, createItem(Material.PAPER, 0, "§e上一页", new ArrayList<>()));
         for (int i = 0; i <= 6; i++) {
-            inv.setItem(46 + i, createItem(Material.STAINED_GLASS_PANE, 15, "§e边框", new ArrayList<>()));
+            inv.setItem(46 + i, createItem(ItemFactory.valueOf("STAINED_GLASS_PANE"), 15, "§e边框", new ArrayList<>()));
         }
         inv.setItem(53, createItem(Material.PAPER, 0, "§e下一页", new ArrayList<>()));
         return inv;
@@ -235,7 +246,8 @@ public class CheckContainers implements Listener {
                     }.runTaskLater(UntilTheEndServer.getInstance(), 2L);
                 } catch (Exception e) {
                     if (item.getType() == Material.ENDER_CHEST) {
-                        OfflinePlayer owner = Bukkit.getOfflinePlayer(inv.getName().replace("玩家", "").replace("的容器打开记录", ""));
+                        //TODO
+                        OfflinePlayer owner = Bukkit.getOfflinePlayer(event.getView().getTitle().replace("玩家", "").replace("的容器打开记录", ""));
                         operators.add(player.getUniqueId());
                         player.openInventory(CheckInventory.getEnderChest(owner));
                         new BukkitRunnable() {

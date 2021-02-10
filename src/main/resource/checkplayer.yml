@@ -1,0 +1,3 @@
+checkInventory: true #是否开启可查询离线玩家背包的功能
+checkContainers: true #是否开启可查询玩家打开过的容器的功能
+judgeTime: 864000 #玩家多少秒前的容器打开记录自动删除，不在清理

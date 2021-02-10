@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="1.16.5-patched">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../服务器/1.16.4构建/1.16.5-patched.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/../服务器/1.16.4构建/1.16.5-patched.jar!/" />
+    </SOURCES>
+  </library>
+</component>

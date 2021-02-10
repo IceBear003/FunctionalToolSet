@@ -6,6 +6,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -13,6 +14,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.scheduler.BukkitRunnable;
+import utes.ResourceUtils;
 import utes.UntilTheEndServer;
 import utes.api.UTEInvHolder;
 
@@ -25,6 +27,13 @@ public class CheckInventory implements Listener {
     private static HashMap<Inventory, UUID> owners = new HashMap<>();
 
     public static void initialize(UntilTheEndServer plugin) {
+        ResourceUtils.autoUpdateConfigs("checkplayer.yml");
+        File file = new File(plugin.getDataFolder(), "checkplayer.yml");
+        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
+        if (!yaml.getBoolean("checkInventory")) {
+            return;
+        }
+
         Bukkit.getPluginManager().registerEvents(new CheckInventory(), plugin);
 
         new BukkitRunnable() {
@@ -42,6 +51,7 @@ public class CheckInventory implements Listener {
         Inventory enderchest = player.getEnderChest();
 
         File file = new File(UntilTheEndServer.getInstance().getDataFolder() + "/checkinv/", player.getUniqueId().toString() + ".yml");
+        file.delete();
         YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
 
         for (int i = 0; i < inventory.getSize(); i++) {
@@ -115,25 +125,14 @@ public class CheckInventory implements Listener {
 
         Inventory inv = Bukkit.createInventory(new HolderCheckInventoryGui(), 27, "玩家" + player.getName() + "的末影箱");
 
-        File changeFile = new File(UntilTheEndServer.getInstance().getDataFolder() + "/changeinv/", player.getUniqueId().toString() + ".yml");
-        if (changeFile.exists()) {
-            YamlConfiguration yaml = YamlConfiguration.loadConfiguration(changeFile);
-            for (int i = 0; i < 27; i++) {
-                if (!yaml.contains("enderchest." + i)) {
-                    continue;
-                }
-                ItemStack item = yaml.getItemStack("enderchest." + i);
-                inv.setItem(i, item);
+        File file = new File(UntilTheEndServer.getInstance().getDataFolder() + "/checkinv/", player.getUniqueId().toString() + ".yml");
+        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
+        for (int i = 0; i < 27; i++) {
+            if (!yaml.contains("enderchest." + i)) {
+                continue;
             }
-        } else {
-            File file = new File(UntilTheEndServer.getInstance().getDataFolder() + "/checkinv/", player.getUniqueId().toString() + ".yml");
-            YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
-            for (int i = 0; i < 27; i++) {
-                if (yaml.contains("enderchest." + i)) {
-                    ItemStack item = yaml.getItemStack("enderchest." + i);
-                    inv.setItem(i, item);
-                }
-            }
+            ItemStack item = yaml.getItemStack("enderchest." + i);
+            inv.setItem(i, item);
         }
         owners.put(inv, player.getUniqueId());
         return inv;
@@ -142,25 +141,16 @@ public class CheckInventory implements Listener {
     @EventHandler
     public void onClose(InventoryCloseEvent event) {
         Inventory inv = event.getInventory();
-        if (inv.getHolder() instanceof HolderCheckInventoryGui) {
+        if (inv.getHolder() instanceof HolderCheckInventoryGui && inv.getSize() == 54) {
             OfflinePlayer player = Bukkit.getOfflinePlayer(owners.get(inv));
             File file = new File(UntilTheEndServer.getInstance().getDataFolder() + "/changeinv/", player.getUniqueId().toString() + ".yml");
             file.delete();
             YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
-            if (inv.getSize() == 27) {
-                for (int i = 0; i < inv.getSize(); i++) {
-                    if (inv.getItem(i) == null) {
-                        continue;
-                    }
-                    yaml.set("enderchest." + i, inv.getItem(i));
+            for (int i = 0; i < inv.getSize(); i++) {
+                if (inv.getItem(i) == null) {
+                    continue;
                 }
-            } else {
-                for (int i = 0; i < inv.getSize(); i++) {
-                    if (inv.getItem(i) == null) {
-                        continue;
-                    }
-                    yaml.set("inventory." + i, inv.getItem(i));
-                }
+                yaml.set("inventory." + i, inv.getItem(i));
             }
             owners.remove(player.getUniqueId());
             try {
@@ -179,6 +169,7 @@ public class CheckInventory implements Listener {
             YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
             if (yaml.contains("inventory")) {
                 PlayerInventory inv = player.getInventory();
+                inv.clear();
                 for (int i = 0; i < inv.getSize(); i++) {
                     if (!yaml.contains("inventory." + i)) {
                         continue;
@@ -188,27 +179,23 @@ public class CheckInventory implements Listener {
                 }
                 player.updateInventory();
             }
-            if (yaml.contains("enderchest")) {
-                Inventory inv = player.getEnderChest();
-                for (int i = 0; i < inv.getSize(); i++) {
-                    if (!yaml.contains("enderchest." + i)) {
-                        continue;
-                    }
-                    ItemStack item = yaml.getItemStack("enderchest." + i);
-                    inv.setItem(i, item);
-                }
-            }
             file.delete();
+        }
+    }
+
+    @EventHandler
+    public void onClick(InventoryClickEvent event) {
+        if (event.getInventory() == null) {
+            return;
+        }
+        if (event.getInventory().getHolder() instanceof HolderCheckInventoryGui && event.getInventory().getSize() == 27) {
+            event.setCancelled(true);
         }
     }
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         save(event.getPlayer());
-        File file = new File(UntilTheEndServer.getInstance().getDataFolder() + "/changeinv/", event.getPlayer().getUniqueId().toString() + ".yml");
-        if (file.exists()) {
-            file.delete();
-        }
     }
 
     private static class HolderCheckInventoryGui implements UTEInvHolder {

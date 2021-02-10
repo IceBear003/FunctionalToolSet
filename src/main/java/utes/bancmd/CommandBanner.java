@@ -10,7 +10,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import utes.ResourceUtils;
 import utes.UntilTheEndServer;
-import utes.actioncmd.ActionCommand;
 
 import java.io.File;
 import java.util.HashMap;
@@ -37,7 +36,7 @@ public class CommandBanner implements Listener {
             worlds.put(path, yaml.getStringList(path));
         }
 
-        Bukkit.getPluginManager().registerEvents(new ActionCommand(), plugin);
+        Bukkit.getPluginManager().registerEvents(new CommandBanner(), plugin);
     }
 
     @EventHandler(priority = EventPriority.LOW)

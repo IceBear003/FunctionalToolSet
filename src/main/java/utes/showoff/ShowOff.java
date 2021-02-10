@@ -168,6 +168,9 @@ public class ShowOff implements Listener {
 
     @EventHandler
     public void onChat(AsyncPlayerChatEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
         Player player = event.getPlayer();
         if (!player.hasPermission("utes.showoff.can")) {
             return;

@@ -10,8 +10,11 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
+import org.bukkit.inventory.Inventory;
 import utes.capablegui.CapableGui;
 import utes.cardpoints.CardPointRewards;
+import utes.checkplayer.CheckContainers;
+import utes.checkplayer.CheckInventory;
 import utes.chunkrestore.ChunkRestore;
 import utes.particle.ParticleOverHead;
 import utes.particle.ParticleUnderFeet;
@@ -144,7 +147,47 @@ public class UTESCommands implements CommandExecutor {
             CapableGui.openGui(player);
         } else if (command.startsWith("utes regenchunk")) {
             Player player = (Player) sender;
+            if (!player.hasPermission("utes.regenchunk")) {
+                player.sendMessage("你没有权限重生成区块！");
+                return true;
+            }
             ChunkRestore.regenChunk(player.getLocation().getChunk());
+        } else if (command.startsWith("utes checkinv")) {
+            Player player = (Player) sender;
+            if (!player.hasPermission("utes.checkcontainer")) {
+                player.sendMessage("你没有权限查询玩家的背包！");
+                return true;
+            }
+            Inventory inv = CheckInventory.getInv(Bukkit.getOfflinePlayer(args[1]));
+            if (inv != null) {
+                player.openInventory(inv);
+            } else {
+                player.sendMessage("玩家不存在");
+            }
+        } else if (command.startsWith("utes checkchest")) {
+            Player player = (Player) sender;
+            if (!player.hasPermission("utes.checkcontainer")) {
+                player.sendMessage("你没有权限查询玩家的末影箱！");
+                return true;
+            }
+            Inventory inv = CheckInventory.getEnderChest(Bukkit.getOfflinePlayer(args[1]));
+            if (inv != null) {
+                player.openInventory(inv);
+            } else {
+                player.sendMessage("玩家不存在");
+            }
+        } else if (command.startsWith("utes checkcontainer")) {
+            Player player = (Player) sender;
+            if (!player.hasPermission("utes.checkcontainer")) {
+                player.sendMessage("你没有权限查询玩家的容器记录！");
+                return true;
+            }
+            Inventory inv = CheckContainers.getContainers(Bukkit.getOfflinePlayer(args[1]), player);
+            if (inv != null) {
+                player.openInventory(inv);
+            } else {
+                player.sendMessage("玩家不存在");
+            }
         } else if (command.startsWith("utes help")) {
             sender.sendMessage("{ignore}§e-----------§6§lUntilTheEndServer插件指令简介§e-----------");
             sender.sendMessage("{ignore}§a/utes rtp §e-随机传送");
@@ -158,6 +201,9 @@ public class UTESCommands implements CommandExecutor {
             sender.sendMessage("{ignore}§a/utes addgui <方块备注> §e-在便携容器中加入一个新的方块");
             sender.sendMessage("{ignore}§a/utes opengui §e-打开便携容器管理");
             sender.sendMessage("{ignore}§a/utes regenchunk §e-重新生成区块");
+            sender.sendMessage("{ignore}§a/utes checkinv <玩家名> §e-查水表-查询一个玩家的背包");
+            sender.sendMessage("{ignore}§a/utes checkchest <玩家名> §e-查水表-查询一个玩家的末影箱");
+            sender.sendMessage("{ignore}§a/utes checkcontainer <玩家名> §e-查水表-查询一个玩家的容器打开记录");
             sender.sendMessage("{ignore}§e----------------------------------------------------------");
         } else {
             sender.sendMessage("输入/utes help 查看帮助");

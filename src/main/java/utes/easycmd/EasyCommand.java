@@ -45,6 +45,9 @@ public class EasyCommand implements Listener {
 
     @EventHandler
     public void onCommand(PlayerCommandPreprocessEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
         Player player = event.getPlayer();
         if (!player.hasPermission("utes.easycmd")) {
             return;

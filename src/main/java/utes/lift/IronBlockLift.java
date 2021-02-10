@@ -41,6 +41,9 @@ public class IronBlockLift implements Listener {
 
     @EventHandler
     public void onJump(PlayerMoveEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
         Player player = event.getPlayer();
         if (player.getLocation().add(0, -1, 0).getBlock().getType() != blockType) {
             return;
@@ -63,6 +66,9 @@ public class IronBlockLift implements Listener {
 
     @EventHandler
     public void onSneak(PlayerToggleSneakEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
         Player player = event.getPlayer();
         if (player.getLocation().add(0, -1, 0).getBlock().getType() != blockType) {
             return;

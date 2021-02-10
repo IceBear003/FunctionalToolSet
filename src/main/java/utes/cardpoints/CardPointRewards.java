@@ -34,6 +34,10 @@ public class CardPointRewards implements Listener {
         File file = new File(plugin.getDataFolder(), "cardpoints.yml");
         YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
 
+        if (!yaml.getBoolean("enable")) {
+            return;
+        }
+
         int startDate = yaml.getInt("startDate");
         if (startDate == -1) {
             yaml.set("startDate", LocalDate.now().getDayOfMonth());

@@ -41,6 +41,9 @@ public class ParticleOverHead implements Listener {
 
     @EventHandler
     public void onMove(PlayerMoveEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
         Player player = event.getPlayer();
         if (users.containsKey(player.getUniqueId())) {
             Location to = event.getTo();

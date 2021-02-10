@@ -30,8 +30,9 @@ public class ParticleUnderFeet implements Listener {
         if (player.hasPermission("utes.particle.over." + particle.toString())) {
             users.remove(player.getUniqueId());
             users.put(player.getUniqueId(), particle);
-        } else
+        } else {
             player.sendMessage("您没有权限使用该粒子效果！");
+        }
     }
 
     public static void stop(Player player) {
@@ -40,6 +41,9 @@ public class ParticleUnderFeet implements Listener {
 
     @EventHandler
     public void onMove(PlayerMoveEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
         Player player = event.getPlayer();
         if (users.containsKey(player.getUniqueId())) {
             Location to = event.getTo();

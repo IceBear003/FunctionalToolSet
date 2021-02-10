@@ -66,6 +66,9 @@ public class ActionCommand implements Listener {
 
     @EventHandler
     public void onSneak(PlayerToggleSneakEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
         Player player = event.getPlayer();
         if (!event.isSneaking()) {
             playerActions.get(player.getUniqueId()).addAction(ActionType.SNEAK);
@@ -74,12 +77,18 @@ public class ActionCommand implements Listener {
 
     @EventHandler
     public void onSwap(PlayerSwapHandItemsEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
         Player player = event.getPlayer();
         playerActions.get(player.getUniqueId()).addAction(ActionType.SWAP);
     }
 
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
         Player player = event.getPlayer();
         if (event.getAction().toString().contains("LEFT")) {
             playerActions.get(player.getUniqueId()).addAction(ActionType.LEFTCLICK);
@@ -91,12 +100,18 @@ public class ActionCommand implements Listener {
 
     @EventHandler
     public void onInteractEntity(PlayerInteractAtEntityEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
         Player player = event.getPlayer();
         playerActions.get(player.getUniqueId()).addAction(ActionType.INTERACTENTITY);
     }
 
     @EventHandler
     public void onMove(PlayerMoveEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
         Location to = event.getTo();
         Location from = event.getFrom();
         Player player = event.getPlayer();

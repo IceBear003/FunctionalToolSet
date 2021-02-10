@@ -60,6 +60,9 @@ public class WorldBoarder implements Listener {
 
     @EventHandler
     public void onMove(PlayerMoveEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
         Player player = event.getPlayer();
         World world = player.getWorld();
         if (boarders.containsKey(world.getName())) {
@@ -109,6 +112,9 @@ public class WorldBoarder implements Listener {
 
     @EventHandler
     public void onTeleport(PlayerTeleportEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
         Player player = event.getPlayer();
         World world = player.getWorld();
         if (boarders.containsKey(world.getName())) {

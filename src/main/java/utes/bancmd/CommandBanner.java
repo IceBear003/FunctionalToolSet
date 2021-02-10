@@ -42,6 +42,9 @@ public class CommandBanner implements Listener {
 
     @EventHandler(priority = EventPriority.LOW)
     public void onCommand(PlayerCommandPreprocessEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
         Player player = event.getPlayer();
         if (player.hasPermission("utes.cmdban.ignore")) {
             return;

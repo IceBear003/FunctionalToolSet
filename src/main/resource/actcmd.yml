@@ -2,12 +2,12 @@ enable: true #是否开启短时间动作触发指令的功能
 judgeTime: 3 #短时间判定时长
 action1: #第一个动作，action1可以改成别的名字，自行设置
   actions: #玩家需要按顺序作出的动作（次数和角度在value里设置，一个一个对应）
-  - "SNEAK"
-  values: #上面动作的次数和角度
-  - 5
+    - "SNEAK"
+  values: #上面动作的次数
+    - 5
   cmds: #判定成功后执行的指令（{player代表玩家名}）
-  - "spawn {player}"
+    - "spawn {player}"
   messages: #判定成功后给玩家发送的信息
-  - "您使用五次蹲起成功激活了回城指令！"
+    - "您使用五次蹲起成功激活了回城指令！"
 
 #其他动作自行添加

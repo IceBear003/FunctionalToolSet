@@ -1,12 +1,13 @@
+enable: true #是否启用该功能
 reward1: #第一个奖励
   need: 100 #需要多少积分
   reward: #奖励指令内容
-  - "money give {player} 1000"
+    - "money give {player} 1000"
   consume: false #是否消耗积分
 reward2:
   need: 100
   reward:
-  - "money give {player} 1000"
+    - "money give {player} 1000"
   consume: false
 
 startDate: -1 #勿动

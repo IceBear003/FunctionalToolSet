@@ -141,6 +141,8 @@ public class CapableGui implements Listener {
 
         ArrayList<String> lore = new ArrayList<>();
         lore.add(BlockApi.locToStr(loc));
+        lore.add("");
+        lore.add("§6shift+左击 删除本远程容器/商店");
         ItemStack item = createItem(loc.getBlock().getType(), 0, name, lore);
 
         if (hasNull(inv)) {
@@ -185,6 +187,8 @@ public class CapableGui implements Listener {
 
         ArrayList<String> lore = new ArrayList<>();
         lore.add("uuid:" + villager.getUniqueId());
+        lore.add("");
+        lore.add("§6shift+左击 删除本远程容器/商店");
         ItemStack item = createItem(Material.EMERALD, 0, name, lore);
 
         if (hasNull(inv)) {
@@ -291,7 +295,7 @@ public class CapableGui implements Listener {
 
     private static Inventory initInventory() {
         ItemStack frame = createItem(Material.STAINED_GLASS_PANE, 15, "§8边框", new ArrayList<>());
-        Inventory inv = Bukkit.createInventory(new HolderChoseGui(), 54, "§l远程操控"); //TODO
+        Inventory inv = Bukkit.createInventory(new HolderChoseGui(), 54, "§l远程操控");
         for (int i = 0; i <= 53; i++) {
             if (i % 9 == 0 || i % 9 == 1 | i % 9 == 2) {
                 inv.setItem(i, frame);
@@ -317,6 +321,9 @@ public class CapableGui implements Listener {
 
     @EventHandler
     public void onClick(InventoryClickEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
         Inventory inv = event.getClickedInventory();
         if (inv == null) {
             return;

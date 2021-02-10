@@ -10,7 +10,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 import utes.actioncmd.ActionCommand;
 import utes.bancmd.CommandBanner;
 import utes.capablegui.CapableGui;
+import utes.chair.Chair;
 import utes.chatbar.ChatBar;
+import utes.checkplayer.CheckContainers;
+import utes.checkplayer.CheckInventory;
 import utes.chunkrestore.ChunkRestore;
 import utes.customexp.CustomExpMechenism;
 import utes.deathchest.DeathChest;
@@ -145,6 +148,13 @@ public class UntilTheEndServer extends JavaPlugin {
             QuickNight.initialize(this);
             getLogger().info("正在启用进服操作功能中...");
             JoinCommand.initialize(this);
+            getLogger().info("正在启用查询离线背包功能中...");
+            getLogger().info("正在启用查询离线末影箱功能中...");
+            CheckInventory.initialize(this);
+            getLogger().info("正在启用椅子功能中...");
+            Chair.initialize(this);
+            getLogger().info("正在启用查询容器记录功能中...");
+            CheckContainers.initialize(this);
 
         } catch (Exception exception) {
             getLogger().info("哎呀这步好像出了些小问题呢！");

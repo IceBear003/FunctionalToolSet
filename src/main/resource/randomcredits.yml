@@ -1,9 +1,9 @@
 enable: true #是否启用抽奖功能
 permission1: #奖励权限I
-  permission: 'utes.sj.1' #给予的权限
+  permission: 'fts.sj.1' #给予的权限
   message: '恭喜玩家%player%抽取到了超级跳1级权限-%permission%' #全服公告内容
   percent: 1 #权重（数值越大可能性越大）
-command1:  #奖励指令I
+command1: #奖励指令I
   command: 'money give {player} 1000' #执行的指令（玩家名用{player}代替）
   message: '恭喜玩家%player%抽取到了1000金币'
   percent: 1

@@ -10,9 +10,9 @@ enable: true #是否开启简化指令的功能
   - "spawn"
   - "say 我回城了"
 
-#/u help代表 /utes help
-#/u rtp代表 /utes rtp
-u: "utes"
+#/f help代表 /fts help
+#/f rtp代表 /fts rtp
+f: "fts"
 
 #/awa HamsterYDS kkk代表 /tell HamsterYDS kkk
 #/awa HamsterYDS awa代表 /tell HamsterYDS tell

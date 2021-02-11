@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/UntilTheEndServer.iml" filepath="$PROJECT_DIR$/.idea/UntilTheEndServer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/FunctionalToolSet.iml" filepath="$PROJECT_DIR$/.idea/FunctionalToolSet.iml" />
     </modules>
   </component>
 </project>

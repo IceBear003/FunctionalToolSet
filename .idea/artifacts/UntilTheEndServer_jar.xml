@@ -2,7 +2,7 @@
   <artifact type="jar" name="UntilTheEndServer:jar">
     <output-path>$PROJECT_DIR$/../服务器/新服务器/plugins</output-path>
     <root id="archive" name="UntilTheEndServer.jar">
-      <element id="module-output" name="UntilTheEndServer" />
+      <element id="module-output" name="FunctionalToolSet" />
       <element id="file-copy" path="$PROJECT_DIR$/src/main/resource/xpfly.yml" />
       <element id="file-copy" path="$PROJECT_DIR$/src/main/resource/cardpoints.yml" />
       <element id="file-copy" path="$PROJECT_DIR$/src/main/resource/information.yml" />

@@ -25,10 +25,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.io.File;
 import java.util.*;
 
-/*
- * TODO
- * fts.cue
- */
 public class ChatBar implements Listener {
     public static YamlConfiguration yaml;
     private static HashMap<String, UUID> owners = new HashMap<>();
@@ -234,7 +230,7 @@ public class ChatBar implements Listener {
             return;
         }
         Player player = event.getPlayer();
-        if (!player.hasPermission("fts.cue")) {
+        if (!player.hasPermission("fts.cue.use")) {
             return;
         }
         String message = event.getMessage();

@@ -77,6 +77,9 @@ public class CheckContainers implements Listener {
                     item = new ItemStack(Material.CHEST);
                 }
                 ItemMeta meta = item.getItemMeta();
+                if (meta == null) {
+                    continue;
+                }
                 meta.setDisplayName("§c" + turnToString(Math.toIntExact((System.currentTimeMillis() - Long.parseLong(path)) / 1000)) + "前 打开");
                 List<String> lore = new ArrayList<>();
                 lore.add("§e世界:§6" + loc.getWorld().getName());
@@ -258,7 +261,7 @@ public class CheckContainers implements Listener {
                         }.runTaskLater(FunctionalToolSet.getInstance(), 2L);
                         return;
                     }
-                    player.sendMessage("该容器已经不存在！");
+                    player.sendMessage("该容器已经不存在或该方块不支持远程打开！");
                     player.closeInventory();
                     playerInvs.remove(player.getUniqueId());
                 }

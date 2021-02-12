@@ -18,9 +18,6 @@ import org.bukkit.inventory.ItemStack;
 import java.io.File;
 import java.util.*;
 
-/*TODO
- * fts.linkdig
- */
 public class LinkingDig implements Listener {
     private static final HashSet<Location> linked = new HashSet<>();
     private static double exhaustSpeed;
@@ -127,7 +124,7 @@ public class LinkingDig implements Listener {
         }
         Player player = event.getPlayer();
         Block block = event.getBlock();
-        if (!player.hasPermission("fts.linkdig")) {
+        if (!player.hasPermission("fts.linkdig.use")) {
             return;
         }
         if (!player.isSneaking()) {

@@ -39,12 +39,12 @@ public class FTSCommands implements CommandExecutor {
         } catch (Exception exception) {
             if (exception instanceof IndexOutOfBoundsException) {
                 sender.sendMessage("指令参数数量错误");
-            }
-            if (exception instanceof NumberFormatException) {
+            } else if (exception instanceof NumberFormatException) {
                 sender.sendMessage("请输入整数！");
-            }
-            if (exception instanceof ClassCastException) {
+            } else if (exception instanceof ClassCastException) {
                 sender.sendMessage("控制台无法执行此指令！");
+            } else {
+                exception.printStackTrace();
             }
             return true;
         }
@@ -100,6 +100,7 @@ public class FTSCommands implements CommandExecutor {
             case "off":
                 ParticleOverHead.stop((Player) sender);
                 ParticleUnderFeet.stop((Player) sender);
+                sender.sendMessage("已经关闭所有粒子效果");
                 break;
             default:
                 return false;
@@ -154,7 +155,7 @@ public class FTSCommands implements CommandExecutor {
             ChunkRestore.regenChunk(player.getLocation().getChunk());
         } else if (command.startsWith("fts checkinv")) {
             Player player = (Player) sender;
-            if (!player.hasPermission("fts.checkcontainer")) {
+            if (!player.hasPermission("fts.checkinv")) {
                 player.sendMessage("你没有权限查询玩家的背包！");
                 return true;
             }
@@ -166,7 +167,7 @@ public class FTSCommands implements CommandExecutor {
             }
         } else if (command.startsWith("fts checkchest")) {
             Player player = (Player) sender;
-            if (!player.hasPermission("fts.checkcontainer")) {
+            if (!player.hasPermission("fts.checkchest")) {
                 player.sendMessage("你没有权限查询玩家的末影箱！");
                 return true;
             }

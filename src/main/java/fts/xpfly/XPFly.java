@@ -17,7 +17,7 @@ import java.util.UUID;
 //TODO
 /*
  * fts.xpfly.slowexhaust
- * fts.xpfly
+ * fts.xpfly.use
  */
 public class XPFly {
     private static final ArrayList<UUID> flyingPlayers = new ArrayList<>();
@@ -98,7 +98,7 @@ public class XPFly {
     }
 
     public static void initXPFly(Player player) {
-        if (!player.hasPermission("fts.xpfly")) {
+        if (!player.hasPermission("fts.xpfly.use")) {
             player.sendMessage("您没有权限使用经验飞行！");
             return;
         }

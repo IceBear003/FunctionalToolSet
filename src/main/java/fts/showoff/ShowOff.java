@@ -28,10 +28,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
-/* TODO
- * fts.showoff.can
- * fts.showoff.ignorecd
- */
 public class ShowOff implements Listener {
     private static final HashMap<UUID, Long> lastShowOffStamp = new HashMap<>();
     private static final HashMap<String, UUID> owners = new HashMap<>();
@@ -171,7 +167,7 @@ public class ShowOff implements Listener {
             return;
         }
         Player player = event.getPlayer();
-        if (!player.hasPermission("fts.showoff.can")) {
+        if (!player.hasPermission("fts.showoff.use")) {
             return;
         }
         String message = event.getMessage();

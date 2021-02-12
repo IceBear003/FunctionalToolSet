@@ -26,7 +26,7 @@ public class TranslateMessage {
         YamlConfiguration yaml;
         yaml = YamlConfiguration.loadConfiguration(file);
 
-        origins = yaml.getStringList("origins");
+        origins = yaml.getStringList("origin");
         adapteds = yaml.getStringList("adapted");
         prefix = yaml.getString("prefix");
 

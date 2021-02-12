@@ -18,12 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-//TODO
-/*
- * fts.rtp.ignorecd
- * fts.rtp.ignoreworld
- * fts.rtp.ignoremove
- * */
 public class RandomTeleport {
     private static final List<String> enableWorlds = new ArrayList<>();
     private static final HashMap<UUID, Long> lastUseTimeStamp = new HashMap<>();
@@ -58,6 +52,10 @@ public class RandomTeleport {
     }
 
     public static void initRTP(Player player) {
+        if (!player.hasPermission("fts.rtp.use")) {
+            player.sendMessage("你没有随机传送的权限！");
+            return;
+        }
         if ((!enableWorlds.contains(player.getWorld().getName())) && (!player.hasPermission("fts.rtp.ignoreworld"))) {
             player.sendMessage("本世界禁止随机传送！");
             return;
@@ -65,7 +63,7 @@ public class RandomTeleport {
         if (lastUseTimeStamp.containsKey(player.getUniqueId()) && (!player.hasPermission("fts.rtp.ignorecd"))) {
             if (System.currentTimeMillis() - lastUseTimeStamp.get(player.getUniqueId()) < cooldown * 1000) {
                 player.sendMessage("传送冷却未到！还有§6"
-                        + (cooldown - System.currentTimeMillis() - lastUseTimeStamp.get(player.getUniqueId()) / 1000)
+                        + (cooldown - (System.currentTimeMillis() - lastUseTimeStamp.get(player.getUniqueId()) / 1000))
                         + "§r秒");
                 return;
             }

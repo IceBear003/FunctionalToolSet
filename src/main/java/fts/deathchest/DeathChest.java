@@ -23,7 +23,8 @@ import java.util.HashMap;
 import java.util.UUID;
 
 /*TODO
- * fts.deathchest
+ * fts.deathchest.use
+ * fts.deathchest.ignorewho
  */
 
 public class DeathChest implements Listener {
@@ -64,7 +65,7 @@ public class DeathChest implements Listener {
     @EventHandler
     public void onDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
-        if (!player.hasPermission("fts.deathchest")) {
+        if (!player.hasPermission("fts.deathchest.use")) {
             return;
         }
 
@@ -122,7 +123,7 @@ public class DeathChest implements Listener {
         }
         Location loc = event.getClickedBlock().getLocation();
         if (owner.containsKey(loc)) {
-            if (onlyOwnerCanOpen && owner.get(loc) != player.getUniqueId()) {
+            if (onlyOwnerCanOpen && owner.get(loc) != player.getUniqueId() && !player.hasPermission("fts.deathchest.ignorewho")) {
                 event.setCancelled(true);
                 player.sendMessage("这个箱子只有死者本人才能打开！");
                 return;

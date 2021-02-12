@@ -5,10 +5,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-//TODO
-/*
- * fts.sj. level
- */
 public class SuperJump {
     public static void addEffect(Player player, int level) {
         if (player.hasPermission("fts.sj." + level)) {

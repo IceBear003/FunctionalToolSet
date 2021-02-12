@@ -1,8 +1,7 @@
 enable: true #是否开启世界禁用某些指令的功能
-world1: #在名字为world1的世界里
-- "tp" #不允许使用/tp
-- "locate" #不允许使用/locate
+world: #在名字为world的世界里
+  - "me" #不允许使用/me
 world2: #在名字为world2的世界里
-- "spawn" #不允许使用/spawn
+  - "spawn" #不允许使用/spawn
 
 #其他世界自行添加

@@ -176,6 +176,10 @@ public class CardPointRewards implements Listener {
 
     public static void checkPoints(CommandSender sender, Player player) {
         if (player != null) {
+            if (!sender.hasPermission("fts.cardpoints.check")) {
+                sender.sendMessage("您没有权限查询玩家的积分点！");
+                return;
+            }
             IPlayer stat = stats.get(player.getUniqueId());
             sender.sendMessage("玩家" + player.getName() + "拥有积分§e" + stat.points + "§r点");
         } else {

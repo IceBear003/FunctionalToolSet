@@ -16,9 +16,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.io.File;
 import java.util.Collection;
 
-/* TODO
- * fts.modelock
- */
 public class ModeLocking implements Listener {
     private static boolean lockMode;
     private static boolean lockHealth;
@@ -46,9 +43,6 @@ public class ModeLocking implements Listener {
     @EventHandler
     public void onChangeWorld(PlayerChangedWorldEvent event) {
         Player player = event.getPlayer();
-        if (!player.hasPermission("fts.modelock")) {
-            return;
-        }
         GameMode mode = player.getGameMode();
         double health = player.getHealth();
         int foodLevel = player.getFoodLevel();

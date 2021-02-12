@@ -35,13 +35,27 @@ import fts.xpfly.XPFly;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.logging.Level;
 
 public class FunctionalToolSet extends JavaPlugin {
     public static ProtocolManager pm;
     public static Permission vaultPermission = null;
     private static FunctionalToolSet instance;
+    private String latestVersion;
+    private boolean isLatest = true;
+    private String versionUpdate;
 
     public static FunctionalToolSet getInstance() {
         return instance;
@@ -159,6 +173,13 @@ public class FunctionalToolSet extends JavaPlugin {
             getLogger().info("正在启用查询容器记录功能中...");
             CheckContainers.initialize(this);
 
+            checkUpdate();
+
+            if (hasPapi) {
+                getLogger().info("正在注册PAPI变量中...");
+                new PapiExpansion().register();
+            }
+
         } catch (Exception exception) {
             getLogger().info("哎呀这步好像出了些小问题呢！");
             exception.printStackTrace();
@@ -185,5 +206,99 @@ public class FunctionalToolSet extends JavaPlugin {
         } catch (Throwable ignored) {
 
         }
+    }
+
+    public static String getLatestVersion() {
+        HttpURLConnection connection = null;
+        try {
+            int timeout = 5000;
+            URL url = new URL("URL");
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setConnectTimeout(timeout);
+            final StringBuilder buffer = new StringBuilder(255);
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
+                char[] buffer0 = new char[255];
+                while (true) {
+                    int length = reader.read(buffer0);
+                    if (length == -1) {
+                        break;
+                    }
+                    buffer.append(buffer0, 0, length);
+                }
+            }
+            return buffer.toString().trim();
+        } catch (Exception exception) {
+            instance.getLogger().log(Level.WARNING, "获取版本信息失败！", exception);
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+        return null;
+    }
+
+    public static String getUpdateInfo() {
+        HttpURLConnection connection = null;
+        try {
+            int timeout = 5000;
+            URL url = new URL("URL");
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setConnectTimeout(timeout);
+            final StringBuilder buffer = new StringBuilder(255);
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
+                char[] buffer0 = new char[255];
+                while (true) {
+                    int length = reader.read(buffer0);
+                    if (length == -1) {
+                        break;
+                    }
+                    buffer.append(buffer0, 0, length);
+                }
+            }
+            return buffer.toString().trim();
+        } catch (Exception exception) {
+            instance.getLogger().log(Level.WARNING, "获取版本信息失败！", exception);
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+        return null;
+    }
+
+    private void checkUpdate() {
+        String version = getDescription().getVersion().toLowerCase();
+        new BukkitRunnable() {
+            public void run() {
+                getLogger().info("正在检查版本更新中...");
+                getLogger().info("您会用的FTS版本为：V" + version);
+                latestVersion = getLatestVersion();
+                if (latestVersion == null) {
+                    return;
+                }
+                if (latestVersion.equalsIgnoreCase(getDescription().getVersion())) {
+                    getLogger().info("您使用的FTS已经是最新版！");
+                } else {
+                    isLatest = false;
+                    versionUpdate = getUpdateInfo();
+                    getLogger().info("您使用的FTS是旧版，可能存在bug或功能缺失，请尽快更新到新版！");
+                    getLogger().info("新版更新内容：\n" + versionUpdate);
+                    Bukkit.getOnlinePlayers().forEach(this::sendUpdate);
+                    Bukkit.getPluginManager().registerEvents(new Listener() {
+                        @EventHandler()
+                        public void onPlayerJoin(PlayerJoinEvent event) {
+                            sendUpdate(event.getPlayer());
+                        }
+                    }, FunctionalToolSet.instance);
+                }
+            }
+
+            private void sendUpdate(Player player) {
+                if (player.hasPermission("fts.update")) {
+                    player.sendMessage("服务器使用的FTS是旧版，可能存在bug或功能缺失，请尽快更新到新版！");
+                    getLogger().info("新版更新内容：\n" + versionUpdate);
+                }
+            }
+        }.runTaskAsynchronously(this);
     }
 }

@@ -15,9 +15,6 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 
-/* TODO
- * fts.cmdban.ignore
- */
 public class CommandBanner implements Listener {
     private static final HashMap<String, List<String>> worlds = new HashMap<>();
 

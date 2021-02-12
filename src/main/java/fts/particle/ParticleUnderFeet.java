@@ -27,7 +27,7 @@ public class ParticleUnderFeet implements Listener {
             player.sendMessage("请输入正确的粒子效果名称");
             return;
         }
-        if (player.hasPermission("fts.particle.over." + particle.toString())) {
+        if (player.hasPermission("fts.particle.under." + particle.toString())) {
             users.remove(player.getUniqueId());
             users.put(player.getUniqueId(), particle);
         } else {
@@ -50,7 +50,7 @@ public class ParticleUnderFeet implements Listener {
             Location from = event.getFrom();
             Location loc = player.getLocation();
             if ((to.getX() != from.getBlockX()) || (to.getY() != from.getY()) || (to.getZ() != from.getZ())) {
-                loc.setY(loc.getY() - 1.0D);
+                loc.setY(loc.getY() - 0.5D);
                 player.getWorld().playEffect(loc, users.get(player.getUniqueId()), 1, 25);
             } else {
                 event.setCancelled(false);

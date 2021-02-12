@@ -282,7 +282,7 @@ public class FunctionalToolSet extends JavaPlugin {
                     isLatest = false;
                     versionUpdate = getUpdateInfo();
                     getLogger().info("您使用的FTS是旧版，可能存在bug或功能缺失，请尽快更新到新版！");
-                    getLogger().info("新版更新内容：\n" + versionUpdate);
+                    getLogger().info("\n新版更新内容：\n" + versionUpdate);
                     Bukkit.getOnlinePlayers().forEach(this::sendUpdate);
                     Bukkit.getPluginManager().registerEvents(new Listener() {
                         @EventHandler()

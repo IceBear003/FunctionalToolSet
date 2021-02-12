@@ -18,10 +18,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
-/*
- * TODO
- * fts.boarder.ignore
- */
 public class WorldBoarder implements Listener {
     private static HashMap<String, BoarderType> types = new HashMap<>();
     private static HashMap<String, Boarder> boarders = new HashMap<>();

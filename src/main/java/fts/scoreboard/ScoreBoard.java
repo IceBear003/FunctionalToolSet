@@ -20,10 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-//TODO
-/*
- * fts.sb.toggle
- */
 public class ScoreBoard implements Listener {
     private static final ArrayList<UUID> disablers = new ArrayList<>();
     private static String title;

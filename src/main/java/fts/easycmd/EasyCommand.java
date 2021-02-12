@@ -13,10 +13,6 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 
-/*
- * TODO
- * fts.easycmd
- */
 public class EasyCommand implements Listener {
     private static final HashMap<String, List<String>> cmds = new HashMap<>();
     private static final HashMap<String, String> strs = new HashMap<>();
@@ -49,9 +45,6 @@ public class EasyCommand implements Listener {
             return;
         }
         Player player = event.getPlayer();
-        if (!player.hasPermission("fts.easycmd")) {
-            return;
-        }
         String cmd = event.getMessage();
         if (cmds.containsKey(cmd.substring(1))) {
             event.setCancelled(true);

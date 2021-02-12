@@ -19,10 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-//TODO 
-/*
- * fts.cardpoints.double
- */
 public class CardPointRewards implements Listener {
     private static final HashMap<String, List<String>> rewards = new HashMap<>();
     private static final HashMap<String, Integer> needs = new HashMap<>();

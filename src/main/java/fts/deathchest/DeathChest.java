@@ -22,11 +22,6 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.UUID;
 
-/*TODO
- * fts.deathchest.use
- * fts.deathchest.ignorewho
- */
-
 public class DeathChest implements Listener {
     private static final HashMap<Location, UUID> messageArmor = new HashMap<>();
     private static final HashMap<Location, UUID> owner = new HashMap<>();

@@ -14,11 +14,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.UUID;
 
-//TODO
-/*
- * fts.xpfly.slowexhaust
- * fts.xpfly.use
- */
 public class XPFly {
     private static final ArrayList<UUID> flyingPlayers = new ArrayList<>();
     private static double exhaustSpeed;

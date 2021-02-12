@@ -56,7 +56,6 @@ public class ModeLocking implements Listener {
                     player.setGameMode(mode);
                 }
                 if (lockHealth) {
-                    //TODO
                     player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(maxHealth);
                     player.setHealth(health);
                 }

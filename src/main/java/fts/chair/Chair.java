@@ -22,10 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-/*
- * TODO
- * fts.sit
- */
 public class Chair implements Listener {
     private static HashMap<UUID, UUID> chairs = new HashMap<>();
     private static List<String> blockTypes;

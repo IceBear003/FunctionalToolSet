@@ -249,7 +249,6 @@ public class CheckContainers implements Listener {
                     }.runTaskLater(FunctionalToolSet.getInstance(), 2L);
                 } catch (Exception e) {
                     if (item.getType() == Material.ENDER_CHEST) {
-                        //TODO
                         OfflinePlayer owner = Bukkit.getOfflinePlayer(event.getView().getTitle().replace("玩家", "").replace("的容器打开记录", ""));
                         operators.add(player.getUniqueId());
                         player.openInventory(CheckInventory.getEnderChest(owner));

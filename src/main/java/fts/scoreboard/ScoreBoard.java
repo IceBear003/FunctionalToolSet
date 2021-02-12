@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class ScoreBoard implements Listener {
+    private static BukkitRunnable task = null;
     private static final ArrayList<UUID> disablers = new ArrayList<>();
     private static String title;
     private static List<String> lines;
@@ -38,7 +39,11 @@ public class ScoreBoard implements Listener {
 
         Bukkit.getPluginManager().registerEvents(new ScoreBoard(), plugin);
 
-        new BukkitRunnable() {
+        if (task != null) {
+            return;
+        }
+
+        task = new BukkitRunnable() {
             @Override
             public void run() {
                 for (World world : Bukkit.getWorlds()) {
@@ -63,7 +68,8 @@ public class ScoreBoard implements Listener {
                     }
                 }
             }
-        }.runTaskTimer(plugin, 1L, 20L);
+        };
+        task.runTaskTimer(plugin, 1L, 20L);
     }
 
     public static void changeState(Player player) {

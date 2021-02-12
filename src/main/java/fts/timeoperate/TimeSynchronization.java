@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class TimeSynchronization {
+    private static BukkitRunnable task = null;
     private static ArrayList<String> worlds = new ArrayList<>();
 
     public static void initialize(FunctionalToolSet plugin) {
@@ -27,12 +28,15 @@ public class TimeSynchronization {
                 worlds.add(name);
             }
         }
+        if (task != null) {
+            return;
+        }
         if (worlds.size() != 0) {
             for (String name : worlds) {
                 World world = Bukkit.getWorld(name);
                 world.setGameRuleValue("doDaylightCycle", "false");
             }
-            new BukkitRunnable() {
+            task = new BukkitRunnable() {
                 @Override
                 public void run() {
                     for (String name : worlds) {
@@ -40,7 +44,8 @@ public class TimeSynchronization {
                         world.setTime((long) (getTimePercent() * 24000));
                     }
                 }
-            }.runTaskTimer(plugin, 0L, 5L);
+            };
+            task.runTaskTimer(plugin, 0L, 5L);
         }
     }
 

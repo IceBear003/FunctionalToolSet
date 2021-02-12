@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class CheckInventory implements Listener {
+    private static BukkitRunnable task = null;
     private static HashMap<Inventory, UUID> owners = new HashMap<>();
 
     public static void initialize(FunctionalToolSet plugin) {
@@ -36,17 +37,22 @@ public class CheckInventory implements Listener {
 
         Bukkit.getPluginManager().registerEvents(new CheckInventory(), plugin);
 
-        new BukkitRunnable() {
+        if (task != null) {
+            return;
+        }
+
+        task = new BukkitRunnable() {
             @Override
             public void run() {
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     save(player);
                 }
             }
-        }.runTaskTimer(plugin, 0L, 1200L);
+        };
+        task.runTaskTimer(plugin, 0L, 1200L);
     }
 
-    private static void save(Player player) {
+    public static void save(Player player) {
         PlayerInventory inventory = player.getInventory();
         Inventory enderchest = player.getEnderChest();
 

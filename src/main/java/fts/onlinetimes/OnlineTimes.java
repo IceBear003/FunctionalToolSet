@@ -17,14 +17,21 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class OnlineTimes implements Listener {
+    private static BukkitRunnable task = null;
     private static final HashMap<UUID, IPlayer> stats = new HashMap<>();
 
     public static void initialize(FunctionalToolSet plugin) {
         for (Player player : Bukkit.getOnlinePlayers()) {
             stats.put(player.getUniqueId(), loadYaml(player));
         }
+
         Bukkit.getPluginManager().registerEvents(new OnlineTimes(), plugin);
-        new BukkitRunnable() {
+
+        if (task != null) {
+            return;
+        }
+
+        task = new BukkitRunnable() {
             int counter = 0;
 
             @Override
@@ -39,7 +46,8 @@ public class OnlineTimes implements Listener {
                     }
                 }
             }
-        }.runTaskTimer(plugin, 0L, 20L);
+        };
+        task.runTaskTimer(plugin, 0L, 20L);
     }
 
     private static IPlayer loadYaml(Player player) {
@@ -52,7 +60,7 @@ public class OnlineTimes implements Listener {
         return new IPlayer(yaml.getInt("dayTime"), yaml.getInt("totalTime"), yaml.getInt("lastLoginDate"));
     }
 
-    private static void saveYaml(Player player) {
+    public static void saveYaml(Player player) {
         if (!stats.containsKey(player.getUniqueId())) {
             return;
         }
@@ -66,7 +74,7 @@ public class OnlineTimes implements Listener {
         try {
             yaml.save(file);
         } catch (IOException e) {
-            e.printStackTrace();
+            FunctionalToolSet.getInstance().getLogger().info("玩家" + player.getName() + "在线时间保存时出现错误！");
         }
     }
 

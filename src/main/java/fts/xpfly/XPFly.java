@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.UUID;
 
 public class XPFly {
+    private static BukkitRunnable task = null;
     private static final ArrayList<UUID> flyingPlayers = new ArrayList<>();
     private static double exhaustSpeed;
 
@@ -30,7 +31,11 @@ public class XPFly {
 
         HashSet<UUID> tmp = new HashSet<>();
 
-        new BukkitRunnable() {
+        if (task != null) {
+            return;
+        }
+
+        task = new BukkitRunnable() {
             long counter = 0;
 
             @Override
@@ -79,7 +84,8 @@ public class XPFly {
                 }
             }
 
-        }.runTaskTimer(plugin, 0L, 2L);
+        };
+        task.runTaskTimer(plugin, 0L, 2L);
     }
 
     private static int getExpToLevel(int level) {
@@ -105,6 +111,10 @@ public class XPFly {
         }
     }
 
+    public static boolean isFlying(Player player) {
+        return flyingPlayers.contains(player.getUniqueId());
+    }
+
     private static void goFly(Player player) {
         if (player.getTotalExperience() < exhaustSpeed) {
             player.sendMessage("您没有足够的经验飞行！");
@@ -116,7 +126,7 @@ public class XPFly {
         player.sendMessage("经验飞行已经开启");
     }
 
-    private static void cancelFly(Player player) {
+    public static void cancelFly(Player player) {
         flyingPlayers.remove(player.getUniqueId());
         player.setAllowFlight(false);
         player.setFlying(false);

@@ -43,19 +43,26 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 
 public class FunctionalToolSet extends JavaPlugin {
+    private static FunctionalToolSet instance;
     public static ProtocolManager pm;
     public static Permission vaultPermission = null;
-    private static FunctionalToolSet instance;
+
     private String latestVersion;
-    private boolean isLatest = true;
     private String versionUpdate;
+    private boolean isLatest = true;
+
+    public static boolean hasPapi;
+    public static boolean hasPLib;
+    public static File pluginFile;
 
     public static FunctionalToolSet getInstance() {
         return instance;
@@ -85,6 +92,7 @@ public class FunctionalToolSet extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
+        pluginFile = this.getFile();
         getLogger().info("正在启用基础功能插件UTES中...");
         ResourceUtils.initialize(this);
         getLogger().info("您使用的语言是：" + getConfig().getString("language"));
@@ -93,11 +101,11 @@ public class FunctionalToolSet extends JavaPlugin {
             if (!hasVault) {
                 getLogger().info("Vault未安装|无法加载随机抽取权限的功能.");
             }
-            boolean hasPapi = initPapi();
+            hasPapi = initPapi();
             if (!hasPapi) {
                 getLogger().info("PAPI未安装|无法使用插件变量.");
             }
-            boolean hasPLib = initPLib();
+            hasPLib = initPLib();
             if (!hasPLib) {
                 getLogger().info("PLib未安装|无法使用发包相关功能");
             }
@@ -197,14 +205,20 @@ public class FunctionalToolSet extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        getLogger().info("正在关闭FunctionalToolSet中...");
+        getLogger().info("正在保存数据中...");
         for (Player player : Bukkit.getOnlinePlayers()) {
-            player.kickPlayer("服务器重载，请稍后再进");
+            player.closeInventory();
+            CapableGui.save(player);
+            CardPointRewards.saveYaml(player);
+            CheckInventory.save(player);
+            OnlineTimes.saveYaml(player);
+            if (XPFly.isFlying(player)) {
+                XPFly.cancelFly(player);
+            }
         }
-        try {
+        if (hasPLib) {
             pm.removePacketListeners(this);
-            ChunkRestore.save();
-        } catch (Throwable ignored) {
-
         }
     }
 
@@ -225,6 +239,8 @@ public class FunctionalToolSet extends JavaPlugin {
                     }
                     buffer.append(buffer0, 0, length);
                 }
+            } catch (SocketTimeoutException exception) {
+                getInstance().getLogger().info("访问最新版本时网路超时！");
             }
             return buffer.toString().trim();
         } catch (Exception exception) {
@@ -254,6 +270,8 @@ public class FunctionalToolSet extends JavaPlugin {
                     }
                     buffer.append(buffer0, 0, length);
                 }
+            } catch (SocketTimeoutException exception) {
+                getInstance().getLogger().info("访问最新版本时网路超时！");
             }
             return buffer.toString().trim();
         } catch (Exception exception) {

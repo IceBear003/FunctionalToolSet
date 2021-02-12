@@ -39,6 +39,7 @@ public class ChatBar implements Listener {
     private static String cueTitle;
     private static String cueSubtitle;
     private static String cueColor;
+    private static boolean papiEnable;
 
 
     public static void initialize(FunctionalToolSet plugin) {
@@ -60,6 +61,7 @@ public class ChatBar implements Listener {
         cueTitle = yaml.getString("cueTitle");
         cueSubtitle = yaml.getString("cueSubtitle");
         cueColor = yaml.getString("cueColor").replace("&", "§");
+        papiEnable = yaml.getBoolean("papiEnable");
 
         Bukkit.getPluginManager().registerEvents(new ChatBar(), plugin);
 
@@ -87,7 +89,7 @@ public class ChatBar implements Listener {
                                     Player player = Bukkit.getPlayer(owners.get(str));
                                     owners.remove(str);
                                     String playerName = player.getDisplayName();
-                                    String[] fixes = ResourceUtils.getPapi(player, message).split(playerName.replace("§r", "§f"));
+                                    String[] fixes = message.split(playerName.replace("§r", "§f"));
 
                                     for (int i = 0; i < fixes.length; i++) {
                                         String passage = fixes[i];
@@ -187,7 +189,6 @@ public class ChatBar implements Listener {
         if (event.isCancelled()) {
             return;
         }
-        event.setMessage(ResourceUtils.getPapi(event.getPlayer(), event.getMessage()));
         if (!repeatEnable) {
             return;
         }
@@ -219,6 +220,21 @@ public class ChatBar implements Listener {
 
             event.getTabCompletions().addAll(names);
         }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPapi(AsyncPlayerChatEvent event) {
+        if (!papiEnable || !FunctionalToolSet.hasPapi) {
+            return;
+        }
+        if (event.isCancelled()) {
+            return;
+        }
+        Player player = event.getPlayer();
+        if (!player.hasPermission("fts.chat.papi")) {
+            return;
+        }
+        event.setMessage(ResourceUtils.getPapi(player, event.getMessage()));
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

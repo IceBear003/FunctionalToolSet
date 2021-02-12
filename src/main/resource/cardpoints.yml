@@ -4,11 +4,12 @@ reward1: #第一个奖励
   reward: #奖励指令内容
     - "money give {player} 1000"
   consume: false #是否消耗积分
-reward2:
+reward2: #第二个奖励
   need: 100
   reward:
     - "money give {player} 1000"
   consume: false
+#可继续添加
 
 startDate: -1 #勿动
 period: 7 #没多少天重置积分

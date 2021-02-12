@@ -15,10 +15,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -73,6 +75,7 @@ public class Chair implements Listener {
             arrow.teleport(loc);
             arrow.setPassenger(player);
             player.sendMessage("你坐到了椅子上");
+            sitters.add(player.getUniqueId());
             new BukkitRunnable() {
                 @Override
                 public void run() {
@@ -86,6 +89,20 @@ public class Chair implements Listener {
                     }
                 }
             }.runTaskTimer(FunctionalToolSet.getInstance(), 0L, 20L);
+        }
+    }
+
+    private static HashSet<UUID> sitters = new HashSet<>();
+
+    @EventHandler
+    public void onSneak(PlayerToggleSneakEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
+        Player player = event.getPlayer();
+        if (sitters.contains(player.getUniqueId())) {
+            sitters.remove(player.getUniqueId());
+            player.teleport(player.getLocation().add(0, 1, 0));
         }
     }
 }

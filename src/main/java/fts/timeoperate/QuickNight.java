@@ -11,6 +11,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.io.File;
 
 public class QuickNight {
+    private static BukkitRunnable task = null;
     private static double percent;
     private static int speed;
     private static boolean title;
@@ -28,7 +29,11 @@ public class QuickNight {
         speed = yaml.getInt("quickNight.speed");
         title = yaml.getBoolean("quickNight.title");
 
-        new BukkitRunnable() {
+        if (task != null) {
+            return;
+        }
+
+        task = new BukkitRunnable() {
             @Override
             public void run() {
                 for (World world : Bukkit.getWorlds()) {
@@ -68,7 +73,8 @@ public class QuickNight {
                     }
                 }
             }
-        }.runTaskTimer(plugin, 0L, 2L);
+        };
+        task.runTaskTimer(plugin, 0L, 2L);
     }
 
     //把世界时间刻变为刻度的hh:mm

@@ -11,3 +11,5 @@ cueEnable: true #是否开启@功能
 cueTitle: "§e玩家§6{player}§e@了你" #被@人看到的title({player}代表玩家名)
 cueSubtitle: "§e快去看看吧~" #被@人看到的subtitle({player}代表玩家名)
 cueColor: "§b" #@及玩家名的颜色高亮代码
+
+papiEnable: true #是否开启聊天支持papi变量功能

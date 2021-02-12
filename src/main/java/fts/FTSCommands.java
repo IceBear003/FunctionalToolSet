@@ -22,6 +22,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
+import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.Inventory;
 
 import java.util.Collection;
@@ -44,6 +45,7 @@ public class FTSCommands implements CommandExecutor {
             } else if (exception instanceof ClassCastException) {
                 sender.sendMessage("控制台无法执行此指令！");
             } else {
+                sender.sendMessage("指令运行时出现蜜汁错误，请将以下报错交给插件作者以便修复！");
                 exception.printStackTrace();
             }
             return true;
@@ -205,7 +207,16 @@ public class FTSCommands implements CommandExecutor {
             sender.sendMessage("{ignore}§a/fts checkinv <玩家名> §e-查水表-查询一个玩家的背包");
             sender.sendMessage("{ignore}§a/fts checkchest <玩家名> §e-查水表-查询一个玩家的末影箱");
             sender.sendMessage("{ignore}§a/fts checkcontainer <玩家名> §e-查水表-查询一个玩家的容器打开记录");
+            sender.sendMessage("{ignore}§a/fts reload §e-重新载入所有配置文件，但是对新老版本更新无用，请使用/reload");
             sender.sendMessage("{ignore}§e----------------------------------------------------------");
+        } else if (command.startsWith("fts reload")) {
+            if (!sender.hasPermission("fts.reload")) {
+                sender.sendMessage("你没有权限重载FunctionalToolSet！");
+                return true;
+            }
+            HandlerList.unregisterAll(FunctionalToolSet.getInstance());
+            FunctionalToolSet.getInstance().onDisable();
+            FunctionalToolSet.getInstance().onEnable();
         } else {
             sender.sendMessage("输入/fts help 查看帮助");
         }

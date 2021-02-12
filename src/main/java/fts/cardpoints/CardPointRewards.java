@@ -44,7 +44,7 @@ public class CardPointRewards implements Listener {
             try {
                 yaml.save(file);
             } catch (IOException e) {
-                e.printStackTrace();
+                FunctionalToolSet.getInstance().getLogger().info("保存本地时间时出现错误！");
             }
         }
         int period = yaml.getInt("period");
@@ -111,7 +111,7 @@ public class CardPointRewards implements Listener {
         return new IPlayer(yaml.getInt("points"), yaml.getStringList("received"));
     }
 
-    private static void saveYaml(Player player) {
+    public static void saveYaml(Player player) {
         IPlayer stat = stats.get(player.getUniqueId());
         File file = new File(FunctionalToolSet.getInstance().getDataFolder() + "/cardpoints/",
                 player.getUniqueId().toString() + ".yml");
@@ -121,7 +121,7 @@ public class CardPointRewards implements Listener {
         try {
             yaml.save(file);
         } catch (IOException e) {
-            e.printStackTrace();
+            FunctionalToolSet.getInstance().getLogger().info("玩家" + player.getName() + "赛季积分数据保存时出现错误！");
         }
     }
 

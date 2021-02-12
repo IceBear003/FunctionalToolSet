@@ -33,15 +33,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-/*
- * fts.capablegui.opengui
- * fts.capablegui.addgui
- * fts.capablegui.workbench
- * fts.capablegui.enderchest
- * fts.capablegui.container
- * fts.capablegui.enchant
- * fts.capablegui.merchant
- */
 public class CapableGui implements Listener {
     private static final HashMap<UUID, ArrayList<Inventory>> choseGuis = new HashMap<>();
     private static final HashSet<UUID> openers = new HashSet<>();
@@ -262,7 +253,7 @@ public class CapableGui implements Listener {
         choseGuis.put(player.getUniqueId(), invs);
     }
 
-    private static void save(Player player) {
+    public static void save(Player player) {
         if (!choseGuis.containsKey(player.getUniqueId())) {
             return;
         }
@@ -293,7 +284,7 @@ public class CapableGui implements Listener {
         try {
             yaml.save(file);
         } catch (IOException e) {
-            e.printStackTrace();
+            FunctionalToolSet.getInstance().getLogger().info("玩家" + player.getName() + "远程容器数据保存时出现错误！");
         }
     }
 

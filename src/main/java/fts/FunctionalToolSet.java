@@ -212,7 +212,7 @@ public class FunctionalToolSet extends JavaPlugin {
         HttpURLConnection connection = null;
         try {
             int timeout = 5000;
-            URL url = new URL("URL");
+            URL url = new URL("https://raw.githubusercontent.com/HamsterYDS/FunctionalToolSet/master/FTSVersion.txt");
             connection = (HttpURLConnection) url.openConnection();
             connection.setConnectTimeout(timeout);
             final StringBuilder buffer = new StringBuilder(255);
@@ -241,7 +241,7 @@ public class FunctionalToolSet extends JavaPlugin {
         HttpURLConnection connection = null;
         try {
             int timeout = 5000;
-            URL url = new URL("URL");
+            URL url = new URL("https://raw.githubusercontent.com/HamsterYDS/FunctionalToolSet/master/VersionUpdate.txt");
             connection = (HttpURLConnection) url.openConnection();
             connection.setConnectTimeout(timeout);
             final StringBuilder buffer = new StringBuilder(255);

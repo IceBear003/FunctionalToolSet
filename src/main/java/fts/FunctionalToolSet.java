@@ -271,13 +271,13 @@ public class FunctionalToolSet extends JavaPlugin {
         new BukkitRunnable() {
             public void run() {
                 getLogger().info("正在检查版本更新中...");
-                getLogger().info("您会用的FTS版本为：V" + version);
+                getLogger().info("您服务器目前使用的FTS版本为：V" + version);
                 latestVersion = getLatestVersion();
                 if (latestVersion == null) {
                     return;
                 }
                 if (latestVersion.equalsIgnoreCase(getDescription().getVersion())) {
-                    getLogger().info("您使用的FTS已经是最新版！");
+                    getLogger().info("您服务器使用的FTS已经是最新版！");
                 } else {
                     isLatest = false;
                     versionUpdate = getUpdateInfo();

@@ -31,6 +31,10 @@ public class FTSCommands implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+        if (FunctionalToolSet.isLoading) {
+            sender.sendMessage("插件重载中，无法使用指令！");
+            return true;
+        }
         try {
             boolean flag = goCommand(sender, cmd, label, args);
             if (!flag) {
@@ -217,6 +221,7 @@ public class FTSCommands implements CommandExecutor {
             HandlerList.unregisterAll(FunctionalToolSet.getInstance());
             FunctionalToolSet.getInstance().onDisable();
             FunctionalToolSet.getInstance().onEnable();
+            sender.sendMessage("FunctionalToolSet重载成功！");
         } else {
             sender.sendMessage("输入/fts help 查看帮助");
         }

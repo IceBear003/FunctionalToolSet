@@ -13,10 +13,12 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.util.HashMap;
@@ -64,59 +66,97 @@ public class DeathChest implements Listener {
             return;
         }
 
-        Location dieLoc = player.getLocation().getBlock().getLocation().clone().add(0, 1, 0);
-        if (dieLoc.getY() <= 0) {
-            for (int i = 128; i > 0; i--) {
-                dieLoc.setY(i);
-                if (dieLoc.getBlock().getType() != Material.AIR) {
-                    dieLoc.add(0, 2, 0);
-                    break;
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                Location dieLoc = player.getLocation().getBlock().getLocation().clone().add(0, 1, 0);
+                if (dieLoc.getY() <= 0) {
+                    for (int i = 128; i > 0; i--) {
+                        dieLoc.setY(i);
+                        if (dieLoc.getBlock().getType() != Material.AIR) {
+                            dieLoc.add(0, 2, 0);
+                            break;
+                        }
+                    }
                 }
+
+                if (dieLoc.getBlock().getType() != Material.AIR) {
+                    player.sendMessage("您的死亡地点无法布置箱子，故无法生成死亡掉落存储箱！");
+                    return;
+                }
+
+                BlockBreakEvent event2 = new BlockBreakEvent(dieLoc.getBlock(), player);
+                Bukkit.getPluginManager().callEvent(event2);
+                if (event2.isCancelled()) {
+                    player.sendMessage("您的死亡地点无法布置箱子，故无法生成死亡掉落存储箱！");
+                    return;
+                }
+
+                dieLoc.getBlock().setType(Material.CHEST);
+
+                Chest chest = (Chest) dieLoc.getBlock().getState();
+                for (ItemStack item : player.getInventory().getContents()) {
+                    if (item == null) {
+                        continue;
+                    }
+                    if (hasNull(chest.getInventory())) {
+                        chest.getInventory().addItem(item.clone());
+                    } else {
+                        dieLoc.getWorld().dropItemNaturally(dieLoc, item);
+                    }
+                }
+
+                event.getDrops().clear();
+                event.setDroppedExp(0);
+                player.getInventory().clear();
+                owner.put(dieLoc, player.getUniqueId());
+
+                if (showMeesage) {
+                    ArmorStand armor = (ArmorStand) dieLoc.getWorld().spawnEntity(dieLoc.clone().add(0.5, 0, 0.5), EntityType.ARMOR_STAND);
+                    armor.setVisible(false);
+                    armor.setCustomNameVisible(true);
+                    armor.setCustomName("§e玩家§r" + player.getName() + "§e死前掉落的遗物，打开箱子以获取");
+                    messageArmor.put(dieLoc, armor.getUniqueId());
+
+                    new BukkitRunnable() {
+                        int counter = 0;
+
+                        @Override
+                        public void run() {
+                            counter++;
+                            if (counter >= 3600 || dieLoc.getBlock().getType() != Material.CHEST) {
+                                messageArmor.remove(dieLoc);
+                                armor.remove();
+                                cancel();
+                                return;
+                            }
+                        }
+                    }.runTaskTimer(FunctionalToolSet.getInstance(), 0L, 20L);
+                }
+
+                if (storeExp) {
+                    storeLevel.put(dieLoc, player.getLevel());
+                    storeExperience.put(dieLoc, player.getExp());
+                    player.setLevel(0);
+                    player.setExp(0);
+                }
+
+                player.sendMessage("你的物品和经验掉落于x:§e" + dieLoc.getBlockX() + "§r z:§e" + dieLoc.getBlockZ());
             }
-        }
-        dieLoc.getBlock().setType(Material.CHEST);
-        Chest chest = (Chest) dieLoc.getBlock().getState();
-        for (ItemStack item : player.getInventory().getContents()) {
-            if (item == null) {
-                continue;
-            }
-            if (hasNull(chest.getInventory())) {
-                chest.getInventory().addItem(item.clone());
-            } else {
-                dieLoc.getWorld().dropItemNaturally(dieLoc, item);
-            }
-        }
-
-        event.getDrops().clear();
-        event.setDroppedExp(0);
-        player.getInventory().clear();
-        owner.put(dieLoc, player.getUniqueId());
-
-        if (showMeesage) {
-            ArmorStand armor = (ArmorStand) dieLoc.getWorld().spawnEntity(dieLoc.clone().add(0.5, 0, 0.5), EntityType.ARMOR_STAND);
-            armor.setVisible(false);
-            armor.setCustomNameVisible(true);
-            armor.setCustomName("§e玩家§r" + player.getName() + "§e死前掉落的遗物，打开箱子以获取");
-            messageArmor.put(dieLoc, armor.getUniqueId());
-        }
-
-        if (storeExp) {
-            storeLevel.put(dieLoc, player.getLevel());
-            storeExperience.put(dieLoc, player.getExp());
-            player.setLevel(0);
-            player.setExp(0);
-        }
-
-        player.sendMessage("你的物品和经验掉落于x:§e" + dieLoc.getBlockX() + "§r z:§e" + dieLoc.getBlockZ());
+        }.runTaskLater(FunctionalToolSet.getInstance(), 2L);
     }
 
     @EventHandler
-    public void onOpen(PlayerInteractEvent event) {
-        Player player = event.getPlayer();
-        if (event.getClickedBlock() == null) {
+    public void onOpen(InventoryOpenEvent event) {
+        Player player = (Player) event.getPlayer();
+        if (event.getInventory() == null) {
             return;
         }
-        Location loc = event.getClickedBlock().getLocation();
+        Inventory inv = event.getInventory();
+        Location loc = inv.getLocation();
+        if (loc == null) {
+            return;
+        }
         if (owner.containsKey(loc)) {
             if (onlyOwnerCanOpen && owner.get(loc) != player.getUniqueId() && !player.hasPermission("fts.deathchest.ignorewho")) {
                 event.setCancelled(true);

@@ -112,7 +112,7 @@ public class ResourceUtils {
         return YamlConfiguration.loadConfiguration(file);
     }
 
-    private static class YamlUpdater {
+    public static class YamlUpdater {
         public static void merge(
                 Map<String, List<String>> latest_commits,
                 Map<String, List<String>> latest_area,

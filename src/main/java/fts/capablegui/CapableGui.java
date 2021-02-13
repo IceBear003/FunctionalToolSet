@@ -418,7 +418,7 @@ public class CapableGui implements Listener {
         load(player);
     }
 
-    private static class HolderChoseGui implements UTEInvHolder {
+    public static class HolderChoseGui implements UTEInvHolder {
         public static final HolderChoseGui INSTANCE = new HolderChoseGui();
         private String name;
 

@@ -122,7 +122,7 @@ public class OnlineTimes implements Listener {
         stats.remove(player.getUniqueId());
     }
 
-    private static class IPlayer {
+    public static class IPlayer {
         private int dayTime;
         private int totalTime;
         private int lastLoginDate;

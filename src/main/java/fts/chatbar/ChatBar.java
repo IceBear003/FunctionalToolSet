@@ -74,6 +74,9 @@ public class ChatBar implements Listener {
                         PacketContainer packet = event.getPacket();
                         PacketType packetType = event.getPacketType();
                         if (packetType.equals(PacketType.Play.Server.CHAT)) {
+                            if (packet.getChatTypes() == null) {
+                                return;
+                            }
                             if (packet.getChatTypes().getValues().get(0) != EnumWrappers.ChatType.SYSTEM) {
                                 return;
                             }
@@ -93,12 +96,17 @@ public class ChatBar implements Listener {
 
                                     for (int i = 0; i < fixes.length; i++) {
                                         String passage = fixes[i];
-                                        results.addAll(Arrays.asList(TextComponent.fromLegacyText(passage)));
                                         if (i == fixes.length - 1) {
-                                            break;
+                                            results.addAll(Arrays.asList(TextComponent.fromLegacyText(passage)));
+                                        } else {
+                                            if (i == 0) {
+                                                results.addAll(Arrays.asList(TextComponent.fromLegacyText(passage)));
+                                                BaseComponent[] tmp = getBaseComponents(player, playerName);
+                                                results.addAll(Arrays.asList(tmp));
+                                            } else {
+                                                results.addAll(Arrays.asList(TextComponent.fromLegacyText(passage + playerName)));
+                                            }
                                         }
-                                        BaseComponent[] tmp = getBaseComponents(player, playerName);
-                                        results.addAll(Arrays.asList(tmp));
                                     }
 
                                     results.get(results.size() - 1).setClickEvent(
@@ -131,9 +139,8 @@ public class ChatBar implements Listener {
                                         for (UUID uuid : players) {
                                             Player other = Bukkit.getPlayer(uuid);
                                             String otherName = other.getName();
-
                                             if (origin.toLegacyText().startsWith(cueColor + "@" + otherName)) {
-                                                BaseComponent[] otherComponents = getBaseComponents(other, cueColor + "@" + cueColor + otherName);
+                                                BaseComponent[] otherComponents = getBaseComponents(other, cueColor + "@" + otherName);
                                                 finalResult.addAll(Arrays.asList(otherComponents));
                                                 break;
                                             } else {

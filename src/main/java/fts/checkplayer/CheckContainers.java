@@ -297,7 +297,7 @@ public class CheckContainers implements Listener {
         save(event.getPlayer(), loc);
     }
 
-    private static class HolderCheckContainerGui implements UTEInvHolder {
+    public static class HolderCheckContainerGui implements UTEInvHolder {
         public static final HolderCheckContainerGui INSTANCE = new HolderCheckContainerGui();
         private String name;
 

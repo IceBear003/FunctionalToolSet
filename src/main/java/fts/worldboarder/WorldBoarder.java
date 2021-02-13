@@ -138,11 +138,11 @@ public class WorldBoarder implements Listener {
         }
     }
 
-    private enum BoarderType {
+    public enum BoarderType {
         RECTANGLE, ROUND
     }
 
-    private static class Boarder {
+    public static class Boarder {
         boolean isTransparent;
 
         Boarder(boolean isTransparent) {
@@ -167,7 +167,7 @@ public class WorldBoarder implements Listener {
         }
     }
 
-    private static class RectangleBoarder extends Boarder {
+    public static class RectangleBoarder extends Boarder {
         int x1, z1, x2, z2;
 
         public RectangleBoarder(boolean isTransparent, int x1, int z1, int x2, int z2) {
@@ -188,7 +188,7 @@ public class WorldBoarder implements Listener {
         }
     }
 
-    private static class RoundBoarder extends Boarder {
+    public static class RoundBoarder extends Boarder {
         int radius;
 
         public RoundBoarder(boolean isTransparent, int radius) {

@@ -47,16 +47,24 @@ public class TranslateMessage {
                             WrappedChatComponent warppedComponent = packet.getChatComponents().getValues().get(0);
 
                             String json = warppedComponent.getJson();
-                            for (int index = 0; index < origins.size(); index++) {
-                                json = json.replace(origins.get(index), adapteds.get(index));
-                            }
-                            boolean flag = json.contains("{ignore}");
-                            json = json.replace("{ignore}", "");
-
                             BaseComponent[] origin = ComponentSerializer.parse(json);
+                            String message = TextComponent.toLegacyText(origin);
+                            for (int index = 0; index < origins.size(); index++) {
+                                message = message.replace(
+                                        origins.get(index).replace("&", "§"),
+                                        adapteds.get(index).replace("&", "§"));
+                            }
+                            origin = TextComponent.fromLegacyText(message);
+                            String newJson = ComponentSerializer.toString(origin);
+
+
+                            boolean flag = newJson.contains("{ignore}");
+                            newJson = newJson.replace("{ignore}", "");
+
+                            origin = ComponentSerializer.parse(newJson);
                             BaseComponent[] adapted = new BaseComponent[origin.length];
                             int tot = 0;
-                            String message = TextComponent.toLegacyText(origin);
+                            message = TextComponent.toLegacyText(origin);
                             if (!message.contains(prefix) && !flag) {
                                 adapted = new BaseComponent[prefixAdapted.length + origin.length];
                                 for (BaseComponent component : prefixAdapted) {
@@ -67,9 +75,9 @@ public class TranslateMessage {
                                 adapted[tot++] = component;
                             }
 
-                            String newJson = ComponentSerializer.toString(adapted);
+                            String result = ComponentSerializer.toString(adapted);
 
-                            warppedComponent.setJson(newJson);
+                            warppedComponent.setJson(result);
                             packet.getChatComponents().write(0, warppedComponent);
                         }
                     }

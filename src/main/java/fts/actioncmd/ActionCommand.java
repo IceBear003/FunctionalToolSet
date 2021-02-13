@@ -160,7 +160,7 @@ public class ActionCommand implements Listener {
         SNEAK, SWAP, LEFTCLICK, RIGHTCLICK, INTERACTENTITY, JUMP, UP, DOWN
     }
 
-    private static class Actions {
+    public static class Actions {
         private final UUID uuid;
         private final List<ActionType> types;
         private final List<Integer> values;
@@ -259,7 +259,7 @@ public class ActionCommand implements Listener {
         }
     }
 
-    private static class IActions {
+    public static class IActions {
         private final List<ActionType> types;
         private final List<Integer> values;
         private final List<String> cmds;

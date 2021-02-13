@@ -62,7 +62,10 @@ public class FunctionalToolSet extends JavaPlugin {
 
     public static boolean hasPapi;
     public static boolean hasPLib;
+    public static boolean hasVault;
     public static File pluginFile;
+    public static boolean isLoading;
+    public static boolean haveReloaded = false;
 
     public static FunctionalToolSet getInstance() {
         return instance;
@@ -89,27 +92,37 @@ public class FunctionalToolSet extends JavaPlugin {
         return !hasNull;
     }
 
+    public void initDepends() {
+        hasVault = initVault();
+        if (!hasVault) {
+            getLogger().info("Vault未安装|无法加载随机抽取权限的功能.");
+        }
+        hasPapi = initPapi();
+        if (!hasPapi) {
+            getLogger().info("PAPI未安装|无法使用插件变量.");
+        }
+        hasPLib = initPLib();
+        if (!hasPLib) {
+            getLogger().info("PLib未安装|无法使用发包相关功能");
+        }
+        if (hasPapi) {
+            getLogger().info("正在注册PAPI变量中...");
+            new PapiExpansion().register();
+        }
+    }
+
     @Override
     public void onEnable() {
+        isLoading = true;
         instance = this;
         pluginFile = this.getFile();
         getLogger().info("正在启用基础功能插件UTES中...");
         ResourceUtils.initialize(this);
         getLogger().info("您使用的语言是：" + getConfig().getString("language"));
         try {
-            boolean hasVault = initVault();
-            if (!hasVault) {
-                getLogger().info("Vault未安装|无法加载随机抽取权限的功能.");
+            if (!haveReloaded) {
+                initDepends();
             }
-            hasPapi = initPapi();
-            if (!hasPapi) {
-                getLogger().info("PAPI未安装|无法使用插件变量.");
-            }
-            hasPLib = initPLib();
-            if (!hasPLib) {
-                getLogger().info("PLib未安装|无法使用发包相关功能");
-            }
-
             getLogger().info("正在注册指令中...");
             this.getCommand("fts").setExecutor(new FTSCommands());
             getLogger().info("正在启用随机传送功能中...");
@@ -183,14 +196,11 @@ public class FunctionalToolSet extends JavaPlugin {
 
             checkUpdate();
 
-            if (hasPapi) {
-                getLogger().info("正在注册PAPI变量中...");
-                new PapiExpansion().register();
-            }
-
+            isLoading = false;
         } catch (Exception exception) {
             getLogger().info("哎呀这步好像出了些小问题呢！");
             exception.printStackTrace();
+            isLoading = false;
         }
     }
 
@@ -205,6 +215,7 @@ public class FunctionalToolSet extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        haveReloaded = true;
         getLogger().info("正在关闭FunctionalToolSet中...");
         getLogger().info("正在保存数据中...");
         for (Player player : Bukkit.getOnlinePlayers()) {
@@ -244,7 +255,7 @@ public class FunctionalToolSet extends JavaPlugin {
             }
             return buffer.toString().trim();
         } catch (Exception exception) {
-            instance.getLogger().log(Level.WARNING, "获取版本信息失败！", exception);
+            instance.getLogger().log(Level.WARNING, "获取版本信息失败！");
         } finally {
             if (connection != null) {
                 connection.disconnect();
@@ -275,7 +286,7 @@ public class FunctionalToolSet extends JavaPlugin {
             }
             return buffer.toString().trim();
         } catch (Exception exception) {
-            instance.getLogger().log(Level.WARNING, "获取版本信息失败！", exception);
+            instance.getLogger().log(Level.WARNING, "获取版本信息失败！");
         } finally {
             if (connection != null) {
                 connection.disconnect();

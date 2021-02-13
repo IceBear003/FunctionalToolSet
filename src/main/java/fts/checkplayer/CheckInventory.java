@@ -204,7 +204,7 @@ public class CheckInventory implements Listener {
         save(event.getPlayer());
     }
 
-    private static class HolderCheckInventoryGui implements UTEInvHolder {
+    public static class HolderCheckInventoryGui implements UTEInvHolder {
         public static final HolderCheckInventoryGui INSTANCE = new HolderCheckInventoryGui();
         private String name;
 

@@ -1,6 +1,6 @@
 name: FunctionalToolSet
 main: fts.FunctionalToolSet
-version: 1.0.1
+version: 1.0.2
 softdepend:
   - PlaceholderAPI
   - Vault

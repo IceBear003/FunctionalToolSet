@@ -81,15 +81,18 @@ public class FunctionalToolSet extends JavaPlugin {
     }
 
     private static boolean initVault() {
-        boolean hasNull = false;
-        RegisteredServiceProvider<Permission> permissionProvider = Bukkit.getServicesManager()
-                .getRegistration(Permission.class);
-        if (permissionProvider != null) {
-            if ((vaultPermission = permissionProvider.getProvider()) == null) {
-                hasNull = true;
+        try {
+            RegisteredServiceProvider<Permission> permissionProvider = Bukkit.getServicesManager()
+                    .getRegistration(Permission.class);
+            if (permissionProvider != null) {
+                if ((vaultPermission = permissionProvider.getProvider()) == null) {
+                    return true;
+                }
             }
+            return false;
+        } catch (NoClassDefFoundError e) {
+            return false;
         }
-        return !hasNull;
     }
 
     public void initDepends() {

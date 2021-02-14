@@ -1,0 +1,6 @@
+enable: true #是否开启自定义TABLIST的功能
+head: #TABLIST上部分的文字(支持PAPI)
+  - "§7欢迎来到XXX服务器"
+  - "§7服务器在线人数：§e%server_online%§7/§e%server_max_players%"
+foot: #TABLIST下部分的文字(支持PAPI)
+  - "§7服务器QQ群：§eXXXXXXXXXX"

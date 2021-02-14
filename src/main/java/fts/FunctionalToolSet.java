@@ -10,7 +10,6 @@ import fts.chair.Chair;
 import fts.chatbar.ChatBar;
 import fts.checkplayer.CheckContainers;
 import fts.checkplayer.CheckInventory;
-import fts.chunkrestore.ChunkRestore;
 import fts.customexp.CustomExpMechenism;
 import fts.deathchest.DeathChest;
 import fts.easycmd.EasyCommand;
@@ -23,10 +22,12 @@ import fts.modelock.ModeLocking;
 import fts.onlinetimes.OnlineTimes;
 import fts.particle.ParticleOverHead;
 import fts.particle.ParticleUnderFeet;
+import fts.random.RandomGenerator;
 import fts.randomcredit.RandomCredits;
 import fts.rtp.RandomTeleport;
 import fts.scoreboard.ScoreBoard;
 import fts.showoff.ShowOff;
+import fts.tablist.TabList;
 import fts.timeoperate.QuickNight;
 import fts.timeoperate.TimeSynchronization;
 import fts.trueexplode.TrueExplode;
@@ -86,10 +87,10 @@ public class FunctionalToolSet extends JavaPlugin {
                     .getRegistration(Permission.class);
             if (permissionProvider != null) {
                 if ((vaultPermission = permissionProvider.getProvider()) == null) {
-                    return true;
+                    return false;
                 }
             }
-            return false;
+            return true;
         } catch (NoClassDefFoundError e) {
             return false;
         }
@@ -174,7 +175,6 @@ public class FunctionalToolSet extends JavaPlugin {
             getLogger().info("正在启用模式锁定功能中...");
             ModeLocking.initialize(this);
             getLogger().info("正在启用区块重生功能中...");
-            ChunkRestore.initialize(this);
             getLogger().info("正在启用世界边界功能中...");
             WorldBoarder.initialize(this);
             if (hasPLib) {
@@ -196,6 +196,10 @@ public class FunctionalToolSet extends JavaPlugin {
             Chair.initialize(this);
             getLogger().info("正在启用查询容器记录功能中...");
             CheckContainers.initialize(this);
+            getLogger().info("正在启用随机数生成器功能中...");
+            RandomGenerator.initialize(this);
+            getLogger().info("正在启用自定义玩家列表功能中...");
+            TabList.initialize(this);
 
             checkUpdate();
 
@@ -328,7 +332,7 @@ public class FunctionalToolSet extends JavaPlugin {
             private void sendUpdate(Player player) {
                 if (player.hasPermission("fts.update")) {
                     player.sendMessage("服务器使用的FTS是旧版，可能存在bug或功能缺失，请尽快更新到新版！");
-                    getLogger().info("新版更新内容：\n" + versionUpdate);
+                    player.sendMessage("新版更新内容：\n" + versionUpdate);
                 }
             }
         }.runTaskAsynchronously(this);

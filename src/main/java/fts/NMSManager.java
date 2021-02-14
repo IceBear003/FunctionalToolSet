@@ -3,7 +3,8 @@ package fts;
 import org.bukkit.Bukkit;
 
 public class NMSManager {
-    public static final String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
+    public static final String version =
+            Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
 
     public static Class<?> getClass(String name) {
         try {

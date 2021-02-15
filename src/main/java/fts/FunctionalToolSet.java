@@ -52,6 +52,9 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 
+/**
+ * @author HamsterYDS
+ */
 public class FunctionalToolSet extends JavaPlugin {
     private static FunctionalToolSet instance;
     public static ProtocolManager pm;

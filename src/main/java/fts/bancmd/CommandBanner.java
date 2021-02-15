@@ -59,7 +59,7 @@ public class CommandBanner implements Listener {
         for (String label : worlds.get(world.getName())) {
             if (cmd.startsWith("/" + label)) {
                 event.setCancelled(true);
-                player.sendMessage("该世界无法使用此指令");
+                ResourceUtils.sendMessage(player, "ban-cmd");
             }
         }
     }

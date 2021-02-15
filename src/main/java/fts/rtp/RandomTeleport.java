@@ -53,26 +53,36 @@ public class RandomTeleport {
 
     public static void initRTP(Player player) {
         if (!player.hasPermission("fts.rtp.use")) {
-            player.sendMessage("你没有随机传送的权限！");
+            ResourceUtils.sendMessage(player, "no-permission-rtp");
             return;
         }
         if ((!enableWorlds.contains(player.getWorld().getName())) && (!player.hasPermission("fts.rtp.ignoreworld"))) {
-            player.sendMessage("本世界禁止随机传送！");
+            ResourceUtils.sendMessage(player, "cannot-rtp-in-world");
             return;
         }
         if (lastUseTimeStamp.containsKey(player.getUniqueId()) && (!player.hasPermission("fts.rtp.ignorecd"))) {
             if (System.currentTimeMillis() - lastUseTimeStamp.get(player.getUniqueId()) < cooldown * 1000) {
-                player.sendMessage("传送冷却未到！还有§6"
-                        + (cooldown - (System.currentTimeMillis() - lastUseTimeStamp.get(player.getUniqueId()) / 1000))
-                        + "§r秒");
+                ResourceUtils.sendSpecialMessage(player, "cooldowning-when-rtp",
+                        new ArrayList<String>() {
+                            {
+                                add("{time}");
+                                add(String.valueOf((cooldown - (System.currentTimeMillis() - lastUseTimeStamp.get(player.getUniqueId()) / 1000))));
+                            }
+                        });
                 return;
             }
         }
-        player.sendMessage("等待随机传送中，3s内请不要移动！");
+        ResourceUtils.sendSpecialMessage(player, "wait-rtp",
+                new ArrayList<String>() {
+                    {
+                        add("{time}");
+                        add(String.valueOf(waitTime));
+                    }
+                });
         Location from = player.getLocation();
         Location destination = getRandomDestination(from.clone());
         if (destination == null) {
-            player.sendMessage("找不到合适的随机传送点，请重试");
+            ResourceUtils.sendMessage(player, "cannot-find-save-loc");
             return;
         }
         new BukkitRunnable() {
@@ -83,11 +93,18 @@ public class RandomTeleport {
                     return;
                 }
                 if (player.getLocation().distance(from) >= 0.3 && (!player.hasPermission("fts.rtp.ignoremove"))) {
-                    player.sendMessage("您移动了，随机传送取消！");
+                    ResourceUtils.sendMessage(player, "cancel-rtp-after-move");
                     return;
                 }
-                player.sendMessage("随机传送至x:§6" + destination.getBlockX() + "§r z:§6"
-                        + destination.getBlockZ());
+                ResourceUtils.sendSpecialMessage(player, "successfully-rtp",
+                        new ArrayList<String>() {
+                            {
+                                add("{X}");
+                                add(String.valueOf(destination.getBlockX()));
+                                add("{Z}");
+                                add(String.valueOf(destination.getBlockZ()));
+                            }
+                        });
                 player.teleport(destination);
                 player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, 200, 0));
                 lastUseTimeStamp.remove(player.getUniqueId());

@@ -85,17 +85,17 @@ public class Chair implements Listener {
         }
         if (sitters.contains(player.getUniqueId())) {
             event.setCancelled(true);
-            player.sendMessage("你已经坐下来了！");
+            ResourceUtils.sendMessage(player, "already-sat");
             return;
         }
         if (flag == true && block.getLocation().add(0, -1, 0).getBlock().getType() == Material.AIR) {
             event.setCancelled(true);
-            player.sendMessage("你不能坐在悬空的椅子上！");
+            ResourceUtils.sendMessage(player, "sit-suspendedly");
             return;
         }
         if (flag == true && block.getLocation().add(0, 1, 0).getBlock().getType() != Material.AIR) {
             event.setCancelled(true);
-            player.sendMessage("你不能坐在上方无空间的椅子上！");
+            ResourceUtils.sendMessage(player, "sit-narrowly");
             return;
         }
         if (flag) {
@@ -106,7 +106,7 @@ public class Chair implements Listener {
             arrow.setPassenger(player);
             arrow.setGravity(false);
             arrow.setBounce(false);
-            player.sendMessage("你坐到了椅子上");
+            ResourceUtils.sendMessage(player, "successfully-sit");
             sitters.add(player.getUniqueId());
             new BukkitRunnable() {
                 @Override
@@ -116,7 +116,7 @@ public class Chair implements Listener {
                     } else {
                         arrow.remove();
                         cancel();
-                        player.sendMessage("你站了起来");
+                        ResourceUtils.sendMessage(player, "successfully-stand");
                         return;
                     }
                 }

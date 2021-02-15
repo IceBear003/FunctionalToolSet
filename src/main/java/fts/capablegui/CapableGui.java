@@ -1,8 +1,9 @@
 package fts.capablegui;
 
 import fts.FunctionalToolSet;
-import fts.spi.ItemFactory;
 import fts.spi.BlockApi;
+import fts.spi.ItemFactory;
+import fts.spi.ResourceUtils;
 import fts.spi.UTEInvHolder;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -50,7 +51,7 @@ public class CapableGui implements Listener {
         if (player.hasPermission("fts.capablegui.opengui")) {
             player.openInventory(choseGuis.get(player.getUniqueId()).get(0));
         } else {
-            player.sendMessage("你没有使用远程操控容器的权限！");
+            ResourceUtils.sendMessage(player, "no-permission-operate-gui");
         }
     }
 
@@ -58,7 +59,7 @@ public class CapableGui implements Listener {
         if (player.hasPermission("fts.capablegui.workbench")) {
             player.openWorkbench(null, true);
         } else {
-            player.sendMessage("你没有使用便携工作台的权限！");
+            ResourceUtils.sendMessage(player, "no-permission-use-capable-workbench");
         }
     }
 
@@ -66,18 +67,18 @@ public class CapableGui implements Listener {
         if (player.hasPermission("fts.capablegui.enderchest")) {
             player.openInventory(player.getEnderChest());
         } else {
-            player.sendMessage("你没有使用便携末影箱的权限！");
+            ResourceUtils.sendMessage(player, "no-permission-use-capable-enderchest");
         }
     }
 
     private static void openSpecialContainer(Player player, Location loc) {
         if (!player.hasPermission("fts.capablegui.container")) {
-            player.sendMessage("你没有使用远程容器的权限！");
+            ResourceUtils.sendMessage(player, "no-permission-capable-container");
             return;
         }
         Block block = loc.getBlock();
         if (!(block.getState() instanceof Container)) {
-            player.sendMessage("该方块不是容器！");
+            ResourceUtils.sendMessage(player, "not-a-container");
             return;
         }
         Container container = (Container) block.getState();
@@ -87,7 +88,7 @@ public class CapableGui implements Listener {
 
     private static void openEnchant(Player player, Location loc) {
         if (!player.hasPermission("fts.capablegui.enchant")) {
-            player.sendMessage("你没有使用远程附魔台的权限！");
+            ResourceUtils.sendMessage(player, "no-permission-capable-enchanttable");
             return;
         }
         Block block = loc.getBlock();
@@ -99,15 +100,15 @@ public class CapableGui implements Listener {
 
     private static void openMerchant(Player player, Villager villager) {
         if (!player.hasPermission("fts.capablegui.merchant")) {
-            player.sendMessage("你没有使用远程商店的权限！");
+            ResourceUtils.sendMessage(player, "no-permission-capable-merchant");
             return;
         }
         if (villager == null) {
-            player.sendMessage("村民不存在");
+            ResourceUtils.sendMessage(player, "villager-not-exist");
             return;
         }
         if (villager.isDead()) {
-            player.sendMessage("村民已死亡");
+            ResourceUtils.sendMessage(player, "villager-already-die");
             return;
         }
         player.openMerchant(villager, true);
@@ -115,13 +116,13 @@ public class CapableGui implements Listener {
 
     public static void addItemStack(Player player, Location loc, String name) {
         if (!player.hasPermission("fts.capablegui.addgui")) {
-            player.sendMessage("你没有权限增加远程容器！");
+            ResourceUtils.sendMessage(player, "no-permission-addgui");
             return;
         }
 
         if (!(loc.getBlock().getState() instanceof Container) && !(loc.getBlock().getType().toString().contains("ENCHANT") &&
                 loc.getBlock().getType().toString().contains("TABLE"))) {
-            player.sendMessage("您指向的方块不是容器！");
+            ResourceUtils.sendMessage(player, "not-a-block");
             return;
         }
 
@@ -130,7 +131,7 @@ public class CapableGui implements Listener {
         event.setExpToDrop(0);
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) {
-            player.sendMessage("这个容器不属于你！");
+            ResourceUtils.sendMessage(player, "no-permission-use-container");
             return;
         }
 
@@ -140,7 +141,7 @@ public class CapableGui implements Listener {
         ArrayList<String> lore = new ArrayList<>();
         lore.add(BlockApi.locToStr(loc));
         lore.add("");
-        lore.add("§6shift+左击 删除本远程容器/商店");
+        lore.add(ResourceUtils.getLang("lore-delgui"));
         ItemStack item = createItem(loc.getBlock().getType(), 0, name, lore);
 
         if (hasNull(inv)) {
@@ -159,19 +160,23 @@ public class CapableGui implements Listener {
             addItemStack(player, loc, name);
         }
 
-        player.sendMessage("添加远程容器" + name + "成功！");
+        ResourceUtils.sendSpecialMessage(player, "successfully-add-gui",
+                new ArrayList<String>() {{
+                    add("{name}");
+                    add(name);
+                }});
     }
 
     public static void addItemStack(Player player, Villager villager, String name) {
         if (!player.hasPermission("fts.capablegui.addgui")) {
-            player.sendMessage("你没有权限增加远程商店！");
+            ResourceUtils.sendMessage(player, "no-permission-addmerchant");
             return;
         }
 
         EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, villager, EntityDamageEvent.DamageCause.CUSTOM, 0.1);
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) {
-            player.sendMessage("这个村民不属于你！");
+            ResourceUtils.sendMessage(player, "villager-not-own");
             return;
         }
 
@@ -185,7 +190,7 @@ public class CapableGui implements Listener {
         ArrayList<String> lore = new ArrayList<>();
         lore.add("uuid:" + villager.getUniqueId());
         lore.add("");
-        lore.add("§6shift+左击 删除本远程容器/商店");
+        lore.add(ResourceUtils.getLang("lore-delgui"));
         ItemStack item = createItem(Material.EMERALD, 0, name, lore);
 
         if (hasNull(inv)) {
@@ -204,7 +209,11 @@ public class CapableGui implements Listener {
             addItemStack(player, villager, name);
         }
 
-        player.sendMessage("添加远程商店" + name + "成功！");
+        ResourceUtils.sendSpecialMessage(player, "successfully-add-merchant",
+                new ArrayList<String>() {{
+                    add("{name}");
+                    add(name);
+                }});
     }
 
     private static boolean hasNull(Inventory inv) {
@@ -241,7 +250,7 @@ public class CapableGui implements Listener {
                 ArrayList<String> lore = new ArrayList<>();
                 lore.add(yaml.getString(path + ".loc"));
                 lore.add("");
-                lore.add("§6shift+左击 删除本远程容器/商店");
+                lore.add(ResourceUtils.getLang("lore-delgui"));
                 ItemStack item = createItem(type, 0, yaml.getString(path + ".name"), lore);
                 inv.addItem(item);
             }
@@ -284,7 +293,12 @@ public class CapableGui implements Listener {
         try {
             yaml.save(file);
         } catch (IOException e) {
-            FunctionalToolSet.getInstance().getLogger().info("玩家" + player.getName() + "远程容器数据保存时出现错误！");
+            FunctionalToolSet.getInstance().getLogger().info(
+                    ResourceUtils.getSpecialLang("error-while-save-gui",
+                            new ArrayList<String>() {{
+                                add("{player}");
+                                add(player.getName());
+                            }}));
         }
     }
 
@@ -353,7 +367,7 @@ public class CapableGui implements Listener {
             } else if (slot % 9 > 2) {
                 if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
                     inv.setItem(slot, new ItemStack(Material.AIR));
-                    player.sendMessage("删除远程容器/商店成功");
+                    ResourceUtils.sendMessage(player, "successfully-del-gui");
                     return;
                 }
                 String lore = item.getItemMeta().getLore().get(0);

@@ -21,6 +21,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -83,7 +84,7 @@ public class DeathChest implements Listener {
                 BlockBreakEvent event2 = new BlockBreakEvent(dieLoc.getBlock(), player);
                 Bukkit.getPluginManager().callEvent(event2);
                 if (event2.isCancelled()) {
-                    player.sendMessage("您的死亡地点无法布置箱子，故无法生成死亡掉落存储箱！");
+                    ResourceUtils.sendMessage(player, "cannot-spawn-death-chest");
                     return;
                 }
 
@@ -110,7 +111,15 @@ public class DeathChest implements Listener {
                     ArmorStand armor = (ArmorStand) dieLoc.getWorld().spawnEntity(dieLoc.clone().add(0.5, 0, 0.5), EntityType.ARMOR_STAND);
                     armor.setVisible(false);
                     armor.setCustomNameVisible(true);
-                    armor.setCustomName("§e玩家§r" + player.getName() + "§e死前掉落的遗物，打开箱子以获取");
+                    armor.setCustomName(
+                            ResourceUtils.getSpecialLang("death-chest-title",
+                                    new ArrayList<String>() {
+                                        {
+                                            add("{player}");
+                                            add(player.getName());
+                                        }
+                                    })
+                    );
                     messageArmor.put(dieLoc, armor.getUniqueId());
 
                     new BukkitRunnable() {
@@ -135,8 +144,15 @@ public class DeathChest implements Listener {
                     player.setLevel(0);
                     player.setExp(0);
                 }
-
-                player.sendMessage("你的物品和经验掉落于x:§e" + dieLoc.getBlockX() + "§r z:§e" + dieLoc.getBlockZ());
+                ResourceUtils.sendSpecialMessage(player, "death-chest-location-info",
+                        new ArrayList<String>() {
+                            {
+                                add("{X}");
+                                add(String.valueOf(dieLoc.getBlockX()));
+                                add("{Z}");
+                                add(String.valueOf(dieLoc.getBlockZ()));
+                            }
+                        });
             }
         }.runTaskLater(FunctionalToolSet.getInstance(), 2L);
     }
@@ -155,7 +171,7 @@ public class DeathChest implements Listener {
         if (owner.containsKey(loc)) {
             if (onlyOwnerCanOpen && owner.get(loc) != player.getUniqueId() && !player.hasPermission("fts.deathchest.ignorewho")) {
                 event.setCancelled(true);
-                player.sendMessage("这个箱子只有死者本人才能打开！");
+                ResourceUtils.sendMessage(player, "no-permission-open-death-chest");
                 return;
             }
             if (storeExp) {

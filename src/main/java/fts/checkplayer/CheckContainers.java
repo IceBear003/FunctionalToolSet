@@ -1,9 +1,9 @@
 package fts.checkplayer;
 
 import fts.FunctionalToolSet;
+import fts.spi.BlockApi;
 import fts.spi.ItemFactory;
 import fts.spi.ResourceUtils;
-import fts.spi.BlockApi;
 import fts.spi.UTEInvHolder;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -169,7 +169,15 @@ public class CheckContainers implements Listener {
         try {
             yaml.save(file);
         } catch (IOException e) {
-            FunctionalToolSet.getInstance().getLogger().info("存储玩家" + player.getName() + "容器操作时发生错误！");
+            FunctionalToolSet.getInstance().getLogger().info(
+                    ResourceUtils.getSpecialLang("error-while-save-container",
+                            new ArrayList<String>() {
+                                {
+                                    add("{player}");
+                                    add(player.getName());
+                                }
+                            })
+            );
         }
     }
 
@@ -184,7 +192,14 @@ public class CheckContainers implements Listener {
         try {
             yaml.save(file);
         } catch (IOException e) {
-            FunctionalToolSet.getInstance().getLogger().info("存储玩家" + player.getName() + "容器操作时发生错误！");
+            FunctionalToolSet.getInstance().getLogger().info(
+                    ResourceUtils.getSpecialLang("error-while-save-container",
+                            new ArrayList<String>() {
+                                {
+                                    add("{player}");
+                                    add(player.getName());
+                                }
+                            }));
         }
     }
 
@@ -260,7 +275,7 @@ public class CheckContainers implements Listener {
                         }.runTaskLater(FunctionalToolSet.getInstance(), 2L);
                         return;
                     }
-                    player.sendMessage("该容器已经不存在或该方块不支持远程打开！");
+                    ResourceUtils.sendMessage(player, "cannot-open-container");
                     player.closeInventory();
                     playerInvs.remove(player.getUniqueId());
                 }

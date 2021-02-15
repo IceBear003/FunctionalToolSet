@@ -1,8 +1,8 @@
 package fts.scoreboard;
 
 import fts.FunctionalToolSet;
-import fts.spi.ResourceUtils;
 import fts.onlinetimes.OnlineTimes;
+import fts.spi.ResourceUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -74,16 +74,16 @@ public class ScoreBoard implements Listener {
 
     public static void changeState(Player player) {
         if (!player.hasPermission("fts.sb.toggle")) {
-            player.sendMessage("您没有权限操控计分板！");
+            ResourceUtils.sendMessage(player, "no-permission-toggle-scoreboard");
             return;
         }
         if (!disablers.contains(player.getUniqueId())) {
             disablers.add(player.getUniqueId());
             player.setScoreboard(Bukkit.getServer().getScoreboardManager().getNewScoreboard());
-            player.sendMessage("计分板已经关闭");
+            ResourceUtils.sendMessage(player, "close-scoreboard");
         } else {
             disablers.remove(player.getUniqueId());
-            player.sendMessage("计分板已经开启");
+            ResourceUtils.sendMessage(player, "open-scoreboard");
         }
     }
 

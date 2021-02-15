@@ -1,6 +1,7 @@
 package fts.onlinetimes;
 
 import fts.FunctionalToolSet;
+import fts.spi.ResourceUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -13,6 +14,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -74,7 +76,15 @@ public class OnlineTimes implements Listener {
         try {
             yaml.save(file);
         } catch (IOException e) {
-            FunctionalToolSet.getInstance().getLogger().info("玩家" + player.getName() + "在线时间保存时出现错误！");
+            FunctionalToolSet.getInstance().getLogger().info(
+                    ResourceUtils.getSpecialLang("error-while-save-onlinetime",
+                            new ArrayList<String>() {
+                                {
+                                    add("{player}");
+                                    add(player.getName());
+                                }
+                            })
+            );
         }
     }
 

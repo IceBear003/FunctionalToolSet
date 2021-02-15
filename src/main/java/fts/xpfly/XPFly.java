@@ -44,7 +44,7 @@ public class XPFly {
                 for (UUID uuid : (ArrayList<UUID>) flyingPlayers.clone()) {
                     Player player = Bukkit.getPlayer(uuid);
                     if (player.getExp() < exhaustSpeed / 10 && player.getLevel() == 0) {
-                        player.sendMessage("您没有足够的经验，自动停止飞行");
+                        ResourceUtils.sendMessage(player, "not-enough-exp");
                         cancelFly(player);
                         return;
                     }
@@ -78,7 +78,7 @@ public class XPFly {
                     }
 
                     if (player.isOnGround() && player.isSneaking()) {
-                        player.sendMessage("您已经落地，自动停止飞行");
+                        ResourceUtils.sendMessage(player, "auto-stop-xpfly");
                         cancelFly(player);
                     }
                 }
@@ -100,12 +100,12 @@ public class XPFly {
 
     public static void initXPFly(Player player) {
         if (!player.hasPermission("fts.xpfly.use")) {
-            player.sendMessage("您没有权限使用经验飞行！");
+            ResourceUtils.sendMessage(player, "no-permission-xpfly");
             return;
         }
         if (flyingPlayers.contains(player.getUniqueId())) {
             cancelFly(player);
-            player.sendMessage("经验飞行已经关闭");
+            ResourceUtils.sendMessage(player, "stop-xpfly");
         } else {
             goFly(player);
         }
@@ -117,13 +117,13 @@ public class XPFly {
 
     private static void goFly(Player player) {
         if (player.getTotalExperience() < exhaustSpeed) {
-            player.sendMessage("您没有足够的经验飞行！");
+            ResourceUtils.sendMessage(player, "not-enough-exp");
             return;
         }
         flyingPlayers.add(player.getUniqueId());
         player.setAllowFlight(true);
         player.setFlying(true);
-        player.sendMessage("经验飞行已经开启");
+        ResourceUtils.sendMessage(player, "start-xpfly");
     }
 
     public static void cancelFly(Player player) {

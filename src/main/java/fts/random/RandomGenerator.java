@@ -31,7 +31,7 @@ public class RandomGenerator implements Listener {
             return;
         }
         String message = event.getMessage();
-        String regex = "#ranInt%[1-9]\\d*,[1-9]\\d*%";
+        String regex = "#ranInt%[0-9]\\d*,[0-9]\\d*%";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(message);
         System.out.println(matcher.matches());

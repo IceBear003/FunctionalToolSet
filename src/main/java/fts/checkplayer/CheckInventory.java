@@ -20,6 +20,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -75,7 +76,14 @@ public class CheckInventory implements Listener {
         try {
             yaml.save(file);
         } catch (IOException e) {
-            FunctionalToolSet.getInstance().getLogger().info("存储玩家" + player.getName() + "背包时发生错误！");
+            FunctionalToolSet.getInstance().getLogger().info(
+                    ResourceUtils.getSpecialLang("error-while-save-inventory",
+                            new ArrayList<String>() {
+                                {
+                                    add("{player}");
+                                    add(player.getName());
+                                }
+                            }));
         }
     }
 
@@ -162,7 +170,14 @@ public class CheckInventory implements Listener {
             try {
                 yaml.save(file);
             } catch (IOException e) {
-                FunctionalToolSet.getInstance().getLogger().info("存储玩家" + player.getName() + "背包时发生错误！");
+                FunctionalToolSet.getInstance().getLogger().info(
+                        ResourceUtils.getSpecialLang("error-while-save-inventory",
+                                new ArrayList<String>() {
+                                    {
+                                        add("{player}");
+                                        add(player.getName());
+                                    }
+                                }));
             }
         }
     }

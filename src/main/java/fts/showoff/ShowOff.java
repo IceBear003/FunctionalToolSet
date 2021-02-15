@@ -123,7 +123,7 @@ public class ShowOff implements Listener {
             method2 = clazz2.getMethod("save",
                     clazz3);
         } catch (NoSuchMethodException | NullPointerException e) {
-            FunctionalToolSet.getInstance().getLogger().info("nms内部错误，请检查版本！");
+            FunctionalToolSet.getInstance().getLogger().info(ResourceUtils.getLang("error-while-use-nms"));
             return null;
         }
 
@@ -133,7 +133,7 @@ public class ShowOff implements Listener {
                     method1.invoke(null, itemStack),
                     clazz3.newInstance());
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NullPointerException e) {
-            FunctionalToolSet.getInstance().getLogger().info("nms内部错误，请检查版本！");
+            FunctionalToolSet.getInstance().getLogger().info(ResourceUtils.getLang("error-while-use-nms"));
             return null;
         }
 
@@ -175,7 +175,7 @@ public class ShowOff implements Listener {
             if (lastShowOffStamp.containsKey(player.getUniqueId())) {
                 long lastUse = lastShowOffStamp.get(player.getUniqueId());
                 if (System.currentTimeMillis() - lastUse < cooldown * 1000 && !player.hasPermission("fts.showoff.ignorecd")) {
-                    player.sendMessage("炫耀物品失败，请等待冷却！");
+                    ResourceUtils.sendMessage(player, "show-off-cooldown");
                 }
             }
             lastShowOffStamp.put(player.getUniqueId(), System.currentTimeMillis());

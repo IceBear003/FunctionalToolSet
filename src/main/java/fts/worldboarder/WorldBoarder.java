@@ -1,8 +1,8 @@
 package fts.worldboarder;
 
 import fts.FunctionalToolSet;
-import fts.spi.ResourceUtils;
 import fts.spi.BlockApi;
+import fts.spi.ResourceUtils;
 import org.bukkit.*;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -39,14 +39,14 @@ public class WorldBoarder implements Listener {
             BoarderType type = BoarderType.valueOf(yaml.getString(path + ".type"));
             boolean isTransparent = yaml.getBoolean(path + ".isTransparent");
             switch (type) {
-            case RECTANGLE:
-                boarders.put(path, new RectangleBoarder(isTransparent,
-                        yaml.getInt(path + ".x1"), yaml.getInt(path + ".z1"),
-                        yaml.getInt(path + ".x2"), yaml.getInt(path + ".z2")));
-                break;
-            case ROUND:
-                boarders.put(path, new RoundBoarder(isTransparent, yaml.getInt(path + ".radius")));
-                break;
+                case RECTANGLE:
+                    boarders.put(path, new RectangleBoarder(isTransparent,
+                            yaml.getInt(path + ".x1"), yaml.getInt(path + ".z1"),
+                            yaml.getInt(path + ".x2"), yaml.getInt(path + ".z2")));
+                    break;
+                case ROUND:
+                    boarders.put(path, new RoundBoarder(isTransparent, yaml.getInt(path + ".radius")));
+                    break;
             }
             types.put(path, type);
         }
@@ -71,26 +71,26 @@ public class WorldBoarder implements Listener {
 
             boolean flag = false;
             switch (type) {
-            case RECTANGLE:
-                flag = ((RectangleBoarder) boarder).isOutOfWorld(loc);
-                break;
-            case ROUND:
-                flag = ((RoundBoarder) boarder).isOutOfWorld(loc);
-                break;
+                case RECTANGLE:
+                    flag = ((RectangleBoarder) boarder).isOutOfWorld(loc);
+                    break;
+                case ROUND:
+                    flag = ((RoundBoarder) boarder).isOutOfWorld(loc);
+                    break;
             }
 
             if (flag) {
                 if (boarder.isTransparent && (!players.contains(player.getUniqueId()))) {
                     Location otherSide = boarder.getTheOtherSide(loc);
                     player.teleport(otherSide);
-                    player.sendMessage("你刚刚超出了地图的边界，现已经穿梭到了地图遥远的另一边");
-                    player.sendMessage("如果想要穿梭回去，请等待数秒~");
+                    ResourceUtils.sendMessage(player, "go-to-the-other-side-1");
+                    ResourceUtils.sendMessage(player, "go-to-the-other-side-2");
                     players.add(player.getUniqueId());
                     new BukkitRunnable() {
                         @Override
                         public void run() {
                             players.remove(player.getUniqueId());
-                            player.sendMessage("你穿梭地图的冷却结束了，现在可以“原路”返回");
+                            ResourceUtils.sendMessage(player, "go-to-the-other-side-3");
                         }
                     }.runTaskLater(FunctionalToolSet.getInstance(), 100L);
                 } else {
@@ -100,7 +100,7 @@ public class WorldBoarder implements Listener {
                     }
                     world.spawnParticle(Particle.BARRIER, loc, 1);
                     particles.add(BlockApi.locToStr(loc));
-                    player.sendMessage("你已经到地图的边界，无法继续前进");
+                    ResourceUtils.sendMessage(player, "move-out-of-the-boarder");
                 }
             }
         }
@@ -123,17 +123,17 @@ public class WorldBoarder implements Listener {
 
             boolean flag = false;
             switch (type) {
-            case RECTANGLE:
-                flag = ((RectangleBoarder) boarder).isOutOfWorld(loc);
-                break;
-            case ROUND:
-                flag = ((RoundBoarder) boarder).isOutOfWorld(loc);
-                break;
+                case RECTANGLE:
+                    flag = ((RectangleBoarder) boarder).isOutOfWorld(loc);
+                    break;
+                case ROUND:
+                    flag = ((RoundBoarder) boarder).isOutOfWorld(loc);
+                    break;
             }
 
             if (flag) {
                 event.setCancelled(true);
-                player.sendMessage("传送失败，目标点超出地图边界");
+                ResourceUtils.sendMessage(player, "tp-out-of-the-boarder");
             }
         }
     }

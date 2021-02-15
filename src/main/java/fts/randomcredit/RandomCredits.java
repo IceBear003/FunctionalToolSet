@@ -48,11 +48,11 @@ public class RandomCredits {
 
     public static void goRandomPermission(CommandSender sender, Player player) {
         if (!sender.hasPermission("fts.randomcredit")) {
-            sender.sendMessage("您没有权限抽取随机权限");
+            ResourceUtils.sendMessage(sender, "no-permission-random-credit");
             return;
         }
         if (player == null) {
-            sender.sendMessage("玩家不存在或不在线");
+            ResourceUtils.sendMessage(sender, "no-such-a-player");
             return;
         }
         String permission = "";
@@ -72,11 +72,11 @@ public class RandomCredits {
 
     public static void goRandomCommand(CommandSender sender, Player player) {
         if (!sender.hasPermission("fts.randomcredit")) {
-            sender.sendMessage("您没有权限抽取随机指令");
+            ResourceUtils.sendMessage(sender, "no-permission-random-credit");
             return;
         }
         if (player == null) {
-            sender.sendMessage("玩家不存在或不在线");
+            ResourceUtils.sendMessage(sender, "no-such-a-player");
             return;
         }
         String cmd = "";

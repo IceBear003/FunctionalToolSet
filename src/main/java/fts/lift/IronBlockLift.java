@@ -57,7 +57,7 @@ public class IronBlockLift implements Listener {
                     if (newLoc.getBlock().getType() == blockType) {
                         player.teleport(newLoc.add(0, 1, 0));
                         consume(player);
-                        player.sendMessage("您乘坐铁块电梯上楼。");
+                        ResourceUtils.sendMessage(player, "up-with-lift");
                         return;
                     }
                 }
@@ -86,7 +86,7 @@ public class IronBlockLift implements Listener {
             if (newLoc.getBlock().getType() == blockType) {
                 player.teleport(newLoc.add(0, 1, 0));
                 consume(player);
-                player.sendMessage("您乘坐铁块电梯下楼。");
+                ResourceUtils.sendMessage(player, "down-with-lift");
                 return;
             }
         }

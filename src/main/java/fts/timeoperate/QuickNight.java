@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
+import java.util.ArrayList;
 
 public class QuickNight {
     private static BukkitRunnable task = null;
@@ -65,7 +66,15 @@ public class QuickNight {
                         if (title) {
                             for (Player player : world.getPlayers()) {
                                 player.resetTitle();
-                                player.sendTitle("§a" + getFormatTime(newTime), "§e世界时间", 10, 70, 20);
+                                player.sendTitle(
+                                        ResourceUtils.getSpecialLang("quick-night-title",
+                                                new ArrayList<String>() {
+                                                    {
+                                                        add("time");
+                                                        add(getFormatTime(newTime));
+                                                    }
+                                                }),
+                                        ResourceUtils.getLang("quick-night-subtitle"), 10, 70, 20);
                             }
                         }
                     } else {

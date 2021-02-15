@@ -3,6 +3,7 @@ package fts.spi;
 import com.sun.istack.internal.NotNull;
 import fts.FunctionalToolSet;
 import me.clip.placeholderapi.PlaceholderAPI;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
@@ -30,8 +31,38 @@ public class ResourceUtils {
         lang = YamlConfiguration.loadConfiguration(file);
     }
 
+    public static void sendMessage(CommandSender player, String path) {
+        String message = getLang(path);
+        if (!message.equalsIgnoreCase("")) {
+            player.sendMessage(message);
+        }
+    }
+
+    public static void sendSpecialMessage(CommandSender player, String path, List<String> elements) {
+        String message = getSpecialLang(path, elements);
+        if (!message.equalsIgnoreCase("")) {
+            player.sendMessage(message);
+        }
+    }
+
     public static String getLang(String path) {
-        return lang.getString(path);
+        if (lang.contains(path)) {
+            return lang.getString(path);
+        } else {
+            return "";
+        }
+    }
+
+    public static String getSpecialLang(String path, List<String> elements) {
+        if (lang.contains(path)) {
+            String origin = lang.getString(path);
+            for (int index = 0; index < elements.size(); index += 2) {
+                origin = origin.replace(elements.get(index), elements.get(index + 1));
+            }
+            return origin;
+        } else {
+            return "";
+        }
     }
 
     public static String getPapi(Player player, String origin) {

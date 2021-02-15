@@ -1,6 +1,7 @@
 package fts.particle;
 
 import fts.FunctionalToolSet;
+import fts.spi.ResourceUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -24,14 +25,14 @@ public class ParticleOverHead implements Listener {
         try {
             particle = Effect.valueOf(particleName);
         } catch (Exception exception) {
-            player.sendMessage("请输入正确的粒子效果名称");
+            ResourceUtils.sendMessage(player, "not-a-particle");
             return;
         }
         if (player.hasPermission("fts.particle.over." + particle.toString())) {
             users.remove(player.getUniqueId());
             users.put(player.getUniqueId(), particle);
         } else {
-            player.sendMessage("您没有权限使用该粒子效果！");
+            ResourceUtils.sendMessage(player, "no-permission-use-particle");
         }
     }
 

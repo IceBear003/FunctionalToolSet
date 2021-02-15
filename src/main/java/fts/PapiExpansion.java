@@ -1,6 +1,7 @@
 package fts;
 
 import com.sun.istack.internal.NotNull;
+import fts.cardpoints.CardPointRewards;
 import fts.onlinetimes.OnlineTimes;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.OfflinePlayer;
@@ -33,12 +34,14 @@ public class PapiExpansion extends PlaceholderExpansion {
             return "";
         }
         switch (identifier) {
-        case "dayOnlineTime":
-            return OnlineTimes.turnToString(OnlineTimes.getDayTime(player));
-        case "totalOnlineTime":
-            return OnlineTimes.turnToString(OnlineTimes.getTotalTime(player));
-        default:
-            return identifier;
+            case "dayOnlineTime":
+                return OnlineTimes.turnToString(OnlineTimes.getDayTime(player));
+            case "totalOnlineTime":
+                return OnlineTimes.turnToString(OnlineTimes.getTotalTime(player));
+            case "cardPoints":
+                return String.valueOf(CardPointRewards.stats.get(player.getUniqueId()).points);
+            default:
+                return identifier;
         }
     }
 }

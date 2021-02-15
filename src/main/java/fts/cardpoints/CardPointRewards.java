@@ -44,7 +44,9 @@ public class CardPointRewards implements Listener {
             try {
                 yaml.save(file);
             } catch (IOException e) {
-                FunctionalToolSet.getInstance().getLogger().info("保存本地时间时出现错误！");
+                FunctionalToolSet.getInstance().getLogger().info(
+                        ResourceUtils.getLang("error-while-save-time")
+                );
             }
         }
         int period = yaml.getInt("period");
@@ -72,23 +74,37 @@ public class CardPointRewards implements Listener {
         int need = needs.get(reward);
 
         if (stat.points < need) {
-            player.sendMessage("您的积分不足，无法领取此礼包");
+            ResourceUtils.sendMessage(player, "not-enough-cardpoints");
             return;
         }
         if (stat.received.contains(reward)) {
-            player.sendMessage("您的本赛季已经领取过此礼包");
+            ResourceUtils.sendMessage(player, "already-received-reward");
             return;
         }
         if (isDouble && (!player.hasPermission("fts.cardpoints.double"))) {
-            player.sendMessage("您的没有权限双倍领取此礼包");
+            ResourceUtils.sendMessage(player, "no-permission-double-receive");
             return;
         }
 
         if (consumes.get(reward)) {
-            player.sendMessage("您" + (isDouble ? "双倍" : "") + "领取此礼包，消耗了§e" + need + "§r积分");
+            ResourceUtils.sendSpecialMessage(player, "receive-reward-consume",
+                    new ArrayList<String>() {
+                        {
+                            add("{isDouble}");
+                            add(isDouble ? "双倍" : "");
+                            add("{points}");
+                            add(String.valueOf(need));
+                        }
+                    });
             stat.points -= need;
         } else {
-            player.sendMessage("您" + (isDouble ? "双倍" : "") + "领取了此礼包");
+            ResourceUtils.sendSpecialMessage(player, "receive-reward-unconsume",
+                    new ArrayList<String>() {
+                        {
+                            add("{isDouble}");
+                            add(isDouble ? "双倍" : "");
+                        }
+                    });
         }
 
         for (String str : rewards.get(reward)) {
@@ -121,7 +137,15 @@ public class CardPointRewards implements Listener {
         try {
             yaml.save(file);
         } catch (IOException e) {
-            FunctionalToolSet.getInstance().getLogger().info("玩家" + player.getName() + "赛季积分数据保存时出现错误！");
+            FunctionalToolSet.getInstance().getLogger().info(
+                    ResourceUtils.getSpecialLang("error-while-save-points",
+                            new ArrayList<String>() {
+                                {
+                                    add("{player}");
+                                    add(player.getName());
+                                }
+                            })
+            );
         }
     }
 
@@ -130,13 +154,19 @@ public class CardPointRewards implements Listener {
             if (sender.hasPermission("fts.cardpoints.take")) {
                 IPlayer stat = stats.get(player.getUniqueId());
                 stat.points -= points;
-                player.sendMessage("您的积分减少了§6" + points + "§r点");
-                sender.sendMessage("操作成功");
+                ResourceUtils.sendSpecialMessage(player, "take-points",
+                        new ArrayList<String>() {
+                            {
+                                add("{points}");
+                                add(String.valueOf(points));
+                            }
+                        });
+                ResourceUtils.sendMessage(sender, "successfully-modify-points");
             } else {
-                sender.sendMessage("您没有权限！");
+                ResourceUtils.sendMessage(sender, "no-permission-modify-points");
             }
         } else {
-            sender.sendMessage("玩家不存在或不在线！");
+            ResourceUtils.sendMessage(sender, "no-such-a-player");
         }
     }
 
@@ -145,13 +175,19 @@ public class CardPointRewards implements Listener {
             if (sender.hasPermission("fts.cardpoints.give")) {
                 IPlayer stat = stats.get(player.getUniqueId());
                 stat.points += points;
-                player.sendMessage("您的积分增加了§6" + points + "§r点");
-                sender.sendMessage("操作成功");
+                ResourceUtils.sendSpecialMessage(player, "add-points",
+                        new ArrayList<String>() {
+                            {
+                                add("{points}");
+                                add(String.valueOf(points));
+                            }
+                        });
+                ResourceUtils.sendMessage(sender, "successfully-modify-points");
             } else {
-                sender.sendMessage("您没有权限！");
+                ResourceUtils.sendMessage(sender, "no-permission-modify-points");
             }
         } else {
-            sender.sendMessage("玩家不存在或不在线！");
+            ResourceUtils.sendMessage(sender, "no-such-a-player");
         }
     }
 
@@ -160,26 +196,40 @@ public class CardPointRewards implements Listener {
             if (sender.hasPermission("fts.cardpoints.set")) {
                 IPlayer stat = stats.get(player.getUniqueId());
                 stat.points = points;
-                player.sendMessage("您的积分被设置为§6" + points + "§r点");
-                sender.sendMessage("操作成功");
+                ResourceUtils.sendSpecialMessage(player, "set-points",
+                        new ArrayList<String>() {
+                            {
+                                add("{points}");
+                                add(String.valueOf(points));
+                            }
+                        });
+                ResourceUtils.sendMessage(sender, "successfully-modify-points");
             } else {
-                sender.sendMessage("您没有权限！");
+                ResourceUtils.sendMessage(sender, "no-permission-modify-points");
             }
         } else {
-            sender.sendMessage("玩家不存在或不在线！");
+            ResourceUtils.sendMessage(sender, "no-such-a-player");
         }
     }
 
     public static void checkPoints(CommandSender sender, Player player) {
         if (player != null) {
             if (!sender.hasPermission("fts.cardpoints.check")) {
-                sender.sendMessage("您没有权限查询玩家的积分点！");
+                ResourceUtils.sendMessage(sender, "no-permission-checkpoints");
                 return;
             }
             IPlayer stat = stats.get(player.getUniqueId());
-            sender.sendMessage("玩家" + player.getName() + "拥有积分§e" + stat.points + "§r点");
+            ResourceUtils.sendSpecialMessage(sender, "check-points",
+                    new ArrayList<String>() {
+                        {
+                            add("{player}");
+                            add(player.getName());
+                            add("{points}");
+                            String.valueOf(stat.points);
+                        }
+                    });
         } else {
-            sender.sendMessage("玩家不存在或不在线！");
+            ResourceUtils.sendMessage(sender, "no-such-a-player");
         }
     }
 

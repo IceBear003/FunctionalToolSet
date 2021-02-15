@@ -1,7 +1,7 @@
 package fts.bancmd;
 
 import fts.FunctionalToolSet;
-import fts.ResourceUtils;
+import fts.spi.ResourceUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;

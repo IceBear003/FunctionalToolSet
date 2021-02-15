@@ -6,7 +6,7 @@ import com.comphenix.protocol.injector.GamePhase;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import fts.FunctionalToolSet;
-import fts.ResourceUtils;
+import fts.spi.ResourceUtils;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;

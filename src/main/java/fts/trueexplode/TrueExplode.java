@@ -1,7 +1,7 @@
 package fts.trueexplode;
 
 import fts.FunctionalToolSet;
-import fts.ResourceUtils;
+import fts.spi.ResourceUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;

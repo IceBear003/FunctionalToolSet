@@ -1,7 +1,7 @@
 package fts.xpfly;
 
 import fts.FunctionalToolSet;
-import fts.ResourceUtils;
+import fts.spi.ResourceUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;

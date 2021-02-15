@@ -1,7 +1,7 @@
 package fts.deathchest;
 
 import fts.FunctionalToolSet;
-import fts.ResourceUtils;
+import fts.spi.ResourceUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -78,11 +78,6 @@ public class DeathChest implements Listener {
                             break;
                         }
                     }
-                }
-
-                if (dieLoc.getBlock().getType() != Material.AIR) {
-                    player.sendMessage("您的死亡地点无法布置箱子，故无法生成死亡掉落存储箱！");
-                    return;
                 }
 
                 BlockBreakEvent event2 = new BlockBreakEvent(dieLoc.getBlock(), player);

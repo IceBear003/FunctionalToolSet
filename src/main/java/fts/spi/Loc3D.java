@@ -1,4 +1,4 @@
-package fts.api;
+package fts.spi;
 
 import com.sun.istack.internal.NotNull;
 import org.bukkit.Bukkit;

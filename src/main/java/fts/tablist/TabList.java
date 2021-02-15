@@ -1,8 +1,8 @@
 package fts.tablist;
 
 import fts.FunctionalToolSet;
-import fts.NMSManager;
-import fts.ResourceUtils;
+import fts.spi.NMSManager;
+import fts.spi.ResourceUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;

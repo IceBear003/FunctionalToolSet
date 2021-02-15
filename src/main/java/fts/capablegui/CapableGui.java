@@ -1,9 +1,9 @@
 package fts.capablegui;
 
 import fts.FunctionalToolSet;
-import fts.ItemFactory;
-import fts.api.BlockApi;
-import fts.api.UTEInvHolder;
+import fts.spi.ItemFactory;
+import fts.spi.BlockApi;
+import fts.spi.UTEInvHolder;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;

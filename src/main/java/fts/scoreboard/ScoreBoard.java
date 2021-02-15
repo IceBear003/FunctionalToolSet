@@ -1,7 +1,7 @@
 package fts.scoreboard;
 
 import fts.FunctionalToolSet;
-import fts.ResourceUtils;
+import fts.spi.ResourceUtils;
 import fts.onlinetimes.OnlineTimes;
 import org.bukkit.Bukkit;
 import org.bukkit.World;

@@ -1,8 +1,8 @@
 package fts.checkplayer;
 
 import fts.FunctionalToolSet;
-import fts.ResourceUtils;
-import fts.api.UTEInvHolder;
+import fts.spi.ResourceUtils;
+import fts.spi.UTEInvHolder;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;

@@ -1,4 +1,4 @@
-package fts.api;
+package fts.spi;
 
 import com.google.common.annotations.Beta;
 import com.google.common.io.ByteArrayDataInput;

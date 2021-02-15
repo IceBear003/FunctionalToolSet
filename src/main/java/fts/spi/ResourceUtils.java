@@ -1,6 +1,7 @@
-package fts;
+package fts.spi;
 
 import com.sun.istack.internal.NotNull;
+import fts.FunctionalToolSet;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;

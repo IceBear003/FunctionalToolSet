@@ -1,4 +1,4 @@
-package fts;
+package fts.spi;
 
 import org.bukkit.Bukkit;
 

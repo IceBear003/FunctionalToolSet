@@ -1,8 +1,8 @@
 package fts.worldboarder;
 
 import fts.FunctionalToolSet;
-import fts.ResourceUtils;
-import fts.api.BlockApi;
+import fts.spi.ResourceUtils;
+import fts.spi.BlockApi;
 import org.bukkit.*;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;

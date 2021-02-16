@@ -7,6 +7,7 @@ import fts.checkplayer.CheckInventory;
 import fts.chunkrestore.ChunkRestore;
 import fts.particle.ParticleOverHead;
 import fts.particle.ParticleUnderFeet;
+import fts.pluginmanage.PluginManager;
 import fts.randomcredit.RandomCredits;
 import fts.rtp.RandomTeleport;
 import fts.scoreboard.ScoreBoard;
@@ -38,12 +39,13 @@ public class FTSCommands implements CommandExecutor {
         try {
             boolean flag = goCommand(sender, cmd, label, args);
             if (!flag) {
-                sender.sendMessage("指令参数选择错误");
+                sender.sendMessage("指令参数选择错误！");
             }
             return true;
         } catch (Exception exception) {
+            exception.printStackTrace();
             if (exception instanceof IndexOutOfBoundsException) {
-                sender.sendMessage("指令参数数量错误");
+                sender.sendMessage("指令参数数量错误！");
             } else if (exception instanceof NumberFormatException) {
                 sender.sendMessage("请输入整数！");
             } else if (exception instanceof ClassCastException) {
@@ -77,39 +79,39 @@ public class FTSCommands implements CommandExecutor {
             ScoreBoard.changeState((Player) sender);
         } else if (command.startsWith("fts cardpoints")) {
             switch (args[1]) {
-            case "give":
-                CardPointRewards.givePoints(sender, Bukkit.getPlayer(args[2]), Integer.parseInt(args[3]));
-                break;
-            case "set":
-                CardPointRewards.setPoints(sender, Bukkit.getPlayer(args[2]), Integer.parseInt(args[3]));
-                break;
-            case "take":
-                CardPointRewards.takePoints(sender, Bukkit.getPlayer(args[2]), Integer.parseInt(args[3]));
-                break;
-            case "check":
-                CardPointRewards.checkPoints(sender, Bukkit.getPlayer(args[2]));
-                break;
-            case "get":
-                CardPointRewards.getReward((Player) sender, args[2], (args[3].equalsIgnoreCase("TRUE")));
-                break;
-            default:
-                return false;
+                case "give":
+                    CardPointRewards.givePoints(sender, Bukkit.getPlayer(args[2]), Integer.parseInt(args[3]));
+                    break;
+                case "set":
+                    CardPointRewards.setPoints(sender, Bukkit.getPlayer(args[2]), Integer.parseInt(args[3]));
+                    break;
+                case "take":
+                    CardPointRewards.takePoints(sender, Bukkit.getPlayer(args[2]), Integer.parseInt(args[3]));
+                    break;
+                case "check":
+                    CardPointRewards.checkPoints(sender, Bukkit.getPlayer(args[2]));
+                    break;
+                case "get":
+                    CardPointRewards.getReward((Player) sender, args[2], (args[3].equalsIgnoreCase("TRUE")));
+                    break;
+                default:
+                    return false;
             }
         } else if (command.startsWith("fts particle")) {
             switch (args[1]) {
-            case "under":
-                ParticleUnderFeet.drawParticle((Player) sender, args[2]);
-                break;
-            case "up":
-                ParticleOverHead.drawParticle((Player) sender, args[2]);
-                break;
-            case "off":
-                ParticleOverHead.stop((Player) sender);
-                ParticleUnderFeet.stop((Player) sender);
-                sender.sendMessage("已经关闭所有粒子效果");
-                break;
-            default:
-                return false;
+                case "under":
+                    ParticleUnderFeet.drawParticle((Player) sender, args[2]);
+                    break;
+                case "up":
+                    ParticleOverHead.drawParticle((Player) sender, args[2]);
+                    break;
+                case "off":
+                    ParticleOverHead.stop((Player) sender);
+                    ParticleUnderFeet.stop((Player) sender);
+                    sender.sendMessage("已经关闭所有粒子效果");
+                    break;
+                default:
+                    return false;
             }
         } else if (command.startsWith("fts randomcredits")) {
             if (Math.random() <= 0.5) {
@@ -195,6 +197,30 @@ public class FTSCommands implements CommandExecutor {
             } else {
                 player.sendMessage("玩家不存在");
             }
+        } else if (command.startsWith("fts plugin")) {
+            //TODO fts.plugin LANGUAGE
+            if (!sender.hasPermission("fts.plugin")) {
+                sender.sendMessage("你没有权限管理插件！");
+                return true;
+            }
+            //TODO LANGUAGE
+            if (args[2].equalsIgnoreCase("FunctionalToolSet")) {
+                sender.sendMessage("本插件无法对自身进行载入/卸载/重载的操作！");
+                return true;
+            }
+            switch (args[1]) {
+                case "load":
+                    PluginManager.load(sender, args[2], true);
+                    break;
+                case "reload":
+                    PluginManager.reload(sender, args[2], true);
+                    break;
+                case "unload":
+                    PluginManager.unload(sender, args[2], true);
+                    break;
+                default:
+                    return false;
+            }
         } else if (command.startsWith("fts help")) {
             sender.sendMessage("{ignore}§e-----------§6§lFunctionalToolSet插件指令简介§e-----------");
             sender.sendMessage("{ignore}§a/fts rtp §e-随机传送");
@@ -211,6 +237,7 @@ public class FTSCommands implements CommandExecutor {
             sender.sendMessage("{ignore}§a/fts checkinv <玩家名> §e-查水表-查询一个玩家的背包");
             sender.sendMessage("{ignore}§a/fts checkchest <玩家名> §e-查水表-查询一个玩家的末影箱");
             sender.sendMessage("{ignore}§a/fts checkcontainer <玩家名> §e-查水表-查询一个玩家的容器打开记录");
+            sender.sendMessage("{ignore}§a/fts plugin load/unload/reload <插件名> §e-插件管理-载入/重载/卸载插件");
             sender.sendMessage("{ignore}§a/fts reload §e-重新载入所有配置文件，但是对新老版本更新无用，请使用/reload");
             sender.sendMessage("{ignore}§e----------------------------------------------------------");
         } else if (command.startsWith("fts reload")) {

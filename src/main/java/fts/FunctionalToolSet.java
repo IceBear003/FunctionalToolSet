@@ -19,9 +19,11 @@ import fts.joincmd.JoinCommand;
 import fts.lift.IronBlockLift;
 import fts.linkingdig.LinkingDig;
 import fts.modelock.ModeLocking;
+import fts.motd.MotdManager;
 import fts.onlinetimes.OnlineTimes;
 import fts.particle.ParticleOverHead;
 import fts.particle.ParticleUnderFeet;
+import fts.pluginmanage.PluginManager;
 import fts.random.RandomGenerator;
 import fts.randomcredit.RandomCredits;
 import fts.rtp.RandomTeleport;
@@ -200,10 +202,16 @@ public class FunctionalToolSet extends JavaPlugin {
             Chair.initialize(this);
             getLogger().info("正在启用查询容器记录功能中...");
             CheckContainers.initialize(this);
-            getLogger().info("正在启用随机数生成器功能中...");
-            RandomGenerator.initialize(this);
             getLogger().info("正在启用自定义玩家列表功能中...");
             TabList.initialize(this);
+            //TODO
+            getLogger().info("正在启用插件管理功能中...");
+            PluginManager.initialize(this);
+            getLogger().info("正在启用自定义MOTD功能中...");
+            MotdManager.initialize(this);
+
+            getLogger().info("正在启用随机数生成器功能中...");
+            RandomGenerator.initialize(this);
 
             checkUpdate();
 

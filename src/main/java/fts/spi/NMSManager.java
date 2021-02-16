@@ -17,4 +17,16 @@ public class NMSManager {
             }
         }
     }
+
+    public static Class<?> getClassWithPackage(String name) {
+        try {
+            return Class.forName(name);
+        } catch (ClassNotFoundException e) {
+            try {
+                return Class.forName(name);
+            } catch (ClassNotFoundException e1) {
+                return null;
+            }
+        }
+    }
 }

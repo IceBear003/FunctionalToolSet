@@ -3,23 +3,19 @@ package fts.actioncmd;
 import fts.FunctionalToolSet;
 import fts.spi.ResourceUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.*;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 
-public class ActionCommand implements Listener {
-    private static final HashMap<String, IActions> standardActions = new HashMap<>();
-    private static final HashMap<UUID, Actions> playerActions = new HashMap<>();
-    private static final ArrayList<UUID> jumpers = new ArrayList<>();
-    private static int judgeTime;
-    private static HashSet<UUID> cd = new HashSet<>();
+public class ActionCommand {
+    public static final HashMap<String, IActions> standardActions = new HashMap<>();
+    public static final HashMap<UUID, DoneActions> playerActions = new HashMap<>();
+    public static int judgeTime;
 
     public static void initialize(FunctionalToolSet plugin) {
         ResourceUtils.autoUpdateConfigs("actcmd.yml");
@@ -31,7 +27,7 @@ public class ActionCommand implements Listener {
         judgeTime = yaml.getInt("judgeTime");
 
         for (Player player : Bukkit.getOnlinePlayers()) {
-            playerActions.put(player.getUniqueId(), new Actions(player.getUniqueId()));
+            playerActions.put(player.getUniqueId(), new DoneActions(player.getUniqueId()));
         }
 
         for (String path : yaml.getKeys(false)) {
@@ -49,227 +45,6 @@ public class ActionCommand implements Listener {
                     yaml.getStringList(path + ".messages"));
             standardActions.put(path, actions);
         }
-
-        Bukkit.getPluginManager().registerEvents(new ActionCommand(), plugin);
-    }
-
-    private static void addCd(Player player) {
-        cd.add(player.getUniqueId());
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                cd.remove(player.getUniqueId());
-            }
-        }.runTaskLater(FunctionalToolSet.getInstance(), 2L);
-    }
-
-    @EventHandler
-    public void onJoin(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
-        playerActions.put(player.getUniqueId(), new Actions(player.getUniqueId()));
-    }
-
-    @EventHandler
-    public void onQuit(PlayerQuitEvent event) {
-        Player player = event.getPlayer();
-        playerActions.remove(player.getUniqueId());
-    }
-
-    @EventHandler
-    public void onSneak(PlayerToggleSneakEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
-        Player player = event.getPlayer();
-        if (!player.isSneaking() && !cd.contains(player.getUniqueId())) {
-            addCd(player);
-            playerActions.get(player.getUniqueId()).addAction(ActionType.SNEAK);
-        }
-    }
-
-    @EventHandler
-    public void onSwap(PlayerSwapHandItemsEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
-        Player player = event.getPlayer();
-        if (!cd.contains(player.getUniqueId())) {
-            addCd(player);
-            playerActions.get(player.getUniqueId()).addAction(ActionType.SWAP);
-        }
-    }
-
-    @EventHandler
-    public void onInteract(PlayerInteractEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
-        Player player = event.getPlayer();
-        if (cd.contains(player.getUniqueId())) {
-            return;
-        }
-        addCd(player);
-        if (event.getAction().toString().contains("LEFT")) {
-            playerActions.get(player.getUniqueId()).addAction(ActionType.LEFTCLICK);
-        }
-        if (event.getAction().toString().contains("RIGHT")) {
-            playerActions.get(player.getUniqueId()).addAction(ActionType.RIGHTCLICK);
-        }
-    }
-
-    @EventHandler
-    public void onInteractEntity(PlayerInteractAtEntityEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
-        Player player = event.getPlayer();
-        playerActions.get(player.getUniqueId()).addAction(ActionType.INTERACTENTITY);
-    }
-
-    @EventHandler
-    public void onMove(PlayerMoveEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
-        Location to = event.getTo();
-        Location from = event.getFrom();
-        Player player = event.getPlayer();
-
-        if (player.isOnGround()) {
-            jumpers.remove(player.getUniqueId());
-        }
-        if (!jumpers.contains(player.getUniqueId())) {
-            if (to.getBlockX() == from.getBlockX() && to.getBlockZ() == from.getBlockZ() && to.getY() - from.getY() >= 0.3) {
-                if (!player.isFlying() && !to.getBlock().isLiquid()) {
-                    jumpers.add(player.getUniqueId());
-                    playerActions.get(player.getUniqueId()).addAction(ActionType.JUMP);
-                }
-            }
-        }
-
-        float pitch = to.getPitch() - from.getPitch();
-        if (pitch <= -40 && to.getPitch() <= -70) {
-            playerActions.get(player.getUniqueId()).addAction(ActionType.UP);
-        }
-        if (pitch >= 40 && to.getPitch() >= 70) {
-            playerActions.get(player.getUniqueId()).addAction(ActionType.DOWN);
-        }
-    }
-
-    enum ActionType {
-        SNEAK, SWAP, LEFTCLICK, RIGHTCLICK, INTERACTENTITY, JUMP, UP, DOWN
-    }
-
-    public static class Actions {
-        private final UUID uuid;
-        private final List<ActionType> types;
-        private final List<Integer> values;
-        private final List<Long> stamps;
-
-        private boolean cd = true;
-
-        private Actions(UUID uuid) {
-            this.uuid = uuid;
-            types = new ArrayList<>();
-            values = new ArrayList<>();
-            stamps = new ArrayList<>();
-        }
-
-        private void addAction(ActionType type) {
-            long stamp = System.currentTimeMillis();
-            gc();
-            if (types.size() >= 1) {
-                if (types.get(types.size() - 1) == type) {
-                    values.set(types.size() - 1, values.get(types.size() - 1) + 1);
-                    stamps.set(types.size() - 1, stamp);
-                    judgeAction();
-                    return;
-                }
-            }
-            types.add(type);
-            values.add(1);
-            stamps.add(stamp);
-
-            if (!cd) {
-                return;
-            }
-            cd = true;
-
-            judgeAction();
-        }
-
-        private void gc() {
-            int size = types.size();
-            for (int index = 0; index < size; index++) {
-                long stamp = stamps.get(index);
-                if (System.currentTimeMillis() - stamp > judgeTime * 2000) {
-                    types.remove(index);
-                    values.remove(index);
-                    stamps.remove(index);
-                    size--;
-                }
-            }
-        }
-
-        private void judgeAction() {
-
-            for (String id : standardActions.keySet()) {
-                IActions actions = standardActions.get(id);
-                if (actions.types.size() > types.size()) {
-                    continue;
-                }
-
-                boolean flag = true;
-                for (int index = 0; index < actions.types.size(); index++) {
-                    if (types.get(types.size() - actions.types.size() + index) != actions.types.get(index)) {
-                        flag = false;
-                        break;
-                    }
-                    if (values.get(types.size() - actions.types.size() + index) < actions.values.get(index)) {
-                        flag = false;
-                        break;
-                    }
-                }
-                if (!flag) {
-                    continue;
-                } else {
-                    int size = types.size();
-                    for (int index = 0; index < actions.types.size(); index++) {
-                        int index$ = size - index - 1;
-                        types.remove(index$);
-                        values.remove(index$);
-                        stamps.remove(index$);
-                    }
-                    for (String cmd : actions.cmds) {
-                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.replace("{player}", Bukkit.getPlayer(uuid).getName()));
-                    }
-                    for (String message : actions.messages) {
-                        Bukkit.getPlayer(uuid).sendMessage(message);
-                    }
-                    break;
-                }
-            }
-            new BukkitRunnable() {
-
-                @Override
-                public void run() {
-                    cd = true;
-                }
-            }.runTaskLater(FunctionalToolSet.getInstance(), 60L);
-        }
-    }
-
-    public static class IActions {
-        private final List<ActionType> types;
-        private final List<Integer> values;
-        private final List<String> cmds;
-        private final List<String> messages;
-
-        public IActions(List<ActionType> types, List<Integer> values, List<String> cmds, List<String> messages) {
-            this.types = types;
-            this.values = values;
-            this.cmds = cmds;
-            this.messages = messages;
-        }
+        Bukkit.getPluginManager().registerEvents(new ActionListener(), plugin);
     }
 }

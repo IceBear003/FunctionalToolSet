@@ -13,7 +13,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.io.File;
 import java.util.HashMap;
 
-public class CustomExpMechenism implements Listener {
+public class CustomLevelExp implements Listener {
     private static final HashMap<Integer, Integer> expNeedToUpgrade = new HashMap<>();
 
     public static void initialize(FunctionalToolSet plugin) {
@@ -33,7 +33,7 @@ public class CustomExpMechenism implements Listener {
             expNeedToUpgrade.put(level, exp);
         }
 
-        Bukkit.getPluginManager().registerEvents(new CustomExpMechenism(), plugin);
+        Bukkit.getPluginManager().registerEvents(new CustomLevelExp(), plugin);
     }
 
     private static int getExpToLevel(int level) {

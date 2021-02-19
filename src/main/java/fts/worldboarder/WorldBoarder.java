@@ -3,7 +3,10 @@ package fts.worldboarder;
 import fts.FunctionalToolSet;
 import fts.spi.BlockApi;
 import fts.spi.ResourceUtils;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -11,7 +14,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.Vector;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -138,66 +140,5 @@ public class WorldBoarder implements Listener {
         }
     }
 
-    public enum BoarderType {
-        RECTANGLE, ROUND
-    }
 
-    public static class Boarder {
-        boolean isTransparent;
-
-        Boarder(boolean isTransparent) {
-            this.isTransparent = isTransparent;
-        }
-
-        Location getTheOtherSide(Location loc) {
-            Location centre = new Location(loc.getWorld(), 0, loc.getY(), 0);
-            Vector vector = new Vector(loc.getBlockX(), 0, loc.getBlockZ());
-            vector.multiply(-1);
-            Location result = centre.add(vector).clone();
-            vector.multiply(-1).normalize();
-            result.add(vector);
-            result.add(vector);
-            result.add(vector);
-
-            result.setY(256);
-            while (result.getBlock().getType() == Material.AIR) {
-                result.add(0, -1, 0);
-            }
-            return result.add(0, 1, 0);
-        }
-    }
-
-    public static class RectangleBoarder extends Boarder {
-        int x1, z1, x2, z2;
-
-        public RectangleBoarder(boolean isTransparent, int x1, int z1, int x2, int z2) {
-            super(isTransparent);
-            this.x1 = Math.min(x1, x2);
-            this.z1 = Math.min(z1, z2);
-            this.x2 = Math.max(x1, x2);
-            this.z2 = Math.max(z1, z2);
-        }
-
-        boolean isOutOfWorld(Location loc) {
-            int x = loc.getBlockX();
-            int z = loc.getBlockZ();
-            if (x1 <= x && x <= x2) {
-                return z1 > z || z > z2;
-            }
-            return true;
-        }
-    }
-
-    public static class RoundBoarder extends Boarder {
-        int radius;
-
-        public RoundBoarder(boolean isTransparent, int radius) {
-            super(isTransparent);
-            this.radius = radius;
-        }
-
-        boolean isOutOfWorld(Location loc) {
-            return loc.distance(new Location(loc.getWorld(), 0, loc.getY(), 0)) <= radius;
-        }
-    }
 }

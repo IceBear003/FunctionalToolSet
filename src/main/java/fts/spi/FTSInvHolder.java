@@ -9,7 +9,7 @@ import org.bukkit.inventory.InventoryHolder;
  * Copyright Karlatemp
  * UntilTheEnd $ HamsterYDS.UntilTheEnd.guide
  */
-public interface UTEInvHolder extends InventoryHolder {
+public interface FTSInvHolder extends InventoryHolder {
     @Override
     @NotNull
     default Inventory getInventory() {

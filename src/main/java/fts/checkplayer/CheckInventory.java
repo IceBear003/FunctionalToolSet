@@ -2,7 +2,6 @@ package fts.checkplayer;
 
 import fts.FunctionalToolSet;
 import fts.spi.ResourceUtils;
-import fts.spi.UTEInvHolder;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -217,20 +216,5 @@ public class CheckInventory implements Listener {
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         save(event.getPlayer());
-    }
-
-    public static class HolderCheckInventoryGui implements UTEInvHolder {
-        public static final HolderCheckInventoryGui INSTANCE = new HolderCheckInventoryGui();
-        private String name;
-
-        @Override
-        public String getCustomName() {
-            return name;
-        }
-
-        @Override
-        public void setCustomName(String name) {
-            this.name = name;
-        }
     }
 }

@@ -19,12 +19,12 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class OnlineTimes implements Listener {
+    private static final HashMap<UUID, IPlayerOnlineTimes> stats = new HashMap<>();
     private static BukkitRunnable task = null;
-    private static final HashMap<UUID, IPlayer> stats = new HashMap<>();
 
     public static void initialize(FunctionalToolSet plugin) {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            stats.put(player.getUniqueId(), loadYaml(player));
+            stats.put(player.getUniqueId(), load(player));
         }
 
         Bukkit.getPluginManager().registerEvents(new OnlineTimes(), plugin);
@@ -40,11 +40,11 @@ public class OnlineTimes implements Listener {
             public void run() {
                 counter++;
                 for (Player player : Bukkit.getOnlinePlayers()) {
-                    IPlayer stat = stats.get(player.getUniqueId());
+                    IPlayerOnlineTimes stat = stats.get(player.getUniqueId());
                     stat.dayTime++;
                     stat.totalTime++;
                     if (counter % 60 == 0) {
-                        saveYaml(player);
+                        save(player);
                     }
                 }
             }
@@ -52,21 +52,21 @@ public class OnlineTimes implements Listener {
         task.runTaskTimer(plugin, 0L, 20L);
     }
 
-    private static IPlayer loadYaml(Player player) {
+    private static IPlayerOnlineTimes load(Player player) {
         File file = new File(FunctionalToolSet.getInstance().getDataFolder() + "/onlinetimes/",
                 player.getUniqueId().toString() + ".yml");
         if (!file.exists()) {
-            return (new IPlayer(0, 0, LocalDate.now().getDayOfMonth()));
+            return (new IPlayerOnlineTimes(0, 0, LocalDate.now().getDayOfMonth()));
         }
         YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
-        return new IPlayer(yaml.getInt("dayTime"), yaml.getInt("totalTime"), yaml.getInt("lastLoginDate"));
+        return new IPlayerOnlineTimes(yaml.getInt("dayTime"), yaml.getInt("totalTime"), yaml.getInt("lastLoginDate"));
     }
 
-    public static void saveYaml(Player player) {
+    public static void save(Player player) {
         if (!stats.containsKey(player.getUniqueId())) {
             return;
         }
-        IPlayer stat = stats.get(player.getUniqueId());
+        IPlayerOnlineTimes stat = stats.get(player.getUniqueId());
         File file = new File(FunctionalToolSet.getInstance().getDataFolder() + "/onlinetimes/",
                 player.getUniqueId().toString() + ".yml");
         YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
@@ -122,30 +122,13 @@ public class OnlineTimes implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        stats.put(player.getUniqueId(), loadYaml(player));
+        stats.put(player.getUniqueId(), load(player));
     }
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        saveYaml(player);
+        save(player);
         stats.remove(player.getUniqueId());
-    }
-
-    public static class IPlayer {
-        private int dayTime;
-        private int totalTime;
-        private int lastLoginDate;
-
-        private IPlayer(int dayTime, int totalTime, int lastLoginDate) {
-            this.dayTime = dayTime;
-            this.totalTime = totalTime;
-            this.lastLoginDate = lastLoginDate;
-            LocalDate date = LocalDate.now();
-            if (date.getDayOfMonth() != this.lastLoginDate) {
-                this.dayTime = 0;
-                this.lastLoginDate = date.getDayOfMonth();
-            }
-        }
     }
 }

@@ -4,7 +4,6 @@ import fts.FunctionalToolSet;
 import fts.spi.BlockApi;
 import fts.spi.ItemFactory;
 import fts.spi.ResourceUtils;
-import fts.spi.UTEInvHolder;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -310,20 +309,5 @@ public class CheckContainers implements Listener {
             return;
         }
         save(event.getPlayer(), loc);
-    }
-
-    public static class HolderCheckContainerGui implements UTEInvHolder {
-        public static final HolderCheckContainerGui INSTANCE = new HolderCheckContainerGui();
-        private String name;
-
-        @Override
-        public String getCustomName() {
-            return name;
-        }
-
-        @Override
-        public void setCustomName(String name) {
-            this.name = name;
-        }
     }
 }

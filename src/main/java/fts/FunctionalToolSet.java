@@ -5,12 +5,14 @@ import com.comphenix.protocol.ProtocolManager;
 import fts.actioncmd.ActionCommand;
 import fts.bancmd.CommandBanner;
 import fts.capablegui.CapableGui;
-import fts.cardpoints.CardPointRewards;
+import fts.capablegui.CapableGuiIO;
+import fts.cardpoints.CardPoints;
+import fts.cardpoints.CardPointsIO;
 import fts.chair.Chair;
 import fts.chatbar.ChatBar;
 import fts.checkplayer.CheckContainers;
 import fts.checkplayer.CheckInventory;
-import fts.customexp.CustomExpMechenism;
+import fts.customexp.CustomLevelExp;
 import fts.deathchest.DeathChest;
 import fts.easycmd.EasyCommand;
 import fts.information.NoLoginQuitMessage;
@@ -36,6 +38,7 @@ import fts.timeoperate.TimeSynchronization;
 import fts.trueexplode.TrueExplode;
 import fts.worldboarder.WorldBoarder;
 import fts.xpfly.XPFly;
+import me.clip.placeholderapi.PlaceholderAPI;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -59,20 +62,18 @@ import java.util.logging.Level;
  * @author HamsterYDS
  */
 public class FunctionalToolSet extends JavaPlugin {
-    private static FunctionalToolSet instance;
     public static ProtocolManager pm;
     public static Permission vaultPermission = null;
-
-    private String latestVersion;
-    private String versionUpdate;
-    private boolean isLatest = true;
-
     public static boolean hasPapi;
     public static boolean hasPLib;
     public static boolean hasVault;
     public static File pluginFile;
     public static boolean isLoading;
     public static boolean haveReloaded = false;
+    private static FunctionalToolSet instance;
+    private String latestVersion;
+    private String versionUpdate;
+    private boolean isLatest = true;
 
     public static FunctionalToolSet getInstance() {
         return instance;
@@ -99,156 +100,6 @@ public class FunctionalToolSet extends JavaPlugin {
             return true;
         } catch (NoClassDefFoundError e) {
             return false;
-        }
-    }
-
-    public void initDepends() {
-        hasVault = initVault();
-        if (!hasVault) {
-            getLogger().info("Vault未安装|无法加载随机抽取权限的功能.");
-        }
-        hasPapi = initPapi();
-        if (!hasPapi) {
-            getLogger().info("PAPI未安装|无法使用插件变量.");
-        }
-        hasPLib = initPLib();
-        if (!hasPLib) {
-            getLogger().info("PLib未安装|无法使用发包相关功能");
-        }
-        if (hasPapi) {
-            getLogger().info("正在注册PAPI变量中...");
-            new PapiExpansion().register();
-        }
-    }
-
-    @Override
-    public void onEnable() {
-        isLoading = true;
-        instance = this;
-        pluginFile = this.getFile();
-        getLogger().info("正在启用基础功能插件UTES中...");
-        ResourceUtils.initialize(this);
-        getLogger().info("您使用的语言是：" + getConfig().getString("language"));
-        try {
-            if (!haveReloaded) {
-                initDepends();
-            }
-            getLogger().info("正在注册指令中...");
-            this.getCommand("fts").setExecutor(new FTSCommands());
-            getLogger().info("正在启用随机传送功能中...");
-            RandomTeleport.initialize(this);
-            getLogger().info("正在启用经验飞行功能中...");
-            XPFly.initialize(this);
-            getLogger().info("正在启用赛季积分功能中...");
-            CardPointRewards.initialize(this);
-            getLogger().info("正在启用计分板功能中...");
-            ScoreBoard.initialize(this);
-            getLogger().info("正在启用铁块电梯功能中...");
-            IronBlockLift.initialize(this);
-            if (hasPLib) {
-                getLogger().info("正在启用增加信息前缀功能中...");
-                TranslateMessage.initialize(this);
-            }
-            getLogger().info("正在启用屏蔽进出信息功能中...");
-            NoLoginQuitMessage.initialize(this);
-            getLogger().info("正在启用统计在线时间功能中...");
-            OnlineTimes.initialize(this);
-            getLogger().info("正在启用粒子特效功能中...");
-            ParticleOverHead.initialize(this);
-            ParticleUnderFeet.initialize(this);
-            if (hasVault) {
-                getLogger().info("正在启用随机抽奖功能中...");
-                RandomCredits.initialize(this);
-            }
-            getLogger().info("正在启用死亡物品存储箱功能中...");
-            DeathChest.initialize(this);
-            getLogger().info("正在启用世界禁用指令功能中...");
-            CommandBanner.initialize(this);
-            if (hasPLib) {
-                getLogger().info("正在启用炫耀物品功能中...");
-                ShowOff.initialize(this);
-            }
-            getLogger().info("正在启用快捷动作指令功能中...");
-            ActionCommand.initialize(this);
-            getLogger().info("正在启用自定义升级经验功能中...");
-            CustomExpMechenism.initialize(this);
-            getLogger().info("正在启用连锁挖矿功能中...");
-            LinkingDig.initialize(this);
-            getLogger().info("正在启用更真实的爆炸功能中...");
-            TrueExplode.initialize(this);
-            getLogger().info("正在启用便携容器功能中...");
-            CapableGui.initialize(this);
-            getLogger().info("正在启用模式锁定功能中...");
-            ModeLocking.initialize(this);
-            getLogger().info("正在启用区块重生功能中...");
-            getLogger().info("正在启用世界边界功能中...");
-            WorldBoarder.initialize(this);
-            if (hasPLib) {
-                getLogger().info("正在启用更棒的聊天功能中...");
-                ChatBar.initialize(this);
-            }
-            getLogger().info("正在启用指令简化功能中...");
-            EasyCommand.initialize(this);
-            getLogger().info("正在启用同步时间功能中...");
-            TimeSynchronization.initialize(this);
-            getLogger().info("正在启用快速睡眠功能中...");
-            QuickNight.initialize(this);
-            getLogger().info("正在启用进服操作功能中...");
-            JoinCommand.initialize(this);
-            getLogger().info("正在启用查询离线背包功能中...");
-            getLogger().info("正在启用查询离线末影箱功能中...");
-            CheckInventory.initialize(this);
-            getLogger().info("正在启用椅子功能中...");
-            Chair.initialize(this);
-            getLogger().info("正在启用查询容器记录功能中...");
-            CheckContainers.initialize(this);
-            getLogger().info("正在启用自定义玩家列表功能中...");
-            TabList.initialize(this);
-            //TODO
-            getLogger().info("正在启用插件管理功能中...");
-            PluginManager.initialize(this);
-            getLogger().info("正在启用自定义MOTD功能中...");
-            MotdManager.initialize(this);
-
-            getLogger().info("正在启用随机数生成器功能中...");
-            RandomGenerator.initialize(this);
-
-            checkUpdate();
-
-            isLoading = false;
-        } catch (Exception exception) {
-            getLogger().info("哎呀这步好像出了些小问题呢！");
-            exception.printStackTrace();
-            isLoading = false;
-        }
-    }
-
-    private boolean initPLib() {
-        try {
-            pm = ProtocolLibrary.getProtocolManager();
-            return true;
-        } catch (NoClassDefFoundError error) {
-            return false;
-        }
-    }
-
-    @Override
-    public void onDisable() {
-        haveReloaded = true;
-        getLogger().info("正在关闭FunctionalToolSet中...");
-        getLogger().info("正在保存数据中...");
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            player.closeInventory();
-            CapableGui.save(player);
-            CardPointRewards.saveYaml(player);
-            CheckInventory.save(player);
-            OnlineTimes.saveYaml(player);
-            if (XPFly.isFlying(player)) {
-                XPFly.cancelFly(player);
-            }
-        }
-        if (hasPLib) {
-            pm.removePacketListeners(this);
         }
     }
 
@@ -312,6 +163,161 @@ public class FunctionalToolSet extends JavaPlugin {
             }
         }
         return null;
+    }
+
+    public void initDepends() {
+        hasVault = initVault();
+        if (!hasVault) {
+            getLogger().info("Vault未安装|无法加载随机抽取权限的功能.");
+        }
+        hasPapi = initPapi();
+        if (!hasPapi) {
+            getLogger().info("PAPI未安装|无法使用插件变量.");
+        }
+        hasPLib = initPLib();
+        if (!hasPLib) {
+            getLogger().info("PLib未安装|无法使用发包相关功能");
+        }
+        if (hasPapi) {
+            getLogger().info("正在注册PAPI变量中...");
+            new PapiExpansion().register();
+        }
+    }
+
+    @Override
+    public void onEnable() {
+        isLoading = true;
+        instance = this;
+        pluginFile = this.getFile();
+        getLogger().info("正在启用基础功能插件UTES中...");
+        ResourceUtils.initialize(this);
+        getLogger().info("您使用的语言是：" + getConfig().getString("language"));
+        try {
+            if (!haveReloaded) {
+                initDepends();
+            }
+            getLogger().info("正在注册指令中...");
+            this.getCommand("fts").setExecutor(new FTSCommands());
+            getLogger().info("正在启用随机传送功能中...");
+            RandomTeleport.initialize(this);
+            getLogger().info("正在启用经验飞行功能中...");
+            XPFly.initialize(this);
+            getLogger().info("正在启用赛季积分功能中...");
+            CardPoints.initialize(this);
+            getLogger().info("正在启用计分板功能中...");
+            ScoreBoard.initialize(this);
+            getLogger().info("正在启用铁块电梯功能中...");
+            IronBlockLift.initialize(this);
+            if (hasPLib) {
+                getLogger().info("正在启用增加信息前缀功能中...");
+                TranslateMessage.initialize(this);
+            }
+            getLogger().info("正在启用屏蔽进出信息功能中...");
+            NoLoginQuitMessage.initialize(this);
+            getLogger().info("正在启用统计在线时间功能中...");
+            OnlineTimes.initialize(this);
+            getLogger().info("正在启用粒子特效功能中...");
+            ParticleOverHead.initialize(this);
+            ParticleUnderFeet.initialize(this);
+            if (hasVault) {
+                getLogger().info("正在启用随机抽奖功能中...");
+                RandomCredits.initialize(this);
+            }
+            getLogger().info("正在启用死亡物品存储箱功能中...");
+            DeathChest.initialize(this);
+            getLogger().info("正在启用世界禁用指令功能中...");
+            CommandBanner.initialize(this);
+            if (hasPLib) {
+                getLogger().info("正在启用炫耀物品功能中...");
+                ShowOff.initialize(this);
+            }
+            getLogger().info("正在启用快捷动作指令功能中...");
+            ActionCommand.initialize(this);
+            getLogger().info("正在启用自定义升级经验功能中...");
+            CustomLevelExp.initialize(this);
+            getLogger().info("正在启用连锁挖矿功能中...");
+            LinkingDig.initialize(this);
+            getLogger().info("正在启用更真实的爆炸功能中...");
+            TrueExplode.initialize(this);
+            getLogger().info("正在启用便携容器功能中...");
+            CapableGui.initialize(this);
+            getLogger().info("正在启用模式锁定功能中...");
+            ModeLocking.initialize(this);
+            getLogger().info("正在启用区块重生功能中...");
+            getLogger().info("正在启用世界边界功能中...");
+            WorldBoarder.initialize(this);
+            if (hasPLib) {
+                getLogger().info("正在启用更棒的聊天功能中...");
+                ChatBar.initialize(this);
+            }
+            getLogger().info("正在启用指令简化功能中...");
+            EasyCommand.initialize(this);
+            getLogger().info("正在启用同步时间功能中...");
+            TimeSynchronization.initialize(this);
+            getLogger().info("正在启用快速睡眠功能中...");
+            QuickNight.initialize(this);
+            getLogger().info("正在启用进服操作功能中...");
+            JoinCommand.initialize(this);
+            getLogger().info("正在启用查询离线背包功能中...");
+            getLogger().info("正在启用查询离线末影箱功能中...");
+            CheckInventory.initialize(this);
+            getLogger().info("正在启用椅子功能中...");
+            Chair.initialize(this);
+            getLogger().info("正在启用查询容器记录功能中...");
+            CheckContainers.initialize(this);
+            getLogger().info("正在启用自定义玩家列表功能中...");
+            TabList.initialize(this);
+            //TODO LANGUAGE
+            getLogger().info("正在启用插件管理功能中...");
+            PluginManager.initialize(this);
+            getLogger().info("正在启用自定义MOTD功能中...");
+            MotdManager.initialize(this);
+//            getLogger().info("正在启用自定义皮肤功能中...");
+//            SkinManager.initialize(this);
+
+            getLogger().info("正在启用随机数生成器功能中...");
+            RandomGenerator.initialize(this);
+
+            if (!haveReloaded) {
+                checkUpdate();
+            }
+
+            isLoading = false;
+        } catch (Exception exception) {
+            getLogger().info("哎呀这步好像出了些小问题呢！");
+            exception.printStackTrace();
+            isLoading = false;
+        }
+    }
+
+    private boolean initPLib() {
+        try {
+            pm = ProtocolLibrary.getProtocolManager();
+            return true;
+        } catch (NoClassDefFoundError error) {
+            return false;
+        }
+    }
+
+    @Override
+    public void onDisable() {
+        haveReloaded = true;
+        getLogger().info("正在关闭FunctionalToolSet中...");
+        getLogger().info("正在保存数据中...");
+        PlaceholderAPI.unregisterPlaceholderHook("fts");
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            player.closeInventory();
+            CapableGuiIO.save(player);
+            CardPointsIO.save(player);
+            CheckInventory.save(player);
+            OnlineTimes.save(player);
+            if (XPFly.isFlying(player)) {
+                XPFly.cancelFly(player);
+            }
+        }
+        if (hasPLib) {
+            pm.removePacketListeners(this);
+        }
     }
 
     private void checkUpdate() {

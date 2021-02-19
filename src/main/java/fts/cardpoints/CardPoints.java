@@ -6,10 +6,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,11 +15,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-public class CardPointRewards implements Listener {
-    private static final HashMap<String, List<String>> rewards = new HashMap<>();
-    private static final HashMap<String, Integer> needs = new HashMap<>();
-    private static final HashMap<String, Boolean> consumes = new HashMap<>();
-    public static HashMap<UUID, IPlayer> stats = new HashMap<>();
+public class CardPoints {
+    public static final HashMap<String, List<String>> rewards = new HashMap<>();
+    public static final HashMap<String, Integer> needs = new HashMap<>();
+    public static final HashMap<String, Boolean> consumes = new HashMap<>();
+    public static HashMap<UUID, IPlayerCardPoints> stats = new HashMap<>();
 
     public static void initialize(FunctionalToolSet plugin) {
         ResourceUtils.autoUpdateConfigs("cardpoints.yml");
@@ -35,7 +31,7 @@ public class CardPointRewards implements Listener {
         }
 
         for (Player player : Bukkit.getOnlinePlayers()) {
-            stats.put(player.getUniqueId(), loadYaml(player));
+            stats.put(player.getUniqueId(), CardPointsIO.load(player));
         }
 
         int startDate = yaml.getInt("startDate");
@@ -66,11 +62,11 @@ public class CardPointRewards implements Listener {
             dataFile.delete();
         }
 
-        Bukkit.getPluginManager().registerEvents(new CardPointRewards(), plugin);
+        Bukkit.getPluginManager().registerEvents(new CardPointsIO(), plugin);
     }
 
     public static void getReward(Player player, String reward, boolean isDouble) {
-        IPlayer stat = stats.get(player.getUniqueId());
+        IPlayerCardPoints stat = stats.get(player.getUniqueId());
         int need = needs.get(reward);
 
         if (stat.points < need) {
@@ -117,42 +113,10 @@ public class CardPointRewards implements Listener {
         stat.received.add(reward);
     }
 
-    private static IPlayer loadYaml(Player player) {
-        File file = new File(FunctionalToolSet.getInstance().getDataFolder() + "/cardpoints/",
-                player.getUniqueId().toString() + ".yml");
-        if (!file.exists()) {
-            return (new IPlayer(0, new ArrayList<>()));
-        }
-        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
-        return new IPlayer(yaml.getInt("points"), yaml.getStringList("received"));
-    }
-
-    public static void saveYaml(Player player) {
-        IPlayer stat = stats.get(player.getUniqueId());
-        File file = new File(FunctionalToolSet.getInstance().getDataFolder() + "/cardpoints/",
-                player.getUniqueId().toString() + ".yml");
-        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
-        yaml.set("points", stat.points);
-        yaml.set("received", stat.received);
-        try {
-            yaml.save(file);
-        } catch (IOException e) {
-            FunctionalToolSet.getInstance().getLogger().info(
-                    ResourceUtils.getSpecialLang("error-while-save-points",
-                            new ArrayList<String>() {
-                                {
-                                    add("{player}");
-                                    add(player.getName());
-                                }
-                            })
-            );
-        }
-    }
-
     public static void takePoints(CommandSender sender, Player player, int points) {
         if (player != null) {
             if (sender.hasPermission("fts.cardpoints.take")) {
-                IPlayer stat = stats.get(player.getUniqueId());
+                IPlayerCardPoints stat = stats.get(player.getUniqueId());
                 stat.points -= points;
                 ResourceUtils.sendSpecialMessage(player, "take-points",
                         new ArrayList<String>() {
@@ -173,7 +137,7 @@ public class CardPointRewards implements Listener {
     public static void givePoints(CommandSender sender, Player player, int points) {
         if (player != null) {
             if (sender.hasPermission("fts.cardpoints.give")) {
-                IPlayer stat = stats.get(player.getUniqueId());
+                IPlayerCardPoints stat = stats.get(player.getUniqueId());
                 stat.points += points;
                 ResourceUtils.sendSpecialMessage(player, "add-points",
                         new ArrayList<String>() {
@@ -194,7 +158,7 @@ public class CardPointRewards implements Listener {
     public static void setPoints(CommandSender sender, Player player, int points) {
         if (player != null) {
             if (sender.hasPermission("fts.cardpoints.set")) {
-                IPlayer stat = stats.get(player.getUniqueId());
+                IPlayerCardPoints stat = stats.get(player.getUniqueId());
                 stat.points = points;
                 ResourceUtils.sendSpecialMessage(player, "set-points",
                         new ArrayList<String>() {
@@ -218,41 +182,18 @@ public class CardPointRewards implements Listener {
                 ResourceUtils.sendMessage(sender, "no-permission-checkpoints");
                 return;
             }
-            IPlayer stat = stats.get(player.getUniqueId());
+            IPlayerCardPoints stat = stats.get(player.getUniqueId());
             ResourceUtils.sendSpecialMessage(sender, "check-points",
                     new ArrayList<String>() {
                         {
                             add("{player}");
                             add(player.getName());
                             add("{points}");
-                            String.valueOf(stat.points);
+                            add(String.valueOf(stat.points));
                         }
                     });
         } else {
             ResourceUtils.sendMessage(sender, "no-such-a-player");
-        }
-    }
-
-    @EventHandler
-    public void onJoin(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
-        stats.put(player.getUniqueId(), loadYaml(player));
-    }
-
-    @EventHandler
-    public void onQuit(PlayerQuitEvent event) {
-        Player player = event.getPlayer();
-        saveYaml(player);
-        stats.remove(player.getUniqueId());
-    }
-
-    public static class IPlayer {
-        private final List<String> received;
-        public int points;
-
-        public IPlayer(int points, List<String> received) {
-            this.points = points;
-            this.received = received;
         }
     }
 }

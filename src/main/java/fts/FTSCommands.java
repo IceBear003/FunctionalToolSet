@@ -1,7 +1,7 @@
 package fts;
 
 import fts.capablegui.CapableGui;
-import fts.cardpoints.CardPointRewards;
+import fts.cardpoints.CardPoints;
 import fts.checkplayer.CheckContainers;
 import fts.checkplayer.CheckInventory;
 import fts.chunkrestore.ChunkRestore;
@@ -11,6 +11,7 @@ import fts.pluginmanage.PluginManager;
 import fts.randomcredit.RandomCredits;
 import fts.rtp.RandomTeleport;
 import fts.scoreboard.ScoreBoard;
+import fts.skin.SkinManager;
 import fts.superjump.SuperJump;
 import fts.xpfly.XPFly;
 import org.bukkit.Bukkit;
@@ -51,8 +52,7 @@ public class FTSCommands implements CommandExecutor {
             } else if (exception instanceof ClassCastException) {
                 sender.sendMessage("控制台无法执行此指令！");
             } else {
-                sender.sendMessage("指令运行时出现蜜汁错误，请将以下报错交给插件作者以便修复！");
-                exception.printStackTrace();
+                sender.sendMessage("指令运行时出现蜜汁错误！");
             }
             return true;
         }
@@ -80,19 +80,19 @@ public class FTSCommands implements CommandExecutor {
         } else if (command.startsWith("fts cardpoints")) {
             switch (args[1]) {
                 case "give":
-                    CardPointRewards.givePoints(sender, Bukkit.getPlayer(args[2]), Integer.parseInt(args[3]));
+                    CardPoints.givePoints(sender, Bukkit.getPlayer(args[2]), Integer.parseInt(args[3]));
                     break;
                 case "set":
-                    CardPointRewards.setPoints(sender, Bukkit.getPlayer(args[2]), Integer.parseInt(args[3]));
+                    CardPoints.setPoints(sender, Bukkit.getPlayer(args[2]), Integer.parseInt(args[3]));
                     break;
                 case "take":
-                    CardPointRewards.takePoints(sender, Bukkit.getPlayer(args[2]), Integer.parseInt(args[3]));
+                    CardPoints.takePoints(sender, Bukkit.getPlayer(args[2]), Integer.parseInt(args[3]));
                     break;
                 case "check":
-                    CardPointRewards.checkPoints(sender, Bukkit.getPlayer(args[2]));
+                    CardPoints.checkPoints(sender, Bukkit.getPlayer(args[2]));
                     break;
                 case "get":
-                    CardPointRewards.getReward((Player) sender, args[2], (args[3].equalsIgnoreCase("TRUE")));
+                    CardPoints.getReward((Player) sender, args[2], (args[3].equalsIgnoreCase("TRUE")));
                     break;
                 default:
                     return false;
@@ -129,7 +129,7 @@ public class FTSCommands implements CommandExecutor {
                 }
                 loc.add(loc.getDirection());
             }
-            CapableGui.addItemStack(player, loc, args[1]);
+            CapableGui.addGui(player, loc, args[1]);
         } else if (command.startsWith("fts addmerchant")) {
             Player player = (Player) sender;
             Location loc = player.getEyeLocation();
@@ -150,7 +150,7 @@ public class FTSCommands implements CommandExecutor {
                 loc.add(loc.getDirection());
                 entities = player.getWorld().getNearbyEntities(loc, 0.2, 0.2, 0.2);
             }
-            CapableGui.addItemStack(player, villager, args[1]);
+            CapableGui.addGui(player, villager, args[1]);
         } else if (command.startsWith("fts opengui")) {
             Player player = (Player) sender;
             CapableGui.openGui(player);
@@ -221,6 +221,9 @@ public class FTSCommands implements CommandExecutor {
                 default:
                     return false;
             }
+        } else if (command.startsWith("fts skin")) {
+            //TODO
+            SkinManager.setSkin(sender, Bukkit.getPlayer(args[1]), args[2]);
         } else if (command.startsWith("fts help")) {
             sender.sendMessage("{ignore}§e-----------§6§lFunctionalToolSet插件指令简介§e-----------");
             sender.sendMessage("{ignore}§a/fts rtp §e-随机传送");

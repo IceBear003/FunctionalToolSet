@@ -15,31 +15,25 @@ import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerChatTabCompleteEvent;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.util.*;
 
-public class ChatBar implements Listener {
+public class ChatBar {
     public static YamlConfiguration yaml;
-    private static HashMap<String, UUID> owners = new HashMap<>();
-    private static HashMap<String, HashSet<UUID>> cues = new HashMap<>();
-    private static String legacyHover;
-    private static boolean hoverEnable;
-    private static boolean tellEnable;
-    private static boolean repeatEnable;
-    private static String repeatButtom;
-    private static String repeatHover;
-    private static boolean cueEnable;
-    private static String cueTitle;
-    private static String cueSubtitle;
-    private static String cueColor;
-    private static boolean papiEnable;
+    protected static HashMap<String, UUID> owners = new HashMap<>();
+    protected static HashMap<String, HashSet<UUID>> cues = new HashMap<>();
+    protected static String legacyHover;
+    protected static boolean hoverEnable;
+    protected static boolean tellEnable;
+    protected static boolean repeatEnable;
+    protected static String repeatButtom;
+    protected static String repeatHover;
+    protected static boolean cueEnable;
+    protected static String cueTitle;
+    protected static String cueSubtitle;
+    protected static String cueColor;
+    protected static boolean papiEnable;
 
 
     public static void initialize(FunctionalToolSet plugin) {
@@ -63,7 +57,7 @@ public class ChatBar implements Listener {
         cueColor = yaml.getString("cueColor").replace("&", "§");
         papiEnable = yaml.getBoolean("papiEnable");
 
-        Bukkit.getPluginManager().registerEvents(new ChatBar(), plugin);
+        Bukkit.getPluginManager().registerEvents(new ChatListener(), plugin);
 
         FunctionalToolSet.pm
                 .addPacketListener(new PacketAdapter(PacketAdapter.params().plugin(plugin)
@@ -186,122 +180,5 @@ public class ChatBar implements Listener {
             }
         }
         return components;
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onChat(AsyncPlayerChatEvent event) {
-        if (!repeatEnable) {
-            return;
-        }
-        if (event.isCancelled()) {
-            return;
-        }
-        if (!repeatEnable) {
-            return;
-        }
-        Player player = event.getPlayer();
-        String message = event.getMessage();
-        event.setMessage(message + repeatButtom);
-        owners.put(message, player.getUniqueId());
-    }
-
-    @EventHandler
-    public void onTab(PlayerChatTabCompleteEvent event) {
-        if (!cueEnable) {
-            return;
-        }
-        String current = event.getLastToken();
-        if (current.contains("@")) {
-            int index = current.lastIndexOf('@');
-            String uncompletedName = current.substring(index + 1);
-
-            ArrayList<String> names = new ArrayList<>();
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                if (current.equalsIgnoreCase("")) {
-                    names.add(current.substring(0, index + 1) + player.getName());
-                }
-                if (player.getName().startsWith(uncompletedName)) {
-                    names.add(current.substring(0, index + 1) + player.getName());
-                }
-            }
-
-            event.getTabCompletions().addAll(names);
-        }
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onPapi(AsyncPlayerChatEvent event) {
-        if (!papiEnable || !FunctionalToolSet.hasPapi) {
-            return;
-        }
-        if (event.isCancelled()) {
-            return;
-        }
-        Player player = event.getPlayer();
-        if (!player.hasPermission("fts.chat.papi")) {
-            return;
-        }
-        event.setMessage(ResourceUtils.getPapi(player, event.getMessage()));
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onCue(AsyncPlayerChatEvent event) {
-        if (!cueEnable) {
-            return;
-        }
-        if (event.isCancelled()) {
-            return;
-        }
-        Player player = event.getPlayer();
-        if (!player.hasPermission("fts.cue.use")) {
-            return;
-        }
-        String message = event.getMessage();
-        String[] fixes = message.split("@");
-        if (fixes.length == 1) {
-            return;
-        }
-        HashSet<UUID> players = new HashSet<>();
-
-        boolean hasCue = false;
-
-        HashSet<Integer> notPlayerIndexes = new HashSet<>();
-
-        for (int i = 1; i < fixes.length; i++) {
-            boolean hasPlayer = false;
-            for (Player other : Bukkit.getOnlinePlayers()) {
-                if (fixes[i].startsWith(other.getName())) {
-                    new BukkitRunnable() {
-                        @Override
-                        public void run() {
-                            other.sendTitle(cueTitle.replace("{player}", player.getName()),
-                                    cueSubtitle.replace("{player}", player.getName()), 10, 70, 20);
-                        }
-                    }.runTaskLater(FunctionalToolSet.getInstance(), 3L);
-                    fixes[i] = other.getName() + fixes[i].replaceFirst(other.getName(), "§r");
-                    players.add(other.getUniqueId());
-                    hasCue = true;
-                    hasPlayer = true;
-                    break;
-                }
-            }
-            if (!hasPlayer) {
-                notPlayerIndexes.add(i);
-            }
-        }
-        if (hasCue) {
-            String result = "";
-            for (int i = 0; i < fixes.length - 1; i++) {
-                if (notPlayerIndexes.contains(i + 1)) {
-                    result += fixes[i] + "@";
-                } else {
-                    result += fixes[i] + cueColor + "@";
-                }
-            }
-            result += fixes[fixes.length - 1];
-            event.setMessage(result);
-            cues.put(result, players);
-            owners.put(result, player.getUniqueId());
-        }
     }
 }

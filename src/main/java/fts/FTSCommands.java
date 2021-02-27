@@ -5,6 +5,7 @@ import fts.cardpoints.CardPoints;
 import fts.checkplayer.CheckContainers;
 import fts.checkplayer.CheckInventory;
 import fts.chunkrestore.ChunkRestore;
+import fts.freecam.FreeCam;
 import fts.particle.ParticleOverHead;
 import fts.particle.ParticleUnderFeet;
 import fts.pluginmanage.PluginManager;
@@ -29,6 +30,7 @@ import org.bukkit.inventory.Inventory;
 
 import java.util.Collection;
 
+//TODO LANGUAGE
 public class FTSCommands implements CommandExecutor {
 
     @Override
@@ -198,12 +200,10 @@ public class FTSCommands implements CommandExecutor {
                 player.sendMessage("玩家不存在");
             }
         } else if (command.startsWith("fts plugin")) {
-            //TODO fts.plugin LANGUAGE
             if (!sender.hasPermission("fts.plugin")) {
                 sender.sendMessage("你没有权限管理插件！");
                 return true;
             }
-            //TODO LANGUAGE
             if (args[2].equalsIgnoreCase("FunctionalToolSet")) {
                 sender.sendMessage("本插件无法对自身进行载入/卸载/重载的操作！");
                 return true;
@@ -221,8 +221,9 @@ public class FTSCommands implements CommandExecutor {
                 default:
                     return false;
             }
+        } else if (command.startsWith("fts freecam")) {
+            FreeCam.goFreeCam(Bukkit.getPlayer(args[1]));
         } else if (command.startsWith("fts skin")) {
-            //TODO
             SkinManager.setSkin(sender, Bukkit.getPlayer(args[1]), args[2]);
         } else if (command.startsWith("fts help")) {
             sender.sendMessage("{ignore}§e-----------§6§lFunctionalToolSet插件指令简介§e-----------");
@@ -240,6 +241,7 @@ public class FTSCommands implements CommandExecutor {
             sender.sendMessage("{ignore}§a/fts checkinv <玩家名> §e-查水表-查询一个玩家的背包");
             sender.sendMessage("{ignore}§a/fts checkchest <玩家名> §e-查水表-查询一个玩家的末影箱");
             sender.sendMessage("{ignore}§a/fts checkcontainer <玩家名> §e-查水表-查询一个玩家的容器打开记录");
+            sender.sendMessage("{ignore}§a/fts freecam <玩家名> §e-灵魂侦查-开始侦查周围地形");
             sender.sendMessage("{ignore}§a/fts plugin load/unload/reload <插件名> §e-插件管理-载入/重载/卸载插件");
             sender.sendMessage("{ignore}§a/fts reload §e-重新载入所有配置文件，但是对新老版本更新无用，请使用/reload");
             sender.sendMessage("{ignore}§e----------------------------------------------------------");

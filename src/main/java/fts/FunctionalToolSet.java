@@ -15,6 +15,7 @@ import fts.checkplayer.CheckInventory;
 import fts.customexp.CustomLevelExp;
 import fts.deathchest.DeathChest;
 import fts.easycmd.EasyCommand;
+import fts.freecam.FreeCam;
 import fts.information.NoLoginQuitMessage;
 import fts.information.TranslateMessage;
 import fts.joincmd.JoinCommand;
@@ -178,10 +179,6 @@ public class FunctionalToolSet extends JavaPlugin {
         if (!hasPLib) {
             getLogger().info("PLib未安装|无法使用发包相关功能");
         }
-        if (hasPapi) {
-            getLogger().info("正在注册PAPI变量中...");
-            new PapiExpansion().register();
-        }
     }
 
     @Override
@@ -267,11 +264,12 @@ public class FunctionalToolSet extends JavaPlugin {
             CheckContainers.initialize(this);
             getLogger().info("正在启用自定义玩家列表功能中...");
             TabList.initialize(this);
-            //TODO LANGUAGE
             getLogger().info("正在启用插件管理功能中...");
             PluginManager.initialize(this);
             getLogger().info("正在启用自定义MOTD功能中...");
             MotdManager.initialize(this);
+            getLogger().info("正在启用灵魂侦查功能中...");
+            FreeCam.initialize(this);
 //            getLogger().info("正在启用自定义皮肤功能中...");
 //            SkinManager.initialize(this);
 
@@ -281,8 +279,13 @@ public class FunctionalToolSet extends JavaPlugin {
             if (!haveReloaded) {
                 checkUpdate();
             }
-
+            haveReloaded = true;
             isLoading = false;
+
+            if (hasPapi) {
+                new PapiExpansion().register();
+            }
+
         } catch (Exception exception) {
             getLogger().info("哎呀这步好像出了些小问题呢！");
             exception.printStackTrace();
@@ -301,7 +304,6 @@ public class FunctionalToolSet extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        haveReloaded = true;
         getLogger().info("正在关闭FunctionalToolSet中...");
         getLogger().info("正在保存数据中...");
         PlaceholderAPI.unregisterPlaceholderHook("fts");

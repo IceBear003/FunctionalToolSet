@@ -18,7 +18,6 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 
-//TODO Language
 public class PluginManager {
     private static FunctionalToolSet main;
     private static org.bukkit.plugin.PluginManager BukkitPluginManager;
@@ -81,7 +80,7 @@ public class PluginManager {
                         try {
                             plugin = Bukkit.getPluginManager().loadPlugin(file);
                         } catch (InvalidPluginException invalidPluginException) {
-                            sender.sendMessage("插件加载错误！请检查是否存在此插件，或此插件是否合法！");
+                            ResourceUtils.sendMessage(sender, "error-while-load-plugin");
                             return;
                         }
                         break;
@@ -94,14 +93,14 @@ public class PluginManager {
         plugin.onLoad();
         Bukkit.getPluginManager().enablePlugin(plugin);
         if (hasInfo) {
-            sender.sendMessage("插件加载完成.");
+            ResourceUtils.sendMessage(sender, "plugin-load-successfully");
         }
     }
 
     public static void unload(CommandSender sender, String pluginName, boolean hasInfo) {
         Plugin plugin = Bukkit.getPluginManager().getPlugin(pluginName);
         if (plugin == null) {
-            sender.sendMessage("插件不存在或未加载！");
+            ResourceUtils.sendMessage(sender, "error-while-unload-plugin");
             return;
         }
         pluginList.remove(plugin);
@@ -133,20 +132,20 @@ public class PluginManager {
         Bukkit.getPluginManager().disablePlugin(plugin);
         System.gc();
         if (hasInfo) {
-            sender.sendMessage("插件卸载完成.");
+            ResourceUtils.sendMessage(sender, "plugin-unload-successfully");
         }
     }
 
     public static void reload(CommandSender sender, String pluginName, boolean hasInfo) {
         Plugin plugin = Bukkit.getPluginManager().getPlugin(pluginName);
         if (plugin == null) {
-            sender.sendMessage("插件不存在或未加载！");
+            ResourceUtils.sendMessage(sender, "error-while-reload-plugin");
             return;
         }
         unload(sender, pluginName, false);
         load(sender, pluginName, false);
         if (hasInfo) {
-            sender.sendMessage("插件重载完成.");
+            ResourceUtils.sendMessage(sender, "plugin-reload-successfully");
         }
     }
 }

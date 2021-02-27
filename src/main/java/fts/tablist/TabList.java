@@ -22,6 +22,24 @@ public class TabList implements Listener {
     private static List<String> foot;
     private static String headMsg = "";
     private static String footMsg = "";
+    private static Class Packet;
+    private static Class ChatSerializer;
+    private static Class CraftPlayer;
+    private static Class PacketPlayOutPlayerListHeaderFooter;
+    private static Method a;
+    private static int playerAmount = 0;
+
+    static {
+        Packet = NMSManager.getClass("Packet");
+        ChatSerializer = NMSManager.getClass("IChatBaseComponent$ChatSerializer");
+        CraftPlayer = NMSManager.getClass("entity.CraftPlayer");
+        PacketPlayOutPlayerListHeaderFooter = NMSManager.getClass("PacketPlayOutPlayerListHeaderFooter");
+        try {
+            a = ChatSerializer.getMethod("a", Class.forName("java.lang.String"));
+        } catch (NoSuchMethodException | ClassNotFoundException | NullPointerException e) {
+            FunctionalToolSet.getInstance().getLogger().info("Java内部错误！");
+        }
+    }
 
     public static void initialize(FunctionalToolSet plugin) {
         ResourceUtils.autoUpdateConfigs("tablist.yml");
@@ -33,6 +51,8 @@ public class TabList implements Listener {
 
         head = yaml.getStringList("head");
         foot = yaml.getStringList("foot");
+        headMsg = "";
+        footMsg = "";
 
         for (int index = 0; index < head.size(); index++) {
             if (index == head.size() - 1) {
@@ -54,33 +74,6 @@ public class TabList implements Listener {
         }
 
         Bukkit.getPluginManager().registerEvents(new TabList(), plugin);
-    }
-
-    private static Class Packet;
-    private static Class ChatSerializer;
-    private static Class CraftPlayer;
-    private static Class PacketPlayOutPlayerListHeaderFooter;
-    private static Method a;
-
-    static {
-        Packet = NMSManager.getClass("Packet");
-        ChatSerializer = NMSManager.getClass("IChatBaseComponent$ChatSerializer");
-        CraftPlayer = NMSManager.getClass("entity.CraftPlayer");
-        PacketPlayOutPlayerListHeaderFooter = NMSManager.getClass("PacketPlayOutPlayerListHeaderFooter");
-        try {
-            a = ChatSerializer.getMethod("a", Class.forName("java.lang.String"));
-        } catch (NoSuchMethodException | ClassNotFoundException | NullPointerException e) {
-            FunctionalToolSet.getInstance().getLogger().info("Java内部错误！");
-        }
-    }
-
-    private static int playerAmount = 0;
-
-    @EventHandler
-    public void onJoin(PlayerJoinEvent event) {
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            updateTabList(player, playerAmount);
-        }
     }
 
     private static void updateTabList(Player player, int playerAmount) {
@@ -116,6 +109,13 @@ public class TabList implements Listener {
                 InvocationTargetException | NoSuchFieldException |
                 InstantiationException | NoSuchMethodException e) {
             FunctionalToolSet.getInstance().getLogger().info("NMS内部错误！请检查版本！");
+        }
+    }
+
+    @EventHandler
+    public void onJoin(PlayerJoinEvent event) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            updateTabList(player, playerAmount);
         }
     }
 

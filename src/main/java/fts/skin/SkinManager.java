@@ -16,7 +16,7 @@ import java.util.HashMap;
 
 public class SkinManager {
     private static FunctionalToolSet main;
-    private static HashMap<String, String> urls = new HashMap<String, String>();
+    private static HashMap<String, Property> urls = new HashMap<String, Property>();
 
     public static void initialize(FunctionalToolSet plugin) {
         main = plugin;
@@ -26,32 +26,30 @@ public class SkinManager {
         YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
 
         for (String path : yaml.getKeys(false)) {
-            urls.put(path, yaml.getString(path));
+            String url = yaml.getString(path);
+            urls.put(path, new Property("textures", getValue(url), null));
         }
     }
 
     public static void setSkin(CommandSender sender, Player player, String skinName) {
-        String value = getValue(player, skinName);
-        if (value.equalsIgnoreCase("")) {
+        if (!urls.containsKey(skinName)) {
             return;
         }
         PropertyMap props = ((CraftPlayer) player).getHandle().getProfile().getProperties();
-        props.clear();
-        props.put("textures", new Property("textures", value, (String) null));
+        props.get("textures").clear();
+        System.out.println(urls.get(skinName));
+        props.put("textures", urls.get(skinName));
         update(player);
 
         sender.sendMessage("设置完成");
     }
 
-    private static String getValue(Player player, String skinName) {
-        if (!urls.containsKey(skinName)) {
-            return "";
-        }
-        String url = urls.get(skinName);
+    private static String getValue(String url) {
         String json = "{\n" +
-                "  \"timestamp\" : " + System.currentTimeMillis() + ",\n" +
-                "  \"profileId\" : \"" + player.getUniqueId().toString().replace("-", "") + "\",\n" +
-                "  \"profileName\" : \"" + player.getName() + "\",\n" +
+                "  \"timestamp\" : 1613780104071,\n" +
+                "  \"profileId\" : \"0a1c1a3b135643f28ca58d0120c1e976\",\n" +
+                "  \"profileName\" : \"HamsterYDS\",\n" +
+                "  \"signatureRequired\" : false,\n" +
                 "  \"textures\" : {\n" +
                 "    \"SKIN\" : {\n" +
                 "      \"url\" : \"" + url + "\"\n" +
@@ -63,16 +61,8 @@ public class SkinManager {
 
     private static void update(Player player) {
         for (Player each : Bukkit.getOnlinePlayers()) {
-            try {
-                each.hidePlayer(main, player);
-            } catch (NoSuchMethodError ignored) {
-                each.hidePlayer(player);
-            }
-            try {
-                each.showPlayer(main, player);
-            } catch (NoSuchMethodError ignored) {
-                each.showPlayer(player);
-            }
+            each.hidePlayer(player);
+            each.showPlayer(player);
         }
     }
 }

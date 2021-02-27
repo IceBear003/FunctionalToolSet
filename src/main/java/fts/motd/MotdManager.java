@@ -11,7 +11,6 @@ import org.bukkit.event.server.ServerListPingEvent;
 import java.io.File;
 import java.util.List;
 
-//TODO LANGUAGE
 public class MotdManager implements Listener {
     private static int maxPlayer;
     private static String motd = "";
@@ -45,7 +44,9 @@ public class MotdManager implements Listener {
             try {
                 Bukkit.loadServerIcon(new File(iconFile));
             } catch (Exception e) {
-                plugin.getLogger().info("加载服务器MOTD图片时发生错误！");
+                plugin.getLogger().info(
+                        ResourceUtils.getLang("error-while-load-motd-png")
+                );
             }
         }
 

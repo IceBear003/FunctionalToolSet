@@ -17,6 +17,7 @@ import fts.mechanism.player.xpfly.XPFly;
 import fts.mechanism.player.xplimit.ExpLimit;
 import fts.mechanism.world.chunkrestore.ChunkRestore;
 import fts.mechanism.world.rtp.RandomTeleport;
+import fts.spi.ResourceUtils;
 import fts.stat.cardpoints.CardPoints;
 import fts.stat.pluginmanage.PluginManager;
 import org.bukkit.Bukkit;
@@ -234,6 +235,10 @@ public class FTSCommands implements CommandExecutor {
             return true;
         } else if (command.startsWith("fts xplimit")) {
             Player player = (Player) sender;
+            if (!player.hasPermission("fts.xplimit.use")) {
+                ResourceUtils.sendMessage(player, "no-permission-use-xplimit");
+                return true;
+            }
             ItemStack item = player.getItemInHand();
             if (item == null) {
                 sender.sendMessage("§6[经验限制]§r 你手上必须持有物品！");

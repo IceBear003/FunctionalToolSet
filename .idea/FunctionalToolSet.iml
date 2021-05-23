@@ -8,10 +8,10 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="[P][前置]ProtocolLib" level="project" />
     <orderEntry type="library" name="[V][前置]Vault" level="project" />
     <orderEntry type="library" name="PlaceholderAPI-2.10.4" level="project" />
     <orderEntry type="library" name="1.16.5-patched" level="project" />
     <orderEntry type="library" name="SpigotCore-1.12.2" level="project" />
+    <orderEntry type="library" name="ProtocolLib" level="project" />
   </component>
 </module>

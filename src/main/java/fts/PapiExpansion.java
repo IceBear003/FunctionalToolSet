@@ -1,8 +1,8 @@
 package fts;
 
 import com.sun.istack.internal.NotNull;
-import fts.cardpoints.CardPoints;
-import fts.onlinetimes.OnlineTimes;
+import fts.stat.cardpoints.CardPoints;
+import fts.stat.onlinetimes.OnlineTimes;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;

@@ -2,44 +2,47 @@ package fts;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
-import fts.actioncmd.ActionCommand;
-import fts.bancmd.CommandBanner;
-import fts.capablegui.CapableGui;
-import fts.capablegui.CapableGuiIO;
-import fts.cardpoints.CardPoints;
-import fts.cardpoints.CardPointsIO;
-import fts.chair.Chair;
-import fts.chatbar.ChatBar;
-import fts.checkplayer.CheckContainers;
-import fts.checkplayer.CheckInventory;
-import fts.customexp.CustomLevelExp;
-import fts.deathchest.DeathChest;
-import fts.easycmd.EasyCommand;
-import fts.freecam.FreeCam;
-import fts.information.NoLoginQuitMessage;
-import fts.information.TranslateMessage;
-import fts.joincmd.JoinCommand;
-import fts.lift.IronBlockLift;
-import fts.linkingdig.LinkingDig;
-import fts.modelock.ModeLocking;
-import fts.motd.MotdManager;
-import fts.onlinetimes.OnlineTimes;
-import fts.particle.ParticleOverHead;
-import fts.particle.ParticleUnderFeet;
-import fts.pluginmanage.PluginManager;
-import fts.random.RandomGenerator;
-import fts.randomcredit.RandomCredits;
-import fts.rtp.RandomTeleport;
-import fts.scoreboard.ScoreBoard;
-import fts.showoff.ShowOff;
+import fts.cmd.actioncmd.ActionCommand;
+import fts.cmd.bancmd.CommandBanner;
+import fts.cmd.easycmd.EasyCommand;
+import fts.cmd.joincmd.JoinCommand;
+import fts.cmd.randomcredit.RandomCredits;
+import fts.gui.capablegui.CapableGui;
+import fts.gui.capablegui.CapableGuiIO;
+import fts.gui.checkplayer.CheckContainers;
+import fts.gui.checkplayer.CheckInventory;
+import fts.gui.customrecipes.CustomRecipes;
+import fts.info.chatbar.ChatBar;
+import fts.info.modify.NoLoginQuitMessage;
+import fts.info.modify.TranslateMessage;
+import fts.info.motd.MotdManager;
+import fts.info.scoreboard.ScoreBoard;
+import fts.info.showoff.ShowOff;
+import fts.info.tablist.TabList;
+import fts.mechanism.player.chair.Chair;
+import fts.mechanism.player.customexp.CustomLevelExp;
+import fts.mechanism.player.deathchest.DeathChest;
+import fts.mechanism.player.freecam.FreeCam;
+import fts.mechanism.player.particle.ParticleOverHead;
+import fts.mechanism.player.particle.ParticleUnderFeet;
+import fts.mechanism.player.xpfly.XPFly;
+import fts.mechanism.player.xplimit.ExpLimit;
+import fts.mechanism.world.lift.IronBlockLift;
+import fts.mechanism.world.linkingdig.LinkingDig;
+import fts.mechanism.world.modelock.ModeLocking;
+import fts.mechanism.world.rtp.RandomTeleport;
+import fts.mechanism.world.timeoperate.QuickNight;
+import fts.mechanism.world.timeoperate.TimeSynchronization;
+import fts.mechanism.world.trueexplode.TrueExplode;
+import fts.mechanism.world.worldboarder.WorldBoarder;
 import fts.spi.ResourceUtils;
-import fts.tablist.TabList;
-import fts.timeoperate.QuickNight;
-import fts.timeoperate.TimeSynchronization;
-import fts.trueexplode.TrueExplode;
-import fts.worldboarder.WorldBoarder;
-import fts.xpfly.XPFly;
+import fts.stat.cardpoints.CardPoints;
+import fts.stat.cardpoints.CardPointsIO;
+import fts.stat.iprecorder.IPRecorder;
+import fts.stat.onlinetimes.OnlineTimes;
+import fts.stat.pluginmanage.PluginManager;
 import me.clip.placeholderapi.PlaceholderAPI;
+import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -64,6 +67,7 @@ import java.util.logging.Level;
  */
 public class FunctionalToolSet extends JavaPlugin {
     public static ProtocolManager pm;
+    public static Economy vaultEconomy = null;
     public static Permission vaultPermission = null;
     public static boolean hasPapi;
     public static boolean hasPLib;
@@ -93,8 +97,12 @@ public class FunctionalToolSet extends JavaPlugin {
         try {
             RegisteredServiceProvider<Permission> permissionProvider = Bukkit.getServicesManager()
                     .getRegistration(Permission.class);
+            RegisteredServiceProvider<Economy> economyProvider = Bukkit.getServicesManager().getRegistration(Economy.class);
             if (permissionProvider != null) {
                 if ((vaultPermission = permissionProvider.getProvider()) == null) {
+                    return false;
+                }
+                if ((vaultEconomy = economyProvider.getProvider()) == null) {
                     return false;
                 }
             }
@@ -270,11 +278,12 @@ public class FunctionalToolSet extends JavaPlugin {
             MotdManager.initialize(this);
             getLogger().info("正在启用灵魂侦查功能中...");
             FreeCam.initialize(this);
-//            getLogger().info("正在启用自定义皮肤功能中...");
-//            SkinManager.initialize(this);
-
-            getLogger().info("正在启用随机数生成器功能中...");
-            RandomGenerator.initialize(this);
+            getLogger().info("正在启用经验等级限制功能中...");
+            ExpLimit.initialize(this);
+            getLogger().info("正在启用自定义4*4合成功能中...");
+            CustomRecipes.initialize(this);
+            getLogger().info("正在启用IP记录功能中...");
+            IPRecorder.initialize(this);
 
             if (!haveReloaded) {
                 checkUpdate();

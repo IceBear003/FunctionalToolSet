@@ -1,20 +1,24 @@
 package fts;
 
-import fts.capablegui.CapableGui;
-import fts.cardpoints.CardPoints;
-import fts.checkplayer.CheckContainers;
-import fts.checkplayer.CheckInventory;
-import fts.chunkrestore.ChunkRestore;
-import fts.freecam.FreeCam;
-import fts.particle.ParticleOverHead;
-import fts.particle.ParticleUnderFeet;
-import fts.pluginmanage.PluginManager;
-import fts.randomcredit.RandomCredits;
-import fts.rtp.RandomTeleport;
-import fts.scoreboard.ScoreBoard;
-import fts.skin.SkinManager;
-import fts.superjump.SuperJump;
-import fts.xpfly.XPFly;
+import fts.cmd.randomcredit.RandomCredits;
+import fts.gui.capablegui.CapableGui;
+import fts.gui.checkplayer.CheckContainers;
+import fts.gui.checkplayer.CheckInventory;
+import fts.gui.customrecipes.gui.ops.RecipeEditor;
+import fts.gui.customrecipes.gui.player.RecipeWorkbench;
+import fts.gui.customrecipes.gui.shared.RecipeSawer;
+import fts.gui.customrecipes.stat.FileManager;
+import fts.info.scoreboard.ScoreBoard;
+import fts.mechanism.player.freecam.FreeCam;
+import fts.mechanism.player.particle.ParticleOverHead;
+import fts.mechanism.player.particle.ParticleUnderFeet;
+import fts.mechanism.player.superjump.SuperJump;
+import fts.mechanism.player.xpfly.XPFly;
+import fts.mechanism.player.xplimit.ExpLimit;
+import fts.mechanism.world.chunkrestore.ChunkRestore;
+import fts.mechanism.world.rtp.RandomTeleport;
+import fts.stat.cardpoints.CardPoints;
+import fts.stat.pluginmanage.PluginManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -27,8 +31,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 //TODO LANGUAGE
 public class FTSCommands implements CommandExecutor {
@@ -223,8 +231,130 @@ public class FTSCommands implements CommandExecutor {
             }
         } else if (command.startsWith("fts freecam")) {
             FreeCam.goFreeCam(Bukkit.getPlayer(args[1]));
-        } else if (command.startsWith("fts skin")) {
-            SkinManager.setSkin(sender, Bukkit.getPlayer(args[1]), args[2]);
+            return true;
+        } else if (command.startsWith("fts xplimit")) {
+            Player player = (Player) sender;
+            ItemStack item = player.getItemInHand();
+            if (item == null) {
+                sender.sendMessage("§6[经验限制]§r 你手上必须持有物品！");
+                return true;
+            }
+            ItemMeta meta = item.getItemMeta();
+            if (meta == null) {
+                sender.sendMessage("§6[经验限制]§r 你手上必须持有物品！");
+                return true;
+            }
+            List<String> lore = meta.hasLore() ? meta.getLore() : new ArrayList<>();
+            lore.add(ExpLimit.limitOrigin.replace("%exp%", args[1]));
+            meta.setLore(lore);
+            item.setItemMeta(meta);
+            sender.sendMessage("§6[经验限制]§r 设置成功！");
+            return true;
+        } else if (command.startsWith("fts cr")) {
+            if (args.length == 1) {
+                sender.sendMessage("§6[合成系统]§r CustomRecipes模块指令：");
+                sender.sendMessage("§6★ §r /fts cr help - 查看CustomRecipes模块指令帮助");
+                sender.sendMessage("§6★ §r /fts cr editor - 打开配方管理控制面板");
+                sender.sendMessage("§6★ §r /fts cr opengui - 打开合成面板");
+                sender.sendMessage("§6★ §r /fts cr checkrecipes - 查询所有合成");
+                sender.sendMessage("§6★ §r /fts cr delete <编号> - 删除某个配方");
+                sender.sendMessage("§6★ §r /fts cr money <编号> <需要的金钱> - 设置配方合成需要的金钱");
+                sender.sendMessage("§6★ §r /fts cr exp <编号> <需要的经验等级> - 设置配方合成需要的经验等级");
+                sender.sendMessage("§6★ §r /fts cr percent <编号> <成功率> - 设置配方合成的成功率（0-100）");
+                sender.sendMessage("§6★ §r /fts cr special <编号> <触发概率> - 设置指定编号的配方在合成时，触发特殊成品的几率（0-100）");
+                sender.sendMessage("§6★ §r /fts cr addluckylore <成功率> - 设置手中物品用于合成时提高的成功率");
+                return true;
+            }
+            if (args[1].equalsIgnoreCase("help")) {
+                sender.sendMessage("§6[合成系统]§r CustomRecipes模块指令：");
+                sender.sendMessage("§6★ §r /fts cr help - 查看CustomRecipes模块指令帮助");
+                sender.sendMessage("§6★ §r /fts cr editor - 打开配方管理控制面板");
+                sender.sendMessage("§6★ §r /fts cr opengui - 打开合成面板");
+                sender.sendMessage("§6★ §r /fts cr checkrecipes - 查询所有合成");
+                sender.sendMessage("§6★ §r /fts cr delete <编号> - 删除某个配方");
+                sender.sendMessage("§6★ §r /fts cr money <编号> <需要的金钱> - 设置配方合成需要的金钱");
+                sender.sendMessage("§6★ §r /fts cr exp <编号> <需要的经验等级> - 设置配方合成需要的经验等级");
+                sender.sendMessage("§6★ §r /fts cr percent <编号> <成功率> - 设置配方合成的成功率（0-100）");
+                sender.sendMessage("§6★ §r /fts cr special <编号> <触发概率> - 设置指定编号的配方在合成时，触发特殊成品的几率（0-100）");
+                sender.sendMessage("§6★ §r /fts cr addluckylore <成功率> - 设置手中物品用于合成时提高的成功率");
+                return true;
+            }
+            if (args[1].equalsIgnoreCase("opengui")) {
+                ((Player) sender).openInventory(RecipeWorkbench.invs.get(((Player) sender).getUniqueId()));
+                sender.sendMessage("§6[合成系统]§r 打开合成面板中...");
+                return true;
+            }
+            if (args[1].equalsIgnoreCase("checkrecipes")) {
+                ((Player) sender).openInventory(RecipeSawer.chooseInv);
+                sender.sendMessage("§6[合成系统]§r 打开合成查询面板中...");
+                return true;
+            }
+
+            if (!sender.isOp()) {
+                sender.sendMessage("§6[合成系统]§r 你没有权限！");
+                return true;
+            }
+            if (args[1].equalsIgnoreCase("editor")) {
+                ((Player) sender).openInventory(RecipeEditor.inv);
+                sender.sendMessage("§6[合成系统]§r 打开控制面板中...");
+                return true;
+            }
+            if (args[1].equalsIgnoreCase("addluckylore")) {
+                Player player = (Player) sender;
+                ItemStack item = player.getInventory().getItemInMainHand();
+                if (item == null) {
+                    sender.sendMessage("§6[合成系统]§r 手上没有物品！");
+                    return true;
+                }
+                ItemMeta meta = item.getItemMeta();
+                List<String> lore = meta.getLore();
+                if (lore == null) {
+                    lore = new ArrayList<>();
+                }
+                lore.add("§6提升成功率:§r " + args[2] + "/100");
+                meta.setLore(lore);
+                item.setItemMeta(meta);
+                player.getInventory().setItemInMainHand(item);
+                sender.sendMessage("§6[合成系统]§r 添加提成lore成功。");
+                return true;
+            }
+
+            if (!FileManager.recipes.containsKey(Integer.parseInt(args[2]))) {
+                sender.sendMessage("§6[合成系统]§r 配方不存在！");
+                return true;
+            }
+            if (args[1].equalsIgnoreCase("delete")) {
+                FileManager.delRecipe(Integer.parseInt(args[2]));
+                sender.sendMessage("§6[合成系统]§r 删除配方成功。");
+                return true;
+            }
+            if (args[1].equalsIgnoreCase("money")) {
+                FileManager.changeMoney(Integer.parseInt(args[2]), Integer.parseInt(args[3]));
+                sender.sendMessage("§6[合成系统]§r 修改配置成功。");
+                return true;
+            }
+            if (args[1].equalsIgnoreCase("exp")) {
+                FileManager.changeExp(Integer.parseInt(args[2]), Integer.parseInt(args[3]));
+                sender.sendMessage("§6[合成系统]§r 修改配置成功。");
+                return true;
+            }
+            if (args[1].equalsIgnoreCase("percent")) {
+                FileManager.changePercent(Integer.parseInt(args[2]), Integer.parseInt(args[3]));
+                sender.sendMessage("§6[合成系统]§r 修改配置成功。");
+                return true;
+            }
+            if (args[1].equalsIgnoreCase("special")) {
+                Player player = (Player) sender;
+                if (player.getInventory().getItemInMainHand() == null) {
+                    sender.sendMessage("§6[合成系统]§r 手上必须拿着一个物品，作为特殊成品！");
+                    return true;
+                }
+                FileManager.changeSpecialPercent(Integer.parseInt(args[2]), Integer.parseInt(args[3]));
+                FileManager.changeSpecialResult(Integer.parseInt(args[2]), player.getInventory().getItemInMainHand());
+                sender.sendMessage("§6[合成系统]§r 修改配置成功。");
+                return true;
+            }
+            return true;
         } else if (command.startsWith("fts help")) {
             sender.sendMessage("{ignore}§e-----------§6§lFunctionalToolSet插件指令简介§e-----------");
             sender.sendMessage("{ignore}§a/fts rtp §e-随机传送");
@@ -242,6 +372,8 @@ public class FTSCommands implements CommandExecutor {
             sender.sendMessage("{ignore}§a/fts checkchest <玩家名> §e-查水表-查询一个玩家的末影箱");
             sender.sendMessage("{ignore}§a/fts checkcontainer <玩家名> §e-查水表-查询一个玩家的容器打开记录");
             sender.sendMessage("{ignore}§a/fts freecam <玩家名> §e-灵魂侦查-开始侦查周围地形");
+            sender.sendMessage("{ignore}§a/fts xplimit <等级> §e-等级限制-为手上的物品增加等级限制");
+            sender.sendMessage("{ignore}§a/fts cr §e-自定义4*4合成-查看合成模块帮助");
             sender.sendMessage("{ignore}§a/fts plugin load/unload/reload <插件名> §e-插件管理-载入/重载/卸载插件");
             sender.sendMessage("{ignore}§a/fts reload §e-重新载入所有配置文件，但是对新老版本更新无用，请使用/reload");
             sender.sendMessage("{ignore}§e----------------------------------------------------------");
